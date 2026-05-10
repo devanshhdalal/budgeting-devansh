@@ -44,10 +44,21 @@ function App() {
             <NavLinks />
             <button 
               onClick={toggleTheme} 
-              style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+              className="theme-toggle"
               title="Toggle Dark Mode"
             >
-              {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={theme}
+                  initial={{ rotate: -90, opacity: 0, scale: 0.5 }}
+                  animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                  exit={{ rotate: 90, opacity: 0, scale: 0.5 }}
+                  transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                  style={{ display: 'flex', alignItems: 'center' }}
+                >
+                  {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+                </motion.div>
+              </AnimatePresence>
             </button>
           </div>
         </header>

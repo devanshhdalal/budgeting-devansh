@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle, ArrowRight, Upload, Image as ImageIcon } from 'lucide-react';
 import { saveTransaction, uploadReceipt } from '../services/storage';
-import { REWARDS_CONFIG } from '../config/rewards';
+import { CARDS, CATEGORIES } from '../config/cards';
 
 const AddTransaction = () => {
   const [formData, setFormData] = useState({
@@ -143,14 +143,9 @@ const AddTransaction = () => {
                   onChange={handleChange}
                   required
                 >
-                  <option value="Food">Food & Dining</option>
-                  <option value="Groceries">Groceries</option>
-                  <option value="Car">Transportation & Car</option>
-                  <option value="Health">Health & Wellness</option>
-                  <option value="Personal Items">Personal Items</option>
-                  <option value="Utilities">Utilities & Bills</option>
-                  <option value="Travel">Travel</option>
-                  <option value="Other">Other</option>
+                  {CATEGORIES.map(cat => (
+                    <option key={cat.value} value={cat.value}>{cat.label}</option>
+                  ))}
                 </select>
               </div>
 
@@ -163,7 +158,7 @@ const AddTransaction = () => {
                   onChange={handleChange}
                 >
                   <option value="">Select a Card...</option>
-                  {Object.keys(REWARDS_CONFIG).map(card => (
+                  {Object.keys(CARDS).map(card => (
                     <option key={card} value={card}>{card}</option>
                   ))}
                 </select>

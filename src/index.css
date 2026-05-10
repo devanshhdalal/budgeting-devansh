@@ -115,14 +115,13 @@ button {
 }
 
 .card:hover {
-  transform: translateY(-4px) scale(1.01);
-  box-shadow: var(--shadow-hover);
+  box-shadow: 0 0 0 1px var(--accent-primary), var(--shadow-md);
   border-color: var(--accent-primary);
 }
 
 /* Minimal Layout */
 .app-container {
-  max-width: 1200px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 32px 24px;
   min-height: 100vh;
@@ -213,6 +212,34 @@ button {
 
 @media (max-width: 992px) {
   .col-span-4, .col-span-8 { grid-column: span 12; }
+}
+
+@media (min-width: 1200px) {
+  .dashboard-grid {
+    gap: 28px;
+  }
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.theme-toggle:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  box-shadow: 0 0 0 4px var(--accent-light);
 }
 
 /* Summary Cards */

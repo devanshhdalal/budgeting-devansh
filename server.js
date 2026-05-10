@@ -56,6 +56,95 @@ const putGitHubFile = async (filePath, contentBase64, message, sha = null) => {
   return response.ok;
 };
 
+// Merchant-to-Category auto-detection map
+// Add new merchant fragments here (lowercase) to auto-categorize Apple Shortcut transactions
+const MERCHANT_CATEGORY_MAP = {
+  // Food & Dining
+  "mcdonald": "Food",
+  "haveli": "Food",
+  "osmow": "Food",
+  "taco bell": "Food",
+  "five guys": "Food",
+  "dairy queen": "Food",
+  "domino": "Food",
+  "despacito": "Food",
+  "wok box": "Food",
+  "starbucks": "Food",
+  "skip the dishes": "Food",
+  "uber eats": "Food",
+  "doordash": "Food",
+  "sauceplus": "Food",
+  "sushi island": "Food",
+  "olive branch": "Food",
+  "quidi vidi": "Food",
+  "tim hortons": "Food",
+  "subway": "Food",
+  "pizza": "Food",
+  "wendy": "Food",
+  "a&w": "Food",
+  "popeye": "Food",
+  "kfc": "Food",
+  // Groceries
+  "sobeys": "Groceries",
+  "wal-mart": "Groceries",
+  "walmart": "Groceries",
+  "costco wholesale": "Groceries",
+  "mega bazaar": "Groceries",
+  "no frills": "Groceries",
+  "loblaws": "Groceries",
+  "superstore": "Groceries",
+  // Car & Transportation
+  "costco gas": "Car",
+  "circle k": "Car",
+  "esso": "Car",
+  "shell": "Car",
+  "petro": "Car",
+  "parking": "Car",
+  // Travel
+  "easyjet": "Travel",
+  "travix": "Travel",
+  "air-serv": "Travel",
+  "metrobus": "Travel",
+  "airline": "Travel",
+  "hotel": "Travel",
+  "airbnb": "Travel",
+  // Health
+  "shoppers drug": "Health",
+  "lawtons": "Health",
+  "pharmacy": "Health",
+  // Utilities
+  "apple bill": "Utilities",
+  "tidal": "Utilities",
+  "netflix": "Utilities",
+  "spotify": "Utilities",
+  "scotia credit card protec": "Utilities",
+  // Personal Items
+  "sephora": "Personal Items",
+  "klarna": "Personal Items",
+  "marshalls": "Personal Items",
+  "atlantic cannabis": "Personal Items",
+  "herbal centre": "Personal Items",
+  "uniqlo": "Personal Items",
+  "afterpay": "Other",
+  // Other
+  "amazon": "Other",
+  "cineplex": "Other",
+  "best buy": "Other",
+  "steam": "Other",
+  "immigration": "Other",
+  "mycreds": "Other"
+};
+
+// Auto-detect category from merchant name
+const inferCategory = (merchant) => {
+  if (!merchant) return "Other";
+  const lower = merchant.toLowerCase();
+  for (const [fragment, category] of Object.entries(MERCHANT_CATEGORY_MAP)) {
+    if (lower.includes(fragment)) return category;
+  }
+  return "Other";
+};
+
 // Ensure data directory exists
 const dataDir = path.join(__dirname, 'data');
 if (!fs.existsSync(dataDir)) {
@@ -64,14 +153,9 @@ if (!fs.existsSync(dataDir)) {
 
 const dbFile = path.join(dataDir, 'transactions.json');
 
-// Initialize db from public if it doesn't exist
+// Initialize empty db if it doesn't exist
 if (!fs.existsSync(dbFile)) {
-  const publicDb = path.join(__dirname, 'public', 'transactions.json');
-  if (fs.existsSync(publicDb)) {
-    fs.copyFileSync(publicDb, dbFile);
-  } else {
-    fs.writeFileSync(dbFile, JSON.stringify([]));
-  }
+  fs.writeFileSync(dbFile, JSON.stringify([]));
 }
 
 // Helper to read DB local
@@ -142,6 +226,11 @@ app.post('/api/transactions', async (req, res) => {
   // Basic validation
   if (!payload.Amount || !payload.Date) {
     return res.status(400).json({ error: 'Amount and Date are required.' });
+  }
+
+  // Auto-categorize if category is missing (e.g. from Apple Shortcut)
+  if (!payload.Category || payload.Category === '' || payload.Category === 'Other') {
+    payload.Category = inferCategory(payload.Merchant);
   }
 
   // If payload has an index, it's an edit

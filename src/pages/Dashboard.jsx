@@ -3,8 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, Coffee, Car, HeartPulse, Home, MoreHorizontal, Pencil, X, Save, Trash2, Search, Receipt, Upload, Image as ImageIcon } from 'lucide-react';
 import { fetchTransactions, saveTransaction, deleteTransaction, uploadReceipt } from '../services/storage';
 import { SpendingPieChart, SpendingBarChart } from '../components/Charts';
-import { calculateRewards, REWARDS_CONFIG } from '../config/rewards';
-import { BUDGET_CONFIG } from '../config/budget';
+import { calculateRewards } from '../config/rewards';
+import { CARDS, CATEGORIES, BUDGET_CONFIG } from '../config/cards';
 
 // Category Icon mapping
 const getCategoryIcon = (category) => {
@@ -281,7 +281,7 @@ const Dashboard = () => {
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '14px', fontWeight: 500 }}>
                     <span>{cat}</span>
                     <span style={{ color: isOver ? 'var(--accent-primary)' : 'var(--text-secondary)' }}>
-                      ${spent.toFixed(0)} / ${limit}
+                      ${spent.toFixed(2)} / ${limit}
                     </span>
                   </div>
                   <div style={{ height: '8px', background: 'var(--border-color)', borderRadius: '4px', overflow: 'hidden' }}>
@@ -335,7 +335,7 @@ const Dashboard = () => {
                   <div className="transaction-merchant">{t.Merchant || 'Unknown Merchant'}</div>
                   <div className="transaction-category">
                     {t.Category || 'Other'} • {formatDate(t.Date)}
-                    {t.Notes && <span style={{ marginLeft: '8px', opacity: 0.7 }}>— {t.Notes}</span>}
+                    {t.Notes && <span style={{ marginLeft: '8px', opacity: 0.7 }}>- {t.Notes}</span>}
                   </div>
                 </div>
               </div>
@@ -438,14 +438,9 @@ const Dashboard = () => {
                       onChange={handleEditChange}
                       required
                     >
-                      <option value="Food">Food & Dining</option>
-                      <option value="Groceries">Groceries</option>
-                      <option value="Car">Transportation & Car</option>
-                      <option value="Health">Health & Wellness</option>
-                      <option value="Personal Items">Personal Items</option>
-                      <option value="Utilities">Utilities & Bills</option>
-                      <option value="Travel">Travel</option>
-                      <option value="Other">Other</option>
+                      {CATEGORIES.map(cat => (
+                        <option key={cat.value} value={cat.value}>{cat.label}</option>
+                      ))}
                     </select>
                   </div>
 
@@ -458,7 +453,7 @@ const Dashboard = () => {
                       onChange={handleEditChange}
                     >
                       <option value="">Select a Card...</option>
-                      {Object.keys(REWARDS_CONFIG).map(card => (
+                      {Object.keys(CARDS).map(card => (
                         <option key={card} value={card}>{card}</option>
                       ))}
                     </select>
