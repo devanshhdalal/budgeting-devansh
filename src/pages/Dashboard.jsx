@@ -1,29 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, Coffee, Car, HeartPulse, Home, MoreHorizontal, Pencil, X, Save, Trash2, Search, Receipt, Upload, Image as ImageIcon } from 'lucide-react';
+import { ShoppingBag, Coffee, Car, HeartPulse, Home, MoreHorizontal, Pencil, X, Save, Trash2, Search, Receipt, Upload, Image as ImageIcon, Plane } from 'lucide-react';
 import { fetchTransactions, saveTransaction, deleteTransaction, uploadReceipt } from '../services/storage';
 import { SpendingPieChart, SpendingBarChart } from '../components/Charts';
 import { calculateRewards } from '../config/rewards';
 import { CARDS, CATEGORIES, BUDGET_CONFIG } from '../config/cards';
 
-// Category Icon mapping
+// Icon resolver: maps icon string names from config to Lucide components
+const ICON_MAP = { Coffee, Car, HeartPulse, Home, ShoppingBag, MoreHorizontal, Plane };
+
+// Build category->icon lookup from config (so adding a category in cards.js auto-resolves)
+const CATEGORY_ICON_MAP = Object.fromEntries(
+  CATEGORIES.map(cat => [cat.value.toLowerCase(), cat.icon])
+);
+
 const getCategoryIcon = (category) => {
-  switch (category?.toLowerCase()) {
-    case 'food':
-    case 'groceries':
-      return <Coffee size={24} />;
-    case 'car':
-      return <Car size={24} />;
-    case 'health':
-      return <HeartPulse size={24} />;
-    case 'utilities':
-      return <Home size={24} />;
-    case 'personal items':
-      return <ShoppingBag size={24} />;
-    default:
-      return <MoreHorizontal size={24} />;
-  }
+  const iconName = CATEGORY_ICON_MAP[category?.toLowerCase()] || 'MoreHorizontal';
+  const IconComponent = ICON_MAP[iconName] || MoreHorizontal;
+  return <IconComponent size={24} />;
 };
+
+// Display limits
+const MAX_VISIBLE_TRANSACTIONS = 15;
+const MAX_BAR_CHART_DAYS = 10;
 
 const formatDate = (dateString) => {
   if (!dateString) return '';
@@ -41,6 +40,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCard, setSelectedCard] = useState('All');
   const [selectedMonth, setSelectedMonth] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   
   // Edit Modal State
@@ -146,13 +146,14 @@ const Dashboard = () => {
   const filteredTransactions = transactionsWithIndex.filter(t => {
     const matchCard = selectedCard === 'All' || t.Card === selectedCard;
     const matchMonth = selectedMonth === 'All' || (t.Date && t.Date.startsWith(selectedMonth));
+    const matchCategory = selectedCategory === 'All' || t.Category === selectedCategory;
     const query = searchQuery.toLowerCase();
     const matchSearch = query === '' || 
       (t.Merchant && t.Merchant.toLowerCase().includes(query)) ||
       (t.Category && t.Category.toLowerCase().includes(query)) ||
       (t.Notes && t.Notes.toLowerCase().includes(query));
     
-    return matchCard && matchMonth && matchSearch;
+    return matchCard && matchMonth && matchCategory && matchSearch;
   });
 
   // Calculate summary stats
@@ -175,7 +176,7 @@ const Dashboard = () => {
   });
   const barData = Object.keys(dateMap)
     .sort((a,b) => new Date(a) - new Date(b))
-    .slice(-10)
+    .slice(-MAX_BAR_CHART_DAYS)
     .map(key => ({ name: key, amount: dateMap[key] }));
 
   // Animation variants
@@ -220,6 +221,17 @@ const Dashboard = () => {
         >
           {uniqueMonths.map(m => (
             <option key={m} value={m}>{m === 'All' ? 'All Months' : new Date(m + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</option>
+          ))}
+        </select>
+        <select 
+          className="form-input" 
+          style={{ width: 'auto', borderRadius: '24px', padding: '10px 16px' }}
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+        >
+          <option value="All">All Categories</option>
+          {CATEGORIES.map(cat => (
+            <option key={cat.value} value={cat.value}>{cat.label}</option>
           ))}
         </select>
       </motion.div>
@@ -302,7 +314,7 @@ const Dashboard = () => {
       {/* Charts */}
       <motion.div className="col-span-4 card" variants={itemVariants}>
         <h3 style={{ marginBottom: '24px', fontSize: '18px' }}>Spending by Category</h3>
-        <SpendingPieChart data={pieData} />
+        <SpendingPieChart data={pieData} onCategoryClick={(cat) => setSelectedCategory(prev => prev === cat ? 'All' : cat)} />
       </motion.div>
 
       <motion.div className="col-span-8 card" variants={itemVariants}>
@@ -317,7 +329,7 @@ const Dashboard = () => {
         </div>
         
         <div className="transaction-list">
-          {filteredTransactions.slice(0, 15).map((t, i) => {
+          {filteredTransactions.slice(0, MAX_VISIBLE_TRANSACTIONS).map((t, i) => {
             const rewards = calculateRewards(t.Card, t.Category, t.Amount);
             return (
             <motion.div 

@@ -41,14 +41,15 @@ export const CARDS = {
 };
 
 export const CATEGORIES = [
-  { value: "Food", label: "Food & Dining" },
-  { value: "Groceries", label: "Groceries" },
-  { value: "Car", label: "Transportation & Car" },
-  { value: "Health", label: "Health & Wellness" },
-  { value: "Personal Items", label: "Personal Items" },
-  { value: "Utilities", label: "Utilities & Bills" },
-  { value: "Travel", label: "Travel" },
-  { value: "Other", label: "Other" }
+  { value: "Food", label: "Food & Dining", icon: "Coffee" },
+  { value: "Groceries", label: "Groceries", icon: "Coffee" },
+  { value: "Car", label: "Transportation & Car", icon: "Car" },
+  { value: "Health", label: "Health & Wellness", icon: "HeartPulse" },
+  { value: "Personal Items", label: "Personal Items", icon: "ShoppingBag" },
+  { value: "Utilities", label: "Utilities & Bills", icon: "Home" },
+  { value: "Subscriptions", label: "Subscriptions", icon: "Home" },
+  { value: "Travel", label: "Travel", icon: "Plane" },
+  { value: "Other", label: "Other", icon: "MoreHorizontal" }
 ];
 
 export const BUDGET_CONFIG = {
@@ -58,5 +59,6 @@ export const BUDGET_CONFIG = {
   "Personal Items": 100,
   "Health": 200,
   "Utilities": 500,
+  "Subscriptions": 30,
   "Travel": 200
 };

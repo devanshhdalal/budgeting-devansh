@@ -73,7 +73,6 @@ const MERCHANT_CATEGORY_MAP = {
   "skip the dishes": "Food",
   "uber eats": "Food",
   "doordash": "Food",
-  "sauceplus": "Food",
   "sushi island": "Food",
   "olive branch": "Food",
   "quidi vidi": "Food",
@@ -84,6 +83,9 @@ const MERCHANT_CATEGORY_MAP = {
   "a&w": "Food",
   "popeye": "Food",
   "kfc": "Food",
+  "burger": "Food",
+  "restaurant": "Food",
+  "cafe": "Food",
   // Groceries
   "sobeys": "Groceries",
   "wal-mart": "Groceries",
@@ -100,6 +102,7 @@ const MERCHANT_CATEGORY_MAP = {
   "shell": "Car",
   "petro": "Car",
   "parking": "Car",
+  "gas bar": "Car",
   // Travel
   "easyjet": "Travel",
   "travix": "Travel",
@@ -108,16 +111,27 @@ const MERCHANT_CATEGORY_MAP = {
   "airline": "Travel",
   "hotel": "Travel",
   "airbnb": "Travel",
+  "expedia": "Travel",
+  "booking.com": "Travel",
   // Health
   "shoppers drug": "Health",
   "lawtons": "Health",
   "pharmacy": "Health",
+  "rexall": "Health",
   // Utilities
   "apple bill": "Utilities",
-  "tidal": "Utilities",
   "netflix": "Utilities",
   "spotify": "Utilities",
   "scotia credit card protec": "Utilities",
+  "hydro": "Utilities",
+  "internet": "Utilities",
+  // Subscriptions
+  "sauceplus": "Subscriptions",
+  "tidal": "Subscriptions",
+  "disney+": "Subscriptions",
+  "crave": "Subscriptions",
+  "youtube premium": "Subscriptions",
+  "amazon prime": "Subscriptions",
   // Personal Items
   "sephora": "Personal Items",
   "klarna": "Personal Items",
@@ -135,11 +149,16 @@ const MERCHANT_CATEGORY_MAP = {
   "mycreds": "Other"
 };
 
+// Pre-sort entries longest-first so more specific fragments match before generic ones
+// e.g. "costco gas" -> Car will match before "costco" could match anything else
+const SORTED_MERCHANT_ENTRIES = Object.entries(MERCHANT_CATEGORY_MAP)
+  .sort((a, b) => b[0].length - a[0].length);
+
 // Auto-detect category from merchant name
 const inferCategory = (merchant) => {
   if (!merchant) return "Other";
   const lower = merchant.toLowerCase();
-  for (const [fragment, category] of Object.entries(MERCHANT_CATEGORY_MAP)) {
+  for (const [fragment, category] of SORTED_MERCHANT_ENTRIES) {
     if (lower.includes(fragment)) return category;
   }
   return "Other";
