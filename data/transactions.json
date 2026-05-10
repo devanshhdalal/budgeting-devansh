@@ -1,8 +1,8 @@
 [
   {
     "Date": "2026-05-08",
-    "Month": null,
-    "Merchant": "Osmows Mediterranean Cuisine",
+    "Month": "May 2026",
+    "Merchant": "Osmow's",
     "Amount": 17.24,
     "Category": "Food",
     "Card": "AMEX Cobalt",
@@ -10,8 +10,8 @@
   },
   {
     "Date": "2026-05-07",
-    "Month": null,
-    "Merchant": "Marshalls St. John's",
+    "Month": "May 2026",
+    "Merchant": "Marshalls",
     "Amount": 57.47,
     "Category": "Personal Items",
     "Card": "AMEX Cobalt",
@@ -19,8 +19,8 @@
   },
   {
     "Date": "2026-05-07",
-    "Month": null,
-    "Merchant": "Sobeys #604 St. John's",
+    "Month": "May 2026",
+    "Merchant": "Sobeys",
     "Amount": 40.84,
     "Category": "Groceries",
     "Card": "AMEX Cobalt",
@@ -28,7 +28,7 @@
   },
   {
     "Date": "2026-05-07",
-    "Month": null,
+    "Month": "May 2026",
     "Merchant": "Mega Bazaar",
     "Amount": 28.95,
     "Category": "Groceries",
@@ -38,8 +38,8 @@
   },
   {
     "Date": "2026-05-07",
-    "Month": null,
-    "Merchant": "Haveli Restaurant St. John's",
+    "Month": "May 2026",
+    "Merchant": "Haveli Restaurant",
     "Amount": 125.51,
     "Category": "Food",
     "Card": "AMEX Cobalt",
@@ -48,7 +48,7 @@
   },
   {
     "Date": "2026-05-07",
-    "Month": null,
+    "Month": "May 2026",
     "Merchant": "Cineplex Rec Room",
     "Amount": 13.86,
     "Category": "Other",
@@ -58,7 +58,7 @@
   {
     "Date": "2026-05-06",
     "Month": "May 2026",
-    "Merchant": "Costco Gas W1324",
+    "Merchant": "Costco Gas",
     "Amount": 47.43,
     "Category": "Car",
     "Card": "Neo Mastercard",
@@ -66,8 +66,8 @@
   },
   {
     "Date": "2026-05-06",
-    "Month": null,
-    "Merchant": "Shoppers Drug Mart #05",
+    "Month": "May 2026",
+    "Merchant": "Shoppers Drug Mart",
     "Amount": 57.65,
     "Category": "Health",
     "Card": "AMEX Cobalt",
@@ -75,8 +75,8 @@
   },
   {
     "Date": "2026-05-06",
-    "Month": null,
-    "Merchant": "McDonald's 7957 St John's",
+    "Month": "May 2026",
+    "Merchant": "McDonald's",
     "Amount": 10.42,
     "Category": "Food",
     "Card": "AMEX Cobalt",
@@ -84,8 +84,8 @@
   },
   {
     "Date": "2026-05-06",
-    "Month": null,
-    "Merchant": "Wal-Mart 3093 St John's",
+    "Month": "May 2026",
+    "Merchant": "Walmart",
     "Amount": 19.54,
     "Category": "Groceries",
     "Card": "AMEX Cobalt",
@@ -94,7 +94,7 @@
   {
     "Date": "2026-05-06",
     "Month": "May 2026",
-    "Merchant": "Klarna*Sephora CA",
+    "Merchant": "Sephora",
     "Amount": 39.1,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
@@ -103,7 +103,7 @@
   {
     "Date": "2026-05-06",
     "Month": "May 2026",
-    "Merchant": "Costco Wholesale W1324",
+    "Merchant": "Costco Wholesale",
     "Amount": 241.39,
     "Category": "Groceries",
     "Card": "Neo Mastercard",
@@ -112,7 +112,7 @@
   {
     "Date": "2026-05-06",
     "Month": "May 2026",
-    "Merchant": "Klarna*Temu.com",
+    "Merchant": "Temu",
     "Amount": 11.3,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
@@ -121,7 +121,7 @@
   {
     "Date": "2026-05-06",
     "Month": "May 2026",
-    "Merchant": "Klarna*Sephora CA",
+    "Merchant": "Sephora",
     "Amount": 39.1,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
@@ -130,7 +130,7 @@
   {
     "Date": "2026-05-05",
     "Month": "May 2026",
-    "Merchant": "Klarna*Sephora CA",
+    "Merchant": "Sephora",
     "Amount": 13.37,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
@@ -148,7 +148,7 @@
   {
     "Date": "2026-05-05",
     "Month": "May 2026",
-    "Merchant": "Per Use Parking",
+    "Merchant": "Parking",
     "Amount": 2.82,
     "Category": "Car",
     "Card": "Scene+ Visa",
@@ -156,8 +156,8 @@
   },
   {
     "Date": "2026-05-05",
-    "Month": null,
-    "Merchant": "Wal-Mart 3092 St John's",
+    "Month": "May 2026",
+    "Merchant": "Walmart",
     "Amount": 34.14,
     "Category": "Groceries",
     "Card": "AMEX Cobalt",
@@ -165,8 +165,8 @@
   },
   {
     "Date": "2026-05-05",
-    "Month": null,
-    "Merchant": "EasyJet Luton",
+    "Month": "May 2026",
+    "Merchant": "EasyJet",
     "Amount": 138.51,
     "Category": "Travel",
     "Card": "AMEX Cobalt",
@@ -174,8 +174,8 @@
   },
   {
     "Date": "2026-05-05",
-    "Month": null,
-    "Merchant": "Despacito Bakery St. Johns",
+    "Month": "May 2026",
+    "Merchant": "Despacito Bakery",
     "Amount": 21.93,
     "Category": "Food",
     "Card": "AMEX Cobalt",
@@ -184,7 +184,7 @@
   {
     "Date": "2026-05-04",
     "Month": "May 2026",
-    "Merchant": "Klarna*Sephora CA",
+    "Merchant": "Sephora",
     "Amount": 11.99,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
@@ -192,8 +192,8 @@
   },
   {
     "Date": "2026-05-04",
-    "Month": null,
-    "Merchant": "Dairy Queen St. John's",
+    "Month": "May 2026",
+    "Merchant": "Dairy Queen",
     "Amount": 8.04,
     "Category": "Food",
     "Card": "AMEX Cobalt",
@@ -202,7 +202,7 @@
   {
     "Date": "2026-05-04",
     "Month": "May 2026",
-    "Merchant": "Klarna*Sephora CA",
+    "Merchant": "Sephora",
     "Amount": 7.54,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
@@ -210,7 +210,7 @@
   },
   {
     "Date": "2026-05-03",
-    "Month": null,
+    "Month": "May 2026",
     "Merchant": "Cineplex Rec Room",
     "Amount": 8.33,
     "Category": "Other",
@@ -219,8 +219,8 @@
   },
   {
     "Date": "2026-05-03",
-    "Month": null,
-    "Merchant": "McDonald's #7957 Mount Pearl",
+    "Month": "May 2026",
+    "Merchant": "McDonald's",
     "Amount": 18.61,
     "Category": "Food",
     "Card": "AMEX Cobalt",
@@ -228,8 +228,8 @@
   },
   {
     "Date": "2026-05-03",
-    "Month": null,
-    "Merchant": "Atlantic Cannabis Galwa",
+    "Month": "May 2026",
+    "Merchant": "Atlantic Cannabis",
     "Amount": 14.94,
     "Category": "Personal Items",
     "Card": "AMEX Cobalt",
@@ -237,8 +237,8 @@
   },
   {
     "Date": "2026-05-03",
-    "Month": null,
-    "Merchant": "Amazon Mktp CA",
+    "Month": "May 2026",
+    "Merchant": "Amazon",
     "Amount": 55.32,
     "Category": "Other",
     "Card": "AMEX Cobalt",
@@ -246,8 +246,8 @@
   },
   {
     "Date": "2026-05-03",
-    "Month": null,
-    "Merchant": "Amazon Mktp CA",
+    "Month": "May 2026",
+    "Merchant": "Amazon",
     "Amount": 79.48,
     "Category": "Other",
     "Card": "AMEX Cobalt",
@@ -255,7 +255,7 @@
   },
   {
     "Date": "2026-05-02",
-    "Month": null,
+    "Month": "May 2026",
     "Merchant": "Cineplex Rec Room",
     "Amount": 14.64,
     "Category": "Other",
@@ -264,8 +264,8 @@
   },
   {
     "Date": "2026-05-01",
-    "Month": null,
-    "Merchant": "McDonald's #4129 St. John's",
+    "Month": "May 2026",
+    "Merchant": "McDonald's",
     "Amount": 8.49,
     "Category": "Food",
     "Card": "AMEX Cobalt",
@@ -285,14 +285,14 @@
     "Month": "May 2026",
     "Merchant": "SaucePlus",
     "Amount": 9.89,
-    "Category": "Food",
+    "Category": "Subscriptions",
     "Card": "Scene+ Visa",
     "Notes": null
   },
   {
     "Date": "2026-04-30",
-    "Month": null,
-    "Merchant": "Uniqlo Canada Inc. Toronto",
+    "Month": "April 2026",
+    "Merchant": "Uniqlo",
     "Amount": 114.66,
     "Category": "Personal Items",
     "Card": "AMEX Cobalt",
@@ -319,7 +319,7 @@
   {
     "Date": "2026-04-30",
     "Month": "April 2026",
-    "Merchant": "Scotia Credit Card Protec",
+    "Merchant": "Scotia CC Protection",
     "Amount": 3.53,
     "Category": "Utilities",
     "Card": "Scene+ Visa",
@@ -328,7 +328,7 @@
   {
     "Date": "2026-04-30",
     "Month": "April 2026",
-    "Merchant": "Costco Gas W1324",
+    "Merchant": "Costco Gas",
     "Amount": 75.54,
     "Category": "Car",
     "Card": "Neo Mastercard",
@@ -336,7 +336,7 @@
   },
   {
     "Date": "2026-04-29",
-    "Month": null,
+    "Month": "April 2026",
     "Merchant": "Cineplex Rec Room",
     "Amount": 9.58,
     "Category": "Other",
@@ -345,8 +345,8 @@
   },
   {
     "Date": "2026-04-29",
-    "Month": null,
-    "Merchant": "Travix Amsterdam",
+    "Month": "April 2026",
+    "Merchant": "Travix",
     "Amount": 453.9,
     "Category": "Travel",
     "Card": "AMEX Cobalt",
@@ -354,8 +354,8 @@
   },
   {
     "Date": "2026-04-28",
-    "Month": null,
-    "Merchant": "Haveli Restaurant St. John's",
+    "Month": "April 2026",
+    "Merchant": "Haveli Restaurant",
     "Amount": 16.89,
     "Category": "Food",
     "Card": "AMEX Cobalt",
@@ -363,8 +363,8 @@
   },
   {
     "Date": "2026-04-28",
-    "Month": null,
-    "Merchant": "Wok Box St. Johns",
+    "Month": "April 2026",
+    "Merchant": "Wok Box",
     "Amount": 18.49,
     "Category": "Food",
     "Card": "AMEX Cobalt",
@@ -372,8 +372,8 @@
   },
   {
     "Date": "2026-04-27",
-    "Month": null,
-    "Merchant": "Air-Serv (Airport)",
+    "Month": "April 2026",
+    "Merchant": "Air-Serv",
     "Amount": 3,
     "Category": "Travel",
     "Card": "AMEX Cobalt",
@@ -381,8 +381,8 @@
   },
   {
     "Date": "2026-04-27",
-    "Month": null,
-    "Merchant": "MyCreds/MesCertif Calgary",
+    "Month": "April 2026",
+    "Merchant": "MyCreds",
     "Amount": 9.99,
     "Category": "Other",
     "Card": "AMEX Cobalt",
@@ -390,8 +390,8 @@
   },
   {
     "Date": "2026-04-27",
-    "Month": null,
-    "Merchant": "Immigration Canada Online",
+    "Month": "April 2026",
+    "Merchant": "Immigration Canada",
     "Amount": 100,
     "Category": "Other",
     "Card": "AMEX Cobalt",
@@ -399,8 +399,8 @@
   },
   {
     "Date": "2026-04-27",
-    "Month": null,
-    "Merchant": "Air-Serv (Airport)",
+    "Month": "April 2026",
+    "Merchant": "Air-Serv",
     "Amount": 2.5,
     "Category": "Travel",
     "Card": "AMEX Cobalt",
@@ -408,7 +408,7 @@
   },
   {
     "Date": "2026-04-26",
-    "Month": null,
+    "Month": "April 2026",
     "Merchant": "Cineplex Rec Room",
     "Amount": 6.63,
     "Category": "Other",
@@ -426,8 +426,8 @@
   },
   {
     "Date": "2026-04-25",
-    "Month": null,
-    "Merchant": "Osmow's Mediterranean St. John's",
+    "Month": "April 2026",
+    "Merchant": "Osmow's",
     "Amount": 35.97,
     "Category": "Food",
     "Card": "AMEX Cobalt",
@@ -435,8 +435,8 @@
   },
   {
     "Date": "2026-04-25",
-    "Month": null,
-    "Merchant": "Domino's Pizza St. John's",
+    "Month": "April 2026",
+    "Merchant": "Domino's Pizza",
     "Amount": 46.85,
     "Category": "Food",
     "Card": "AMEX Cobalt",
@@ -444,7 +444,7 @@
   },
   {
     "Date": "2026-04-24",
-    "Month": null,
+    "Month": "April 2026",
     "Merchant": "St. John's Topsail",
     "Amount": 6.72,
     "Category": "Other",
@@ -453,7 +453,7 @@
   },
   {
     "Date": "2026-04-24",
-    "Month": null,
+    "Month": "April 2026",
     "Merchant": "Cineplex Rec Room",
     "Amount": 8.33,
     "Category": "Other",
@@ -462,8 +462,8 @@
   },
   {
     "Date": "2026-04-23",
-    "Month": null,
-    "Merchant": "Five Guys Avalon St. John's",
+    "Month": "April 2026",
+    "Merchant": "Five Guys",
     "Amount": 16.5,
     "Category": "Food",
     "Card": "AMEX Cobalt",
@@ -471,8 +471,8 @@
   },
   {
     "Date": "2026-04-23",
-    "Month": null,
-    "Merchant": "McDonald's #29133 St. John's",
+    "Month": "April 2026",
+    "Merchant": "McDonald's",
     "Amount": 14.13,
     "Category": "Food",
     "Card": "AMEX Cobalt",
@@ -480,8 +480,8 @@
   },
   {
     "Date": "2026-04-23",
-    "Month": null,
-    "Merchant": "Sephora Avalon St. John's",
+    "Month": "April 2026",
+    "Merchant": "Sephora",
     "Amount": 24.27,
     "Category": "Personal Items",
     "Card": "AMEX Cobalt",
@@ -508,7 +508,7 @@
   {
     "Date": "2026-04-21",
     "Month": "April 2026",
-    "Merchant": "Sq *The Olive Branch",
+    "Merchant": "The Olive Branch",
     "Amount": 18.97,
     "Category": "Food",
     "Card": "Neo Mastercard",
@@ -517,7 +517,7 @@
   {
     "Date": "2026-04-21",
     "Month": "April 2026",
-    "Merchant": "Costco Gas W1324",
+    "Merchant": "Costco Gas",
     "Amount": 58.97,
     "Category": "Car",
     "Card": "Neo Mastercard",
@@ -535,7 +535,7 @@
   {
     "Date": "2026-04-21",
     "Month": "April 2026",
-    "Merchant": "Costco Wholesale W1324",
+    "Merchant": "Costco Wholesale",
     "Amount": 216.66,
     "Category": "Groceries",
     "Card": "Neo Mastercard",
@@ -544,7 +544,7 @@
   {
     "Date": "2026-04-20",
     "Month": "April 2026",
-    "Merchant": "Klarna*Sephora CA",
+    "Merchant": "Sephora",
     "Amount": 11.99,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
@@ -553,7 +553,7 @@
   {
     "Date": "2026-04-20",
     "Month": "April 2026",
-    "Merchant": "Klarna*Sephora CA",
+    "Merchant": "Sephora",
     "Amount": 13.37,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
@@ -562,7 +562,7 @@
   {
     "Date": "2026-04-20",
     "Month": "April 2026",
-    "Merchant": "Klarna*Sephora CA",
+    "Merchant": "Sephora",
     "Amount": 7.53,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
@@ -627,7 +627,7 @@
     "Month": "April 2026",
     "Merchant": "Tidal",
     "Amount": 6.31,
-    "Category": "Utilities",
+    "Category": "Subscriptions",
     "Card": "Scene+ Visa",
     "Notes": null
   },
@@ -643,7 +643,7 @@
   {
     "Date": "2026-04-13",
     "Month": "April 2026",
-    "Merchant": "Sushi Island Canada",
+    "Merchant": "Sushi Island",
     "Amount": 26.23,
     "Category": "Food",
     "Card": "Neo Mastercard",
@@ -652,7 +652,7 @@
   {
     "Date": "2026-04-13",
     "Month": "April 2026",
-    "Merchant": "Sq *Haveli Restaurant",
+    "Merchant": "Haveli Restaurant",
     "Amount": 16.89,
     "Category": "Food",
     "Card": "Neo Mastercard",
@@ -661,7 +661,7 @@
   {
     "Date": "2026-04-13",
     "Month": "April 2026",
-    "Merchant": "MyCreds/MesCertif",
+    "Merchant": "MyCreds",
     "Amount": 15,
     "Category": "Other",
     "Card": "Scene+ Visa",
@@ -670,7 +670,7 @@
   {
     "Date": "2026-04-13",
     "Month": "April 2026",
-    "Merchant": "Uber Eats Online",
+    "Merchant": "Uber Eats",
     "Amount": 29.86,
     "Category": "Food",
     "Card": "Neo Mastercard",
@@ -715,7 +715,7 @@
   {
     "Date": "2026-04-11",
     "Month": "April 2026",
-    "Merchant": "McDonald's Canada",
+    "Merchant": "McDonald's",
     "Amount": 7.56,
     "Category": "Food",
     "Card": "Neo Mastercard",
@@ -742,7 +742,7 @@
   {
     "Date": "2026-04-08",
     "Month": "April 2026",
-    "Merchant": "Www Costco CA Ottawa",
+    "Merchant": "Costco Wholesale",
     "Amount": 184.97,
     "Category": "Groceries",
     "Card": "Neo Mastercard",
@@ -751,7 +751,7 @@
   {
     "Date": "2026-04-08",
     "Month": "April 2026",
-    "Merchant": "Atlantic Cannabis Galw",
+    "Merchant": "Atlantic Cannabis",
     "Amount": 15.61,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
@@ -760,7 +760,7 @@
   {
     "Date": "2026-04-07",
     "Month": "April 2026",
-    "Merchant": "Costco Gas W1324",
+    "Merchant": "Costco Gas",
     "Amount": 84.49,
     "Category": "Car",
     "Card": "Neo Mastercard",
@@ -778,7 +778,7 @@
   {
     "Date": "2026-04-07",
     "Month": "April 2026",
-    "Merchant": "Starbucks Canada",
+    "Merchant": "Starbucks",
     "Amount": 8.48,
     "Category": "Food",
     "Card": "Neo Mastercard",
@@ -787,7 +787,7 @@
   {
     "Date": "2026-04-07",
     "Month": "April 2026",
-    "Merchant": "Costco Wholesale W1324",
+    "Merchant": "Costco Wholesale",
     "Amount": 203.56,
     "Category": "Groceries",
     "Card": "Neo Mastercard",
@@ -796,7 +796,7 @@
   {
     "Date": "2026-04-06",
     "Month": "April 2026",
-    "Merchant": "Klarna*Sephora CA",
+    "Merchant": "Sephora",
     "Amount": 11.98,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
@@ -805,7 +805,7 @@
   {
     "Date": "2026-04-06",
     "Month": "April 2026",
-    "Merchant": "Klarna*Sephora CA",
+    "Merchant": "Sephora",
     "Amount": 13.37,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
@@ -814,7 +814,7 @@
   {
     "Date": "2026-04-06",
     "Month": "April 2026",
-    "Merchant": "Klarna*Sephora CA",
+    "Merchant": "Sephora",
     "Amount": 7.53,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
@@ -841,7 +841,7 @@
   {
     "Date": "2026-04-03",
     "Month": "April 2026",
-    "Merchant": "DoorDash Online",
+    "Merchant": "DoorDash",
     "Amount": 5.74,
     "Category": "Food",
     "Card": "Neo Mastercard",
