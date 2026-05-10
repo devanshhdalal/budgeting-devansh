@@ -1,0 +1,290 @@
+[
+  {
+    "Date": "2026-05-08",
+    "Month": NaN,
+    "Merchant": "Osmows Mediterranean Cuisine",
+    "Amount": 17.24,
+    "Category": "Food",
+    "Card": "Amex Cobalt 21007",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-07",
+    "Month": NaN,
+    "Merchant": "Marshalls St. John's",
+    "Amount": 57.47,
+    "Category": "Personal Items",
+    "Card": "Amex Cobalt 21007",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-07",
+    "Month": NaN,
+    "Merchant": "Sobeys #604 St. John's",
+    "Amount": 40.84,
+    "Category": "Groceries",
+    "Card": "Amex Cobalt 21007",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-07",
+    "Month": NaN,
+    "Merchant": "17875",
+    "Amount": 28.95,
+    "Category": "Other",
+    "Card": "Amex Cobalt 21007",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-07",
+    "Month": NaN,
+    "Merchant": "Haveli Restaurant St. John's",
+    "Amount": 125.51,
+    "Category": "Food",
+    "Card": "Amex Cobalt 21007",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-07",
+    "Month": NaN,
+    "Merchant": "Cineplex Rec Room",
+    "Amount": 13.86,
+    "Category": "Other",
+    "Card": "Amex Cobalt 21007",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-06",
+    "Month": "May 2026",
+    "Merchant": "Costco Gas W1324",
+    "Amount": 47.43,
+    "Category": "Car",
+    "Card": "Neo Mastercard 7697",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-06",
+    "Month": NaN,
+    "Merchant": "Shoppers Drug Mart #05",
+    "Amount": 57.65,
+    "Category": "Health",
+    "Card": "Amex Cobalt 21007",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-06",
+    "Month": NaN,
+    "Merchant": "McDonald's 7957 St John's",
+    "Amount": 10.42,
+    "Category": "Food",
+    "Card": "Amex Cobalt 21007",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-06",
+    "Month": NaN,
+    "Merchant": "Wal-Mart 3093 St John's",
+    "Amount": 19.54,
+    "Category": "Groceries",
+    "Card": "Amex Cobalt 21007",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-06",
+    "Month": "May 2026",
+    "Merchant": "Klarna*Sephora CA",
+    "Amount": 39.1,
+    "Category": "Personal Items",
+    "Card": "Neo Mastercard 7697",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-06",
+    "Month": "May 2026",
+    "Merchant": "Costco Wholesale W1324",
+    "Amount": 241.39,
+    "Category": "Groceries",
+    "Card": "Neo Mastercard 7697",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-06",
+    "Month": "May 2026",
+    "Merchant": "Klarna*Temu.com",
+    "Amount": 11.3,
+    "Category": "Personal Items",
+    "Card": "Neo Mastercard 7697",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-06",
+    "Month": "May 2026",
+    "Merchant": "Klarna*Sephora CA",
+    "Amount": 39.1,
+    "Category": "Personal Items",
+    "Card": "Neo Mastercard 7697",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-05",
+    "Month": "May 2026",
+    "Merchant": "Klarna*Sephora CA",
+    "Amount": 13.37,
+    "Category": "Personal Items",
+    "Card": "Neo Mastercard 7697",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-05",
+    "Month": "May 2026",
+    "Merchant": "Taco Bell",
+    "Amount": 28.14,
+    "Category": "Food",
+    "Card": "Scene+ Visa 5019",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-05",
+    "Month": "May 2026",
+    "Merchant": "Per Use Parking",
+    "Amount": 2.82,
+    "Category": "Car",
+    "Card": "Scene+ Visa 5019",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-05",
+    "Month": NaN,
+    "Merchant": "Wal-Mart 3092 St John's",
+    "Amount": 34.14,
+    "Category": "Groceries",
+    "Card": "Amex Cobalt 21007",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-05",
+    "Month": NaN,
+    "Merchant": "EasyJet Luton",
+    "Amount": 138.51,
+    "Category": "Travel",
+    "Card": "Amex Cobalt 21007",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-05",
+    "Month": NaN,
+    "Merchant": "Despacito Bakery St. Johns",
+    "Amount": 21.93,
+    "Category": "Food",
+    "Card": "Amex Cobalt 21007",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-04",
+    "Month": "May 2026",
+    "Merchant": "Klarna*Sephora CA",
+    "Amount": 11.99,
+    "Category": "Personal Items",
+    "Card": "Neo Mastercard 7697",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-04",
+    "Month": NaN,
+    "Merchant": "Dairy Queen St. John's",
+    "Amount": 8.04,
+    "Category": "Food",
+    "Card": "Amex Cobalt 21007",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-04",
+    "Month": "May 2026",
+    "Merchant": "Klarna*Sephora CA",
+    "Amount": 7.54,
+    "Category": "Personal Items",
+    "Card": "Neo Mastercard 7697",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-03",
+    "Month": NaN,
+    "Merchant": "Cineplex Rec Room",
+    "Amount": 8.33,
+    "Category": "Other",
+    "Card": "Amex Cobalt 21007",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-03",
+    "Month": NaN,
+    "Merchant": "McDonald's #7957 Mount Pearl",
+    "Amount": 18.61,
+    "Category": "Food",
+    "Card": "Amex Cobalt 21007",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-03",
+    "Month": NaN,
+    "Merchant": "Atlantic Cannabis Galwa",
+    "Amount": 14.94,
+    "Category": "Personal Items",
+    "Card": "Amex Cobalt 21007",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-03",
+    "Month": NaN,
+    "Merchant": "Amazon Mktp CA",
+    "Amount": 55.32,
+    "Category": "Other",
+    "Card": "Amex Cobalt 21007",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-03",
+    "Month": NaN,
+    "Merchant": "Amazon Mktp CA",
+    "Amount": 79.48,
+    "Category": "Other",
+    "Card": "Amex Cobalt 21007",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-02",
+    "Month": NaN,
+    "Merchant": "Cineplex Rec Room",
+    "Amount": 14.64,
+    "Category": "Other",
+    "Card": "Amex Cobalt 21007",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-01",
+    "Month": NaN,
+    "Merchant": "McDonald's #4129 St. John's",
+    "Amount": 8.49,
+    "Category": "Food",
+    "Card": "Amex Cobalt 21007",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-01",
+    "Month": "May 2026",
+    "Merchant": "Klarna",
+    "Amount": 11.3,
+    "Category": "Personal Items",
+    "Card": "Scene+ Visa 5019",
+    "Notes": NaN
+  },
+  {
+    "Date": "2026-05-01",
+    "Month": "May 2026",
+    "Merchant": "SaucePlus",
+    "Amount": 9.89,
+    "Category": "Food",
+    "Card": "Scene+ Visa 5019",
+    "Notes": NaN
+  }
+]
