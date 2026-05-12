@@ -20,7 +20,8 @@ const API_KEY = process.env.API_KEY;
 
 const requireApiKey = (req, res, next) => {
   const key = req.headers['x-api-key'];
-  if (!API_KEY || key !== API_KEY) {
+  // Only enforce the check if an API_KEY is defined in the environment (e.g. on Render)
+  if (API_KEY && key !== API_KEY) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
   next();
