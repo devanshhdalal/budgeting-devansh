@@ -1,9 +1,13 @@
 // This service will fetch and push data to GitHub.
 // For now, it will fetch from our local public/transactions.json
 
+const API_KEY = import.meta.env.VITE_API_KEY || '';
+
 export const fetchTransactions = async () => {
   try {
-    const response = await fetch('/api/transactions');
+    const response = await fetch('/api/transactions', {
+      headers: { 'x-api-key': API_KEY }
+    });
     if (!response.ok) return [];
     return await response.json();
   } catch (error) {
@@ -16,7 +20,10 @@ export const saveTransaction = async (transaction) => {
   try {
     const response = await fetch('/api/transactions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY
+      },
       body: JSON.stringify(transaction)
     });
     return response.ok;
@@ -26,10 +33,11 @@ export const saveTransaction = async (transaction) => {
   }
 };
 
-export const deleteTransaction = async (index) => {
+export const deleteTransaction = async (id) => {
   try {
-    const response = await fetch(`/api/transactions/${index}`, {
-      method: 'DELETE'
+    const response = await fetch(`/api/transactions/${id}`, {
+      method: 'DELETE',
+      headers: { 'x-api-key': API_KEY }
     });
     return response.ok;
   } catch (error) {
@@ -46,6 +54,7 @@ export const uploadReceipt = async (file, date) => {
     
     const response = await fetch('/api/upload', {
       method: 'POST',
+      headers: { 'x-api-key': API_KEY },
       body: formData
     });
     

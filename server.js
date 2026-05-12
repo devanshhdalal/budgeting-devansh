@@ -20,7 +20,9 @@ const API_KEY = process.env.API_KEY;
 
 const requireApiKey = (req, res, next) => {
   const key = req.headers['x-api-key'];
-  if (!API_KEY || key !== API_KEY) {
+  // Only enforce the check if an API_KEY is defined in the environment (e.g. on Render)
+  if (API_KEY && key !== API_KEY) {
+    console.warn(`Unauthorized request blocked. Key provided: ${key ? 'Yes' : 'No'}`);
     return res.status(401).json({ error: 'Unauthorized' });
   }
   next();
@@ -35,18 +37,31 @@ const GITHUB_REPO   = process.env.GITHUB_REPO;
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main';
 const useGitHub = Boolean(GITHUB_TOKEN && GITHUB_OWNER && GITHUB_REPO);
 
+console.log(`Storage Mode: ${useGitHub ? 'GitHub' : 'Local Disk'}`);
+if (useGitHub) {
+  console.log(`GitHub Config: ${GITHUB_OWNER}/${GITHUB_REPO} [${GITHUB_BRANCH}]`);
+}
+
 // ─── GITHUB API HELPERS ───────────────────────────────────────────────────────
 const fetchGitHubFile = async (filePath) => {
   const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}?ref=${GITHUB_BRANCH}`;
-  const response = await fetch(url, {
-    headers: {
-      'Authorization': `Bearer ${GITHUB_TOKEN}`,
-      'Accept': 'application/vnd.github.v3+json',
-      'User-Agent': 'Budgeting-App'
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${GITHUB_TOKEN}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'User-Agent': 'Budgeting-App'
+      }
+    });
+    if (!response.ok) {
+      console.error(`GitHub Fetch Error: ${response.status} ${response.statusText} for ${filePath}`);
+      return null;
     }
-  });
-  if (!response.ok) return null;
-  return await response.json();
+    return await response.json();
+  } catch (err) {
+    console.error(`Network Error fetching from GitHub: ${err.message}`);
+    return null;
+  }
 };
 
 const putGitHubFile = async (filePath, contentBase64, message, sha = null) => {
@@ -258,12 +273,15 @@ const getTransactions = async () => {
       const fileData = await fetchGitHubFile('data/transactions.json');
       if (fileData?.content) {
         cache = JSON.parse(Buffer.from(fileData.content, 'base64').toString('utf8'));
+        console.log(`Fetched ${cache.length} transactions from GitHub.`);
         return cache;
       }
     } catch (e) { console.error('Failed to fetch from GitHub', e); }
+    console.warn('GitHub fetch returned no data or failed. Falling back to empty array.');
     return [];
   }
   cache = readLocalDB();
+  console.log(`Fetched ${cache.length} transactions from Local DB.`);
   return cache;
 };
 
