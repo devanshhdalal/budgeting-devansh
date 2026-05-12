@@ -40,6 +40,39 @@ export const CARDS = {
   }
 };
 
+/**
+ * Merchant-specific reward overrides.
+ * Some merchants don't follow the standard category multiplier for certain cards.
+ */
+export const MERCHANT_REWARDS_OVERRIDES = {
+  "Rec Room": {
+    "AMEX Cobalt": { 
+      multiplier: 1, 
+      note: "Entertainment override (not 5x)" 
+    },
+    "Scene+ Visa": { 
+      multiplier: 2, 
+      note: "2x Scene Points at Cineplex partners" 
+    }
+  },
+  "Cineplex Rec Room": {
+    "AMEX Cobalt": { 
+      multiplier: 1, 
+      note: "Entertainment override (not 5x)" 
+    },
+    "Scene+ Visa": { 
+      multiplier: 2, 
+      note: "2x Scene Points at Cineplex partners" 
+    }
+  },
+  "Sobeys": {
+    "Scene+ Visa": {
+      multiplier: 2,
+      note: "2x Scene Points at Sobeys"
+    }
+  }
+};
+
 export const CATEGORIES = [
   { value: "Food", label: "Food & Dining", icon: "Coffee" },
   { value: "Groceries", label: "Groceries", icon: "Coffee" },

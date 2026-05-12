@@ -108,6 +108,7 @@ const CLEAN_RULES = [
   [/starbucks/i,                            'Starbucks'],
   [/sushi\s+island/i,                       'Sushi Island'],
   [/olive\s+branch/i,                       'The Olive Branch'],
+  [/rec\s*room/i,                           'Rec Room'],
   // ── Car ──
   [/per\s+use\s+parking|parking/i,         'Parking'],
   [/circle\s+k/i,                           'Circle K'],
@@ -140,7 +141,6 @@ const CLEAN_RULES = [
   [/amazon\s+prime/i,                       'Amazon Prime'],
   // ── Other ──
   [/amzn\s+mktp|amazon\s+mktp|amazon/i,   'Amazon'],
-  [/cineplex\s+rec\s+room/i,               'Cineplex Rec Room'],
   [/cineplex/i,                             'Cineplex'],
   [/best\s+buy/i,                           'Best Buy'],
   [/steam/i,                                'Steam'],
@@ -229,7 +229,8 @@ const CATEGORY_MAP = {
   'YouTube Premium':      'Subscriptions',
   'Amazon Prime':         'Subscriptions',
   'Amazon':               'Other',
-  'Cineplex Rec Room':    'Other',
+  'Rec Room':             'Food',
+  'Cineplex Rec Room':    'Food',
   'Cineplex':             'Other',
   'Best Buy':             'Other',
   'Steam':                'Other',

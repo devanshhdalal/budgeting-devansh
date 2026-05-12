@@ -330,7 +330,7 @@ const Dashboard = () => {
         
         <div className="transaction-list">
           {filteredTransactions.slice(0, MAX_VISIBLE_TRANSACTIONS).map((t, i) => {
-            const rewards = calculateRewards(t.Card, t.Category, t.Amount);
+            const rewards = calculateRewards(t.Card, t.Category, t.Amount, t.Merchant);
             return (
             <motion.div 
               key={i} 
@@ -372,6 +372,11 @@ const Dashboard = () => {
                   {rewards && (
                     <div style={{ fontSize: '12px', color: 'var(--success)', fontWeight: 600 }}>
                       +{rewards.points} {rewards.currency}
+                      {rewards.note && (
+                        <div style={{ fontSize: '10px', opacity: 0.8, fontWeight: 400, marginTop: '2px' }}>
+                          {rewards.note}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
