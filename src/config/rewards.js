@@ -1,26 +1,16 @@
 /**
- * Rewards Calculation Engine
- * Card config is imported from cards.js (single source of truth).
- */
-
-import { CARDS, MERCHANT_REWARDS_OVERRIDES } from './cards';
-
-// Re-export for backward compatibility
-export const REWARDS_CONFIG = CARDS;
-
-/**
  * Calculates the reward points for a given transaction.
  */
-export const calculateRewards = (cardName, category, amount, merchant) => {
-  if (!cardName || !CARDS[cardName] || !amount) return null;
+export const calculateRewards = (cardName, category, amount, merchant, cardsConfig, overridesConfig) => {
+  if (!cardName || !cardsConfig || !cardsConfig[cardName] || !amount) return null;
 
-  const cardConfig = CARDS[cardName];
+  const cardConfig = cardsConfig[cardName];
   let multiplier = null;
   let rewardNote = null;
 
   // 1. Check for merchant-specific overrides first
-  if (merchant && MERCHANT_REWARDS_OVERRIDES[merchant] && MERCHANT_REWARDS_OVERRIDES[merchant][cardName]) {
-    const override = MERCHANT_REWARDS_OVERRIDES[merchant][cardName];
+  if (merchant && overridesConfig && overridesConfig[merchant] && overridesConfig[merchant][cardName]) {
+    const override = overridesConfig[merchant][cardName];
     multiplier = override.multiplier;
     rewardNote = override.note;
   }

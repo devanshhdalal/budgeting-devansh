@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle, ArrowRight, Upload, Image as ImageIcon } from 'lucide-react';
-import { saveTransaction, uploadReceipt } from '../services/storage';
-import { CARDS, CATEGORIES } from '../config/cards';
+import { saveTransaction, uploadReceipt, fetchConfig } from '../services/storage';
 
 const AddTransaction = () => {
+  const [config, setConfig] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     Amount: '',
     Category: 'Food',
@@ -16,6 +17,18 @@ const AddTransaction = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [receiptFile, setReceiptFile] = useState(null);
+
+  useEffect(() => {
+    const loadConfig = async () => {
+      const data = await fetchConfig();
+      if (data) {
+        setConfig(data);
+        setFormData(prev => ({ ...prev, Category: data.CATEGORIES[0]?.value || 'Other' }));
+      }
+      setLoading(false);
+    };
+    loadConfig();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -52,7 +65,7 @@ const AddTransaction = () => {
       setIsSuccess(false);
       setFormData({
         Amount: '',
-        Category: 'Food',
+        Category: config?.CATEGORIES[0]?.value || 'Food',
         Date: new Date().toISOString().split('T')[0],
         Merchant: '',
         Card: '',
@@ -61,6 +74,8 @@ const AddTransaction = () => {
       setReceiptFile(null);
     }, 3000);
   };
+
+  if (loading || !config) return <div style={{ textAlign: 'center', padding: '100px' }}>Loading...</div>;
 
   return (
     <motion.div 
@@ -143,7 +158,7 @@ const AddTransaction = () => {
                   onChange={handleChange}
                   required
                 >
-                  {CATEGORIES.map(cat => (
+                  {config.CATEGORIES.map(cat => (
                     <option key={cat.value} value={cat.value}>{cat.label}</option>
                   ))}
                 </select>
@@ -158,7 +173,7 @@ const AddTransaction = () => {
                   onChange={handleChange}
                 >
                   <option value="">Select a Card...</option>
-                  {Object.keys(CARDS).map(card => (
+                  {Object.keys(config.CARDS).map(card => (
                     <option key={card} value={card}>{card}</option>
                   ))}
                 </select>

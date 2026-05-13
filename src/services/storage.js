@@ -68,3 +68,33 @@ export const uploadReceipt = async (file, date) => {
     return null;
   }
 };
+
+export const fetchConfig = async () => {
+  try {
+    const response = await fetch('/api/config', {
+      headers: { 'x-api-key': API_KEY }
+    });
+    if (!response.ok) return null;
+    return await response.json();
+  } catch (error) {
+    console.error('Failed to fetch config:', error);
+    return null;
+  }
+};
+
+export const saveConfig = async (config) => {
+  try {
+    const response = await fetch('/api/config', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY
+      },
+      body: JSON.stringify(config)
+    });
+    return response.ok;
+  } catch (error) {
+    console.error('Failed to save config:', error);
+    return false;
+  }
+};

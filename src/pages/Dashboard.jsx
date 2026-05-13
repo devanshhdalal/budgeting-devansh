@@ -1,24 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, Coffee, Car, HeartPulse, Home, MoreHorizontal, Pencil, X, Save, Trash2, Search, Receipt, Upload, Image as ImageIcon, Plane } from 'lucide-react';
-import { fetchTransactions, saveTransaction, deleteTransaction, uploadReceipt } from '../services/storage';
+import { fetchTransactions, saveTransaction, deleteTransaction, uploadReceipt, fetchConfig } from '../services/storage';
 import { SpendingPieChart, SpendingBarChart } from '../components/Charts';
 import { calculateRewards } from '../config/rewards';
-import { CARDS, CATEGORIES, BUDGET_CONFIG } from '../config/cards';
 
 // Icon resolver: maps icon string names from config to Lucide components
 const ICON_MAP = { Coffee, Car, HeartPulse, Home, ShoppingBag, MoreHorizontal, Plane };
-
-// Build category->icon lookup from config (so adding a category in cards.js auto-resolves)
-const CATEGORY_ICON_MAP = Object.fromEntries(
-  CATEGORIES.map(cat => [cat.value.toLowerCase(), cat.icon])
-);
-
-const getCategoryIcon = (category) => {
-  const iconName = CATEGORY_ICON_MAP[category?.toLowerCase()] || 'MoreHorizontal';
-  const IconComponent = ICON_MAP[iconName] || MoreHorizontal;
-  return <IconComponent size={24} />;
-};
 
 // Display limits
 const MAX_VISIBLE_TRANSACTIONS = 15;
@@ -37,9 +25,11 @@ const formatDate = (dateString) => {
 
 const Dashboard = () => {
   const [transactions, setTransactions] = useState([]);
+  const [appConfig, setAppConfig] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedCard, setSelectedCard] = useState('All');
-  const [selectedMonth, setSelectedMonth] = useState('All');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   
@@ -54,12 +44,37 @@ const Dashboard = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      const data = await fetchTransactions();
-      setTransactions(data);
+      const [transData, configData] = await Promise.all([
+        fetchTransactions(),
+        fetchConfig()
+      ]);
+      setTransactions(transData);
+      setAppConfig(configData);
       setLoading(false);
     };
     loadData();
   }, []);
+
+  const getCategoryIcon = (category) => {
+    if (!appConfig) return <MoreHorizontal size={24} />;
+    const cat = appConfig.CATEGORIES.find(c => c.value.toLowerCase() === category?.toLowerCase());
+    const iconName = cat?.icon || 'MoreHorizontal';
+    const IconComponent = ICON_MAP[iconName] || MoreHorizontal;
+    return <IconComponent size={24} />;
+  };
+
+  const setThisMonth = () => {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+    const end = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+    setStartDate(start);
+    setEndDate(end);
+  };
+
+  const clearDateRange = () => {
+    setStartDate('');
+    setEndDate('');
+  };
 
   const openEditModal = (t, index) => {
     setEditingTransaction(index);
@@ -98,24 +113,25 @@ const Dashboard = () => {
     
     let receiptUrl = editFormData.ReceiptUrl;
     if (receiptFile) {
-      const newUrl = await uploadReceipt(receiptFile, editFormData.Date);
-      if (newUrl) receiptUrl = newUrl;
+      const uploadedUrl = await uploadReceipt(receiptFile, editFormData.Date);
+      if (uploadedUrl) receiptUrl = uploadedUrl;
     }
     
-    const updatedData = {
-      ...transactions[editingTransaction],
-      ...editFormData,
+    const updatedTransaction = { 
+      ...transactions[editingTransaction], 
+      ...editFormData, 
       Amount: parseFloat(editFormData.Amount) || 0,
-      ReceiptUrl: receiptUrl
+      ReceiptUrl: receiptUrl 
     };
     
     // Update local state
     const newTransactions = [...transactions];
-    newTransactions[editingTransaction] = updatedData;
-    setTransactions(newTransactions);
+    newTransactions[editingTransaction] = updatedTransaction;
     
-    const payload = { ...updatedData, _index: editingTransaction };
-    await saveTransaction(payload);
+    const success = await saveTransaction({ ...updatedTransaction, _index: editingTransaction });
+    if (success) {
+      setTransactions(newTransactions);
+    }
     
     setIsUploading(false);
     closeEditModal();
@@ -130,22 +146,21 @@ const Dashboard = () => {
     }
   };
 
-  if (loading) {
+  if (loading || !appConfig) {
     return <div style={{ display: 'flex', justifyContent: 'center', padding: '100px' }}>Loading...</div>;
   }
 
   const uniqueCards = ['All', ...new Set(transactions.map(t => t.Card).filter(Boolean))];
   
-  const uniqueMonths = ['All', ...new Set(transactions.map(t => {
-    if (!t.Date) return null;
-    return t.Date.substring(0, 7); // YYYY-MM
-  }).filter(Boolean))].sort((a,b) => b.localeCompare(a)); // Descending
-
   const transactionsWithIndex = transactions.map((t, index) => ({ ...t, originalIndex: index }));
   
   const filteredTransactions = transactionsWithIndex.filter(t => {
     const matchCard = selectedCard === 'All' || t.Card === selectedCard;
-    const matchMonth = selectedMonth === 'All' || (t.Date && t.Date.startsWith(selectedMonth));
+    
+    let matchDate = true;
+    if (startDate && t.Date) matchDate = matchDate && t.Date >= startDate;
+    if (endDate && t.Date) matchDate = matchDate && t.Date <= endDate;
+    
     const matchCategory = selectedCategory === 'All' || t.Category === selectedCategory;
     const query = searchQuery.toLowerCase();
     const matchSearch = query === '' || 
@@ -153,8 +168,40 @@ const Dashboard = () => {
       (t.Category && t.Category.toLowerCase().includes(query)) ||
       (t.Notes && t.Notes.toLowerCase().includes(query));
     
-    return matchCard && matchMonth && matchCategory && matchSearch;
+    return matchCard && matchDate && matchCategory && matchSearch;
   });
+
+  // Calculate category budgets
+  const categoryBudgets = appConfig.CATEGORIES.map(cat => {
+    const spent = transactions
+      .filter(t => {
+        let matchDate = true;
+        if (startDate && t.Date) matchDate = matchDate && t.Date >= startDate;
+        if (endDate && t.Date) matchDate = matchDate && t.Date <= endDate;
+        return t.Category === cat.value && matchDate;
+      })
+      .reduce((sum, t) => sum + (t.Amount || 0), 0);
+    const limit = appConfig.BUDGET_CONFIG[cat.value] || 0;
+    const percentage = limit > 0 ? Math.min((spent / limit) * 100, 100) : 0;
+    return { ...cat, spent, limit, percentage };
+  });
+
+  // Smart Insights Logic
+  const topMerchant = Object.entries(
+    filteredTransactions.reduce((acc, t) => {
+      if (!t.Merchant) return acc;
+      acc[t.Merchant] = (acc[t.Merchant] || 0) + (t.Amount || 0);
+      return acc;
+    }, {})
+  ).sort((a, b) => b[1] - a[1])[0];
+
+  const totalRewards = filteredTransactions.reduce((acc, t) => {
+    const r = calculateRewards(t.Card, t.Category, t.Amount, t.Merchant, appConfig.CARDS, appConfig.MERCHANT_REWARDS_OVERRIDES);
+    if (!r || typeof r.points !== 'number') return acc;
+    const currency = r.currency || 'Points';
+    acc[currency] = (acc[currency] || 0) + r.points;
+    return acc;
+  }, {});
 
   // Calculate summary stats
   const totalSpent = filteredTransactions.reduce((sum, t) => sum + (t.Amount || 0), 0);
@@ -178,6 +225,20 @@ const Dashboard = () => {
     .sort((a,b) => new Date(a) - new Date(b))
     .slice(-MAX_BAR_CHART_DAYS)
     .map(key => ({ name: key, amount: dateMap[key] }));
+
+  // Subscription Logic
+  const subscriptions = transactions
+    .filter(t => t.Category === 'Subscriptions')
+    .reduce((acc, t) => {
+      // Keep only the latest unique subscription based on Merchant
+      if (!acc[t.Merchant] || new Date(t.Date) > new Date(acc[t.Merchant].Date)) {
+        acc[t.Merchant] = t;
+      }
+      return acc;
+    }, {});
+  
+  const subList = Object.values(subscriptions).sort((a,b) => (a.Amount || 0) - (b.Amount || 0));
+  const monthlyBurnRate = subList.reduce((sum, s) => sum + (s.Amount || 0), 0);
 
   // Animation variants
   const containerVariants = {
@@ -213,16 +274,27 @@ const Dashboard = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <select 
-          className="form-input" 
-          style={{ width: 'auto', borderRadius: '24px', padding: '10px 16px' }}
-          value={selectedMonth}
-          onChange={(e) => setSelectedMonth(e.target.value)}
-        >
-          {uniqueMonths.map(m => (
-            <option key={m} value={m}>{m === 'All' ? 'All Months' : new Date(m + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</option>
-          ))}
-        </select>
+
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--surface-color)', padding: '4px 12px', borderRadius: '24px', border: '1px solid var(--border-color)' }}>
+            <input 
+              type="date" 
+              className="date-input-minimal"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+            <span style={{ opacity: 0.5 }}>→</span>
+            <input 
+              type="date" 
+              className="date-input-minimal"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+          </div>
+          <button onClick={setThisMonth} className="btn-secondary-sm">This Month</button>
+          <button onClick={clearDateRange} className="btn-secondary-sm">All Time</button>
+        </div>
+
         <select 
           className="form-input" 
           style={{ width: 'auto', borderRadius: '24px', padding: '10px 16px' }}
@@ -230,10 +302,34 @@ const Dashboard = () => {
           onChange={(e) => setSelectedCategory(e.target.value)}
         >
           <option value="All">All Categories</option>
-          {CATEGORIES.map(cat => (
+          {appConfig.CATEGORIES.map(cat => (
             <option key={cat.value} value={cat.value}>{cat.label}</option>
           ))}
         </select>
+      </motion.div>
+
+      {/* Smart Insights Row */}
+      <motion.div className="col-span-full insight-grid" variants={itemVariants}>
+        <div className="insight-card">
+          <span className="insight-title">Top Merchant</span>
+          <span className="insight-value">{topMerchant ? topMerchant[0] : 'None'}</span>
+          <span className="insight-desc">{topMerchant ? `$${topMerchant[1].toFixed(2)} spent` : 'No data'}</span>
+        </div>
+        <div className="insight-card">
+          <span className="insight-title">Rewards Earned</span>
+          <div className="insight-value" style={{ fontSize: '16px' }}>
+            {Object.keys(totalRewards).length > 0 ? 
+              Object.entries(totalRewards).map(([curr, val]) => (
+                <div key={curr}>+{val} {curr}</div>
+              )) : '0 Points'}
+          </div>
+          <span className="insight-desc">Based on active multipliers</span>
+        </div>
+        <div className="insight-card">
+          <span className="insight-title">Monthly Focus</span>
+          <span className="insight-value">{pieData[0]?.name || 'N/A'}</span>
+          <span className="insight-desc">Highest spending category</span>
+        </div>
       </motion.div>
 
       {/* Card Filter */}
@@ -248,8 +344,8 @@ const Dashboard = () => {
               border: `1px solid ${selectedCard === card ? 'var(--accent-primary)' : 'var(--border-color)'}`,
               background: selectedCard === card ? 'var(--accent-light)' : 'var(--surface-color)',
               color: selectedCard === card ? 'var(--accent-primary)' : 'var(--text-secondary)',
-              fontWeight: 500,
-              cursor: 'pointer',
+              fontWeight: 600,
+              fontSize: '14px',
               whiteSpace: 'nowrap',
               transition: 'all 0.2s ease'
             }}
@@ -257,6 +353,30 @@ const Dashboard = () => {
             {card}
           </button>
         ))}
+      </motion.div>
+
+      {/* Budget Progress Bars */}
+      <motion.div className="col-span-full card" variants={itemVariants} style={{ padding: '24px' }}>
+        <h3 style={{ marginBottom: '20px', fontSize: '18px' }}>Budget Tracking</h3>
+        <div className="summary-cards" style={{ gap: '24px' }}>
+          {categoryBudgets.filter(c => c.limit > 0).map(cat => (
+            <div key={cat.value} onClick={() => setSelectedCategory(cat.value)} style={{ cursor: 'pointer' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                <span style={{ fontWeight: 600, fontSize: '14px' }}>{cat.label}</span>
+                <span style={{ fontSize: '14px', fontWeight: 700 }}>${cat.spent.toFixed(0)} <span style={{ opacity: 0.5, fontWeight: 400 }}>/ ${cat.limit}</span></span>
+              </div>
+              <div className="budget-bar-container">
+                <div 
+                  className="budget-bar-fill" 
+                  style={{ 
+                    width: `${cat.percentage}%`,
+                    background: cat.percentage > 90 ? 'var(--accent-primary)' : (cat.percentage > 70 ? '#f59e0b' : 'var(--success)')
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
       </motion.div>
 
       {/* Header Summary */}
@@ -275,42 +395,6 @@ const Dashboard = () => {
         </div>
       </motion.div>
 
-      {/* Budgets */}
-      {selectedMonth !== 'All' && (
-        <motion.div className="col-span-full card" variants={itemVariants} style={{ marginBottom: '8px' }}>
-          <h3 style={{ marginBottom: '24px', fontSize: '18px' }}>Monthly Budgets</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            {Object.keys(BUDGET_CONFIG).map(cat => {
-              const spent = categoryMap[cat] || 0;
-              const limit = BUDGET_CONFIG[cat];
-              const percent = Math.min((spent / limit) * 100, 100);
-              const isOver = spent > limit;
-              
-              if (spent === 0 && !isOver) return null; // Only show active budgets
-              
-              return (
-                <div key={cat}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '14px', fontWeight: 500 }}>
-                    <span>{cat}</span>
-                    <span style={{ color: isOver ? 'var(--accent-primary)' : 'var(--text-secondary)' }}>
-                      ${spent.toFixed(2)} / ${limit}
-                    </span>
-                  </div>
-                  <div style={{ height: '8px', background: 'var(--border-color)', borderRadius: '4px', overflow: 'hidden' }}>
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      animate={{ width: `${percent}%` }}
-                      transition={{ duration: 1, ease: 'easeOut' }}
-                      style={{ height: '100%', background: isOver ? 'var(--accent-primary)' : 'var(--success)' }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </motion.div>
-      )}
-
       {/* Charts */}
       <motion.div className="col-span-4 card" variants={itemVariants}>
         <h3 style={{ marginBottom: '24px', fontSize: '18px' }}>Spending by Category</h3>
@@ -322,6 +406,36 @@ const Dashboard = () => {
         <SpendingBarChart data={barData} />
       </motion.div>
 
+      {/* Subscription Manager Card */}
+      <motion.div className="col-span-4 card" variants={itemVariants}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+          <h3 style={{ fontSize: '18px' }}>Subscriptions</h3>
+          <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--accent-primary)' }}>
+            ${monthlyBurnRate.toFixed(2)}/mo
+          </span>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {subList.length > 0 ? subList.map((sub, idx) => (
+            <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', borderRadius: '12px', background: 'var(--bg-color)', border: '1px solid var(--border-color)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'var(--accent-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-primary)' }}>
+                  {getCategoryIcon('Subscriptions')}
+                </div>
+                <div>
+                  <div style={{ fontSize: '14px', fontWeight: 600 }}>{sub.Merchant}</div>
+                  <div style={{ fontSize: '11px', opacity: 0.6 }}>Recurring</div>
+                </div>
+              </div>
+              <div style={{ fontSize: '14px', fontWeight: 700 }}>${sub.Amount?.toFixed(2)}</div>
+            </div>
+          )) : (
+            <div style={{ textAlign: 'center', padding: '24px', opacity: 0.5, fontSize: '14px' }}>
+              No subscriptions found
+            </div>
+          )}
+        </div>
+      </motion.div>
+
       {/* Transaction History */}
       <motion.div className="col-span-full card" variants={itemVariants} style={{ marginTop: '16px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
@@ -330,7 +444,7 @@ const Dashboard = () => {
         
         <div className="transaction-list">
           {filteredTransactions.slice(0, MAX_VISIBLE_TRANSACTIONS).map((t, i) => {
-            const rewards = calculateRewards(t.Card, t.Category, t.Amount, t.Merchant);
+            const rewards = calculateRewards(t.Card, t.Category, t.Amount, t.Merchant, appConfig.CARDS, appConfig.MERCHANT_REWARDS_OVERRIDES);
             return (
             <motion.div 
               key={i} 
@@ -455,7 +569,14 @@ const Dashboard = () => {
                       onChange={handleEditChange}
                       required
                     >
-                      {CATEGORIES.map(cat => (
+                    <select 
+                      name="Category"
+                      className="form-input" 
+                      value={editFormData.Category}
+                      onChange={handleEditChange}
+                      required
+                    >
+                      {appConfig.CATEGORIES.map(cat => (
                         <option key={cat.value} value={cat.value}>{cat.label}</option>
                       ))}
                     </select>
@@ -470,7 +591,7 @@ const Dashboard = () => {
                       onChange={handleEditChange}
                     >
                       <option value="">Select a Card...</option>
-                      {Object.keys(CARDS).map(card => (
+                      {Object.keys(appConfig.CARDS).map(card => (
                         <option key={card} value={card}>{card}</option>
                       ))}
                     </select>

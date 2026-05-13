@@ -134,7 +134,7 @@ button {
 
 @media (max-width: 768px) {
   .app-container {
-    padding: 20px 16px 100px 16px; /* Extra bottom padding for mobile nav */
+    padding: 20px 16px; 
   }
 }
 
@@ -369,6 +369,68 @@ button {
   box-shadow: 0 6px 16px rgba(255, 107, 107, 0.4);
 }
 
+/* Budget Progress Bars */
+.budget-bar-container {
+  width: 100%;
+  height: 8px;
+  background: var(--border-color);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.budget-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.budget-status {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 500;
+  margin-top: 4px;
+  color: var(--text-secondary);
+}
+
+/* Insight Cards */
+.insight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.insight-card {
+  padding: 16px;
+  border-radius: var(--radius-md);
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.insight-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.insight-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.insight-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
 /* Form Styles */
 .form-group {
   margin-bottom: 24px;
@@ -398,6 +460,34 @@ button {
   outline: none;
   border-color: var(--accent-primary);
   box-shadow: 0 0 0 4px var(--accent-light);
+}
+
+.date-input-minimal {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+}
+
+.btn-secondary-sm {
+  background: var(--border-color);
+  border: none;
+  color: var(--text-primary);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary-sm:hover {
+  background: var(--text-secondary);
+  color: var(--bg-color);
 }
 
 /* Edit Button Hover */
@@ -484,58 +574,21 @@ button {
 /* Mobile Overhaul */
 @media (max-width: 768px) {
   .app-header {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
     margin-bottom: 24px;
     padding: 8px 0;
   }
 
-  .app-header .nav-menu {
-    display: none; /* Hidden on mobile header, moved to bottom nav */
+  .nav-menu {
+    display: flex;
+    gap: 16px;
+    font-size: 14px;
   }
 
   .logo span {
     font-size: 20px;
-  }
-
-  /* Bottom Tab Bar */
-  .mobile-nav {
-    display: flex;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 72px;
-    background: var(--surface-color);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid var(--border-color);
-    padding-bottom: env(safe-area-inset-bottom);
-    z-index: 1000;
-    justify-content: space-around;
-    align-items: center;
-    box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.05);
-  }
-
-  .mobile-nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    color: var(--text-secondary);
-    font-size: 11px;
-    font-weight: 500;
-    transition: all 0.2s ease;
-  }
-
-  .mobile-nav-item.active {
-    color: var(--accent-primary);
-  }
-
-  .mobile-nav-item svg {
-    width: 24px;
-    height: 24px;
   }
 
   .card {

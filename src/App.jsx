@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Wallet, PlusCircle, LayoutDashboard, Moon, Sun } from 'lucide-react';
 import Dashboard from './pages/Dashboard';
 import AddTransaction from './pages/AddTransaction';
+import Settings from './pages/Settings';
 import './index.css';
 
 function NavLinks() {
@@ -17,23 +18,10 @@ function NavLinks() {
       <Link to="/add" className={`nav-link ${location.pathname === '/add' ? 'active' : ''}`}>
         Add Transaction
       </Link>
+      <Link to="/settings" className={`nav-link ${location.pathname === '/settings' ? 'active' : ''}`}>
+        Settings
+      </Link>
     </nav>
-  );
-}
-
-function MobileNav() {
-  const location = useLocation();
-  return (
-    <div className="mobile-nav">
-      <Link to="/" className={`mobile-nav-item ${location.pathname === '/' ? 'active' : ''}`}>
-        <LayoutDashboard />
-        <span>Dashboard</span>
-      </Link>
-      <Link to="/add" className={`mobile-nav-item ${location.pathname === '/add' ? 'active' : ''}`}>
-        <PlusCircle />
-        <span>Add</span>
-      </Link>
-    </div>
   );
 }
 
@@ -87,10 +75,9 @@ function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/add" element={<AddTransaction />} />
+            <Route path="/settings" element={<Settings />} />
           </Routes>
         </main>
-
-        <MobileNav />
       </div>
     </Router>
   );
