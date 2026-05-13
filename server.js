@@ -299,6 +299,54 @@ const saveTransactions = async (txs, message = 'Update transactions') => {
     writeLocalDB(txs);
   }
 };
+
+// ─── CONFIGURATION HELPERS ───────────────────────────────────────────────────
+let configCache = null;
+
+const getConfig = async () => {
+  if (configCache) return configCache;
+  if (useGitHub) {
+    try {
+      const fileData = await fetchGitHubFile('data/config.json');
+      if (fileData?.content) {
+        configCache = JSON.parse(Buffer.from(fileData.content, 'base64').toString('utf8'));
+        return configCache;
+      }
+    } catch (e) { console.error('Failed to fetch config from GitHub', e); }
+  }
+  
+  try {
+    const configPath = path.join(dataDir, 'config.json');
+    if (fs.existsSync(configPath)) {
+      configCache = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      return configCache;
+    }
+  } catch (e) { console.error('Failed to read local config', e); }
+  
+  return null;
+};
+
+const saveConfig = async (newConfig) => {
+  configCache = newConfig;
+  const content = JSON.stringify(newConfig, null, 2);
+  
+  if (useGitHub) {
+    try {
+      const fileData = await fetchGitHubFile('data/config.json');
+      const sha = fileData?.sha;
+      await putGitHubFile('data/config.json', Buffer.from(content).toString('base64'), 'Update config via App', sha);
+    } catch (e) { console.error('Failed to save config to GitHub', e); }
+  }
+  
+  try {
+    fs.writeFileSync(path.join(dataDir, 'config.json'), content);
+    return true;
+  } catch (e) {
+    console.error('Failed to save local config', e);
+    return false;
+  }
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 const upload = multer({ storage: multer.memoryStorage() });
@@ -306,6 +354,20 @@ const upload = multer({ storage: multer.memoryStorage() });
 app.use('/images', express.static(path.join(dataDir, 'images')));
 
 // ─── ROUTES ───────────────────────────────────────────────────────────────────
+
+// GET app configuration
+app.get('/api/config', async (req, res) => {
+  const config = await getConfig();
+  if (config) res.json(config);
+  else res.status(404).json({ error: 'Config not found' });
+});
+
+// POST — update app configuration
+app.post('/api/config', async (req, res) => {
+  const success = await saveConfig(req.body);
+  if (success) res.json({ success: true });
+  else res.status(500).json({ error: 'Failed to save config' });
+});
 
 // GET all transactions
 app.get('/api/transactions', async (req, res) => {
