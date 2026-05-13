@@ -17,10 +17,7 @@ const formatDate = (dateString) => {
   const date = new Date(dateString);
   // Get time values with timezone offset adjustment to prevent off-by-one day errors
   const dt = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-  const dd = String(dt.getDate()).padStart(2, '0');
-  const mm = String(dt.getMonth() + 1).padStart(2, '0');
-  const yyyy = dt.getFullYear();
-  return `${dd}-${mm}-${yyyy}`;
+  return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 };
 
 const Dashboard = () => {
