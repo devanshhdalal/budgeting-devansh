@@ -499,6 +499,7 @@ button {
   display: flex;
   align-items: center;
   min-width: 100px;
+  cursor: pointer;
 }
 
 .date-display-text {

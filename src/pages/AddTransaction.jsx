@@ -144,7 +144,11 @@ const AddTransaction = () => {
               
               <div className="form-group">
                 <label className="form-label">Date</label>
-                <div className="date-display-container form-input" style={{ position: 'relative' }}>
+                <div 
+                  className="date-display-container form-input" 
+                  style={{ position: 'relative' }}
+                  onClick={(e) => e.currentTarget.querySelector('input')?.showPicker()}
+                >
                   <span className="date-display-text">{formatDate(formData.Date) || 'Select Date'}</span>
                   <input 
                     type="date" 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, Coffee, Car, HeartPulse, Home, MoreHorizontal, Pencil, X, Save, Trash2, Search, Receipt, Upload, Image as ImageIcon, Plane, Calendar } from 'lucide-react';
 import { fetchTransactions, saveTransaction, deleteTransaction, uploadReceipt, fetchConfig } from '../services/storage';
@@ -29,6 +29,9 @@ const Dashboard = () => {
   const [endDate, setEndDate] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  
+  const startDateRef = useRef(null);
+  const endDateRef = useRef(null);
   
   // Edit Modal State
   const [editingTransaction, setEditingTransaction] = useState(null);
@@ -276,10 +279,11 @@ const Dashboard = () => {
           <div className="date-range-pill">
             <div className="date-range-input-wrapper">
               <Calendar size={14} className="date-icon" />
-              <div className="date-display-container">
+              <div className="date-display-container" onClick={() => startDateRef.current?.showPicker()}>
                 <span className="date-display-text">{formatDate(startDate) || 'Start Date'}</span>
                 <input 
                   type="date" 
+                  ref={startDateRef}
                   className="date-picker-hidden"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
@@ -288,10 +292,11 @@ const Dashboard = () => {
             </div>
             <div className="date-separator">to</div>
             <div className="date-range-input-wrapper">
-              <div className="date-display-container">
+              <div className="date-display-container" onClick={() => endDateRef.current?.showPicker()}>
                 <span className="date-display-text">{formatDate(endDate) || 'End Date'}</span>
                 <input 
                   type="date" 
+                  ref={endDateRef}
                   className="date-picker-hidden"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
@@ -563,7 +568,11 @@ const Dashboard = () => {
                   </div>
                   <div className="form-group">
                     <label className="form-label">Date</label>
-                    <div className="date-display-container form-input" style={{ position: 'relative' }}>
+                    <div 
+                      className="date-display-container form-input" 
+                      style={{ position: 'relative' }}
+                      onClick={(e) => e.currentTarget.querySelector('input')?.showPicker()}
+                    >
                       <span className="date-display-text">{formatDate(editFormData.Date) || 'Select Date'}</span>
                       <input 
                         type="date" 
