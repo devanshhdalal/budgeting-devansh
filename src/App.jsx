@@ -21,11 +21,31 @@ function NavLinks() {
   );
 }
 
+function MobileNav() {
+  const location = useLocation();
+  return (
+    <div className="mobile-nav">
+      <Link to="/" className={`mobile-nav-item ${location.pathname === '/' ? 'active' : ''}`}>
+        <LayoutDashboard />
+        <span>Dashboard</span>
+      </Link>
+      <Link to="/add" className={`mobile-nav-item ${location.pathname === '/add' ? 'active' : ''}`}>
+        <PlusCircle />
+        <span>Add</span>
+      </Link>
+    </div>
+  );
+}
+
 function App() {
-  const [theme, setTheme] = useState('light');
+  // Default to dark theme, but check localStorage for saved preference
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('app-theme') || 'dark';
+  });
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('app-theme', theme);
   }, [theme]);
 
   const toggleTheme = () => {
@@ -69,6 +89,8 @@ function App() {
             <Route path="/add" element={<AddTransaction />} />
           </Routes>
         </main>
+
+        <MobileNav />
       </div>
     </Router>
   );

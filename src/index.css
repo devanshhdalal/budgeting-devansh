@@ -68,22 +68,25 @@
 
 [data-theme="dark"] .glass-panel {
   background: rgba(26, 29, 36, 0.7); /* translucent surface color */
+  --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 8px 16px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(45, 55, 72, 0.5); /* translucent border color */
 }
 
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  font-family: var(--font-sans);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background-color: var(--bg-color);
   color: var(--text-primary);
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -127,6 +130,12 @@ button {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    padding: 20px 16px 100px 16px; /* Extra bottom padding for mobile nav */
+  }
 }
 
 /* Premium Navigation Hover Effect */
@@ -472,50 +481,112 @@ button {
 }
 
 /* Mobile Responsiveness */
-@media (max-width: 600px) {
+/* Mobile Overhaul */
+@media (max-width: 768px) {
   .app-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding: 8px 0;
+  }
+
+  .app-header .nav-menu {
+    display: none; /* Hidden on mobile header, moved to bottom nav */
+  }
+
+  .logo span {
+    font-size: 20px;
+  }
+
+  /* Bottom Tab Bar */
+  .mobile-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 72px;
+    background: var(--surface-color);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border-color);
+    padding-bottom: env(safe-area-inset-bottom);
+    z-index: 1000;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.05);
+  }
+
+  .mobile-nav-item {
+    display: flex;
     flex-direction: column;
-    gap: 16px;
-    margin-bottom: 32px;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 500;
+    transition: all 0.2s ease;
   }
-  
-  .app-container {
-    padding: 16px;
+
+  .mobile-nav-item.active {
+    color: var(--accent-primary);
   }
-  
+
+  .mobile-nav-item svg {
+    width: 24px;
+    height: 24px;
+  }
+
   .card {
-    padding: 16px;
+    padding: 20px;
+    border-radius: 20px;
   }
-  
+
   .summary-cards {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
-  
+
   .transaction-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+    padding: 16px 0;
   }
-  
-  .transaction-item > div {
-    width: 100%;
-    justify-content: space-between;
+
+  .transaction-icon {
+    width: 40px;
+    height: 40px;
   }
-  
+
+  .transaction-merchant {
+    font-size: 15px;
+  }
+
   .modal-content {
+    width: 100%;
+    height: 100%;
+    max-height: 100vh;
+    border-radius: 0;
     padding: 24px;
-    padding-top: 50px;
-    width: 95%;
-    margin-top: auto;
-    margin-bottom: auto;
+    padding-top: 80px;
   }
 
   .modal-overlay {
-    align-items: flex-start;
+    padding: 0;
+  }
+
+  .modal-close {
+    top: 32px;
+    right: 24px;
   }
 
   .form-grid-2 {
     grid-template-columns: 1fr;
     gap: 16px;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-nav {
+    display: none;
   }
 }
