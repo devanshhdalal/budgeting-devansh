@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Save, Plus, Trash2, CreditCard, PieChart, DollarSign, Settings as SettingsIcon } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Save, Plus, Trash2, CreditCard, PieChart, DollarSign, Settings as SettingsIcon, X } from 'lucide-react';
 import { fetchConfig, saveConfig } from '../services/storage';
 
 const Settings = () => {
