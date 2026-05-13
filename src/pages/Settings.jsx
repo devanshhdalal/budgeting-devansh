@@ -7,6 +7,10 @@ const Settings = () => {
   const [config, setConfig] = useState(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
+  
+  // Card Editing State
+  const [editingCard, setEditingCard] = useState(null); // { id: 'Card Name', ...data }
+  const [isAddingNew, setIsAddingNew] = useState(false);
 
   useEffect(() => {
     const loadConfig = async () => {
@@ -38,6 +42,56 @@ const Settings = () => {
     }));
   };
 
+  const openCardEditor = (name, data) => {
+    setEditingCard({ name, ...data });
+    setIsAddingNew(false);
+  };
+
+  const openNewCardEditor = () => {
+    const defaultMultipliers = {};
+    config.CATEGORIES.forEach(cat => { defaultMultipliers[cat.value] = 1; });
+    defaultMultipliers['Base'] = 1;
+
+    setEditingCard({
+      name: '',
+      currency: 'Points',
+      multipliers: defaultMultipliers
+    });
+    setIsAddingNew(true);
+  };
+
+  const saveCardChanges = () => {
+    const newCards = { ...config.CARDS };
+    
+    if (isAddingNew) {
+      if (!editingCard.name) return alert('Card name is required');
+      newCards[editingCard.name] = {
+        currency: editingCard.currency,
+        multipliers: editingCard.multipliers
+      };
+    } else {
+      // If name changed, we need to delete old key
+      const oldName = Object.keys(config.CARDS).find(k => k === editingCard.name) || editingCard.name;
+      delete newCards[oldName];
+      newCards[editingCard.name] = {
+        currency: editingCard.currency,
+        multipliers: editingCard.multipliers
+      };
+    }
+
+    setConfig(prev => ({ ...prev, CARDS: newCards }));
+    setEditingCard(null);
+  };
+
+  const deleteCard = (name) => {
+    if (window.confirm(`Are you sure you want to delete ${name}?`)) {
+      const newCards = { ...config.CARDS };
+      delete newCards[name];
+      setConfig(prev => ({ ...prev, CARDS: newCards }));
+      setEditingCard(null);
+    }
+  };
+
   if (loading) return <div style={{ textAlign: 'center', padding: '100px' }}>Loading Settings...</div>;
   if (!config) return <div style={{ textAlign: 'center', padding: '100px' }}>Failed to load configuration.</div>;
 
@@ -53,28 +107,31 @@ const Settings = () => {
         </button>
       </div>
 
-      {message && (
-        <motion.div 
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          style={{ 
-            padding: '16px', 
-            borderRadius: '16px', 
-            background: message.includes('success') ? 'var(--success-light)' : 'var(--accent-light)', 
-            color: message.includes('success') ? 'var(--success)' : 'var(--accent-primary)', 
-            marginBottom: '24px', 
-            fontWeight: 600,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            border: `1px solid ${message.includes('success') ? 'var(--success)' : 'var(--accent-primary)'}22`,
-            fontSize: '14px'
-          }}
-        >
-          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: message.includes('success') ? 'var(--success)' : 'var(--accent-primary)' }} />
-          {message}
-        </motion.div>
-      )}
+      <AnimatePresence>
+        {message && (
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            style={{ 
+              padding: '16px', 
+              borderRadius: '16px', 
+              background: message.includes('success') ? 'var(--success-light)' : 'var(--accent-light)', 
+              color: message.includes('success') ? 'var(--success)' : 'var(--accent-primary)', 
+              marginBottom: '24px', 
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              border: `1px solid ${message.includes('success') ? 'var(--success)' : 'var(--accent-primary)'}22`,
+              fontSize: '14px'
+            }}
+          >
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: message.includes('success') ? 'var(--success)' : 'var(--accent-primary)' }} />
+            {message}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         {/* Budget Management */}
@@ -127,23 +184,26 @@ const Settings = () => {
             </div>
             <div>
               <h2 style={{ fontSize: '18px', fontWeight: 700 }}>Payment Methods</h2>
-              <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Manage accounts</p>
+              <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Manage accounts and multipliers</p>
             </div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '16px' }}>
             {Object.entries(config.CARDS).map(([name, data]) => (
-              <div key={name} style={{ 
-                padding: '16px', 
-                borderRadius: '16px', 
-                background: 'var(--bg-color)', 
-                border: '1px solid var(--border-color)', 
-                display: 'flex', 
-                flexDirection: 'column',
-                gap: '8px',
-                position: 'relative',
-                overflow: 'hidden'
-              }}>
+              <div key={name} 
+                onClick={() => openCardEditor(name, data)}
+                style={{ 
+                  padding: '16px', 
+                  borderRadius: '16px', 
+                  background: 'var(--bg-color)', 
+                  border: '1px solid var(--border-color)', 
+                  display: 'flex', 
+                  flexDirection: 'column',
+                  gap: '8px',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  cursor: 'pointer'
+                }}>
                 <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: 'var(--accent-primary)' }} />
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div>
@@ -173,7 +233,7 @@ const Settings = () => {
                 transition: 'all 0.2s ease',
                 minHeight: '60px'
               }}
-              onClick={() => alert('New card addition is coming in the next update!')}
+              onClick={openNewCardEditor}
             >
               <Plus size={20} />
               <span style={{ fontWeight: 600, fontSize: '14px' }}>Add Account</span>
@@ -181,6 +241,82 @@ const Settings = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Card Edit Modal */}
+      <AnimatePresence>
+        {editingCard && (
+          <div className="modal-overlay" style={{ zIndex: 1000 }}>
+            <motion.div 
+              className="modal-content"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              style={{ maxWidth: '500px', width: '95%' }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                <h2 style={{ fontSize: '20px', fontWeight: 700 }}>{isAddingNew ? 'Add New Card' : 'Edit Card'}</h2>
+                <button onClick={() => setEditingCard(null)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}>
+                  <X size={24} />
+                </button>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Card Name</label>
+                <input 
+                  className="form-input"
+                  value={editingCard.name}
+                  onChange={(e) => setEditingCard({ ...editingCard, name: e.target.value })}
+                  placeholder="e.g. AMEX Cobalt"
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Reward Currency</label>
+                <input 
+                  className="form-input"
+                  value={editingCard.currency}
+                  onChange={(e) => setEditingCard({ ...editingCard, currency: e.target.value })}
+                  placeholder="e.g. Points, Cashback, Scene+"
+                />
+              </div>
+
+              <h3 style={{ fontSize: '16px', fontWeight: 700, margin: '24px 0 16px' }}>Multipliers</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', maxHeight: '300px', overflowY: 'auto', paddingRight: '4px' }}>
+                {Object.keys(editingCard.multipliers).map(key => (
+                  <div key={key} className="form-group" style={{ marginBottom: '8px' }}>
+                    <label className="form-label" style={{ fontSize: '12px' }}>{key}</label>
+                    <input 
+                      type="number"
+                      step="0.01"
+                      className="form-input"
+                      style={{ padding: '8px' }}
+                      value={editingCard.multipliers[key]}
+                      onChange={(e) => setEditingCard({
+                        ...editingCard,
+                        multipliers: {
+                          ...editingCard.multipliers,
+                          [key]: parseFloat(e.target.value) || 0
+                        }
+                      })}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px', marginTop: '32px' }}>
+                {!isAddingNew && (
+                  <button className="btn btn-secondary" style={{ color: 'var(--accent-primary)', flex: 1 }} onClick={() => deleteCard(editingCard.name)}>
+                    <Trash2 size={18} /> Delete
+                  </button>
+                )}
+                <button className="btn btn-primary" style={{ flex: 2 }} onClick={saveCardChanges}>
+                  <Save size={18} /> {isAddingNew ? 'Add Card' : 'Update Card'}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
