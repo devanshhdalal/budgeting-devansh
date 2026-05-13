@@ -569,13 +569,6 @@ const Dashboard = () => {
                       onChange={handleEditChange}
                       required
                     >
-                    <select 
-                      name="Category"
-                      className="form-input" 
-                      value={editFormData.Category}
-                      onChange={handleEditChange}
-                      required
-                    >
                       {appConfig.CATEGORIES.map(cat => (
                         <option key={cat.value} value={cat.value}>{cat.label}</option>
                       ))}
