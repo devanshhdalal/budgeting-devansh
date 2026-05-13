@@ -337,9 +337,9 @@
   {
     "Date": "2026-04-29",
     "Month": null,
-    "Merchant": "Cineplex Rec Room",
+    "Merchant": "Rec Room",
     "Amount": 9.58,
-    "Category": "Other",
+    "Category": "Food",
     "Card": "AMEX Cobalt",
     "Notes": null
   },
@@ -350,7 +350,7 @@
     "Amount": 453.9,
     "Category": "Travel",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": "Flight from YYT St. John's to Ottawa"
   },
   {
     "Date": "2026-04-28",
