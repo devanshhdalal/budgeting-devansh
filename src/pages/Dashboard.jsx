@@ -224,10 +224,6 @@ const Dashboard = () => {
     }
   };
 
-  if (loading || !appConfig) {
-    return <div style={{ display: 'flex', justifyContent: 'center', padding: '100px' }}>Loading...</div>;
-  }
-
   const transactionsWithIndex = useMemo(() => 
     transactions.map((t, index) => ({ ...t, originalIndex: index })),
   [transactions]);
@@ -337,6 +333,10 @@ const Dashboard = () => {
   const uniqueCards = useMemo(() => 
     ['All', ...new Set(transactions.map(t => t.Card).filter(Boolean))],
   [transactions]);
+
+  if (loading || !appConfig) {
+    return <div style={{ display: 'flex', justifyContent: 'center', padding: '100px' }}>Loading...</div>;
+  }
 
   // Destructure for ease of use
   const { topMerchant, totalRewards, totalSpent } = insights;
