@@ -20,6 +20,62 @@ const formatDate = (dateString) => {
   return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 };
 
+// Memoized Transaction Item for performance
+const TransactionItem = React.memo(({ t, i, getCategoryIcon, formatDate, calculateRewards, viewingReceipt, setViewingReceipt, openEditModal, handleDelete, appConfig }) => {
+  const rewards = calculateRewards(t.Card, t.Category, t.Amount, t.Merchant, appConfig.CARDS, appConfig.MERCHANT_REWARDS_OVERRIDES);
+  return (
+    <motion.div 
+      className="transaction-item"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: Math.min(i * 0.03, 0.3) }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div className="transaction-icon">
+          {getCategoryIcon(t.Category)}
+        </div>
+        <div className="transaction-details">
+          <div className="transaction-merchant">{t.Merchant || 'Unknown Merchant'}</div>
+          <div className="transaction-category">
+            {t.Category || 'Other'} • {formatDate(t.Date)}
+            {t.Notes && <span style={{ marginLeft: '8px', opacity: 0.7 }}>- {t.Notes}</span>}
+          </div>
+        </div>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div className="transaction-actions">
+          {t.ReceiptUrl && (
+            <button className="action-btn" onClick={() => setViewingReceipt(t.ReceiptUrl)} title="View Receipt">
+              <Receipt size={18} />
+            </button>
+          )}
+          <button className="action-btn" onClick={() => openEditModal(t, t.originalIndex)} title="Edit Transaction">
+            <Pencil size={18} />
+          </button>
+          <button className="action-btn" onClick={() => handleDelete(t.originalIndex)} title="Delete Transaction" style={{ color: 'var(--accent-primary)' }}>
+            <Trash2 size={18} />
+          </button>
+        </div>
+        <div style={{ textAlign: 'right' }}>
+          <div className="transaction-amount">
+            ${(t.Amount || 0).toFixed(2)}
+          </div>
+          {rewards && (
+            <div style={{ fontSize: '12px', color: 'var(--success)', fontWeight: 600 }}>
+              +{rewards.points} {rewards.currency}
+              {rewards.note && (
+                <div style={{ fontSize: '10px', opacity: 0.8, fontWeight: 400, marginTop: '2px' }}>
+                  {rewards.note}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+});
+
 const Dashboard = () => {
   const [transactions, setTransactions] = useState([]);
   const [appConfig, setAppConfig] = useState(null);
@@ -43,14 +99,36 @@ const Dashboard = () => {
   const [viewingReceipt, setViewingReceipt] = useState(null);
 
   useEffect(() => {
-    const loadData = async () => {
-      const [transData, configData] = await Promise.all([
-        fetchTransactions(),
-        fetchConfig()
-      ]);
-      setTransactions(transData);
-      setAppConfig(configData);
+    // Try to load from cache first for instant UI
+    const cachedTrans = localStorage.getItem('cache_transactions');
+    const cachedConfig = localStorage.getItem('cache_config');
+    
+    if (cachedTrans) setTransactions(JSON.parse(cachedTrans));
+    if (cachedConfig) {
+      setAppConfig(JSON.parse(cachedConfig));
       setLoading(false);
+    }
+
+    const loadData = async () => {
+      try {
+        const [transData, configData] = await Promise.all([
+          fetchTransactions(),
+          fetchConfig()
+        ]);
+        
+        if (transData) {
+          setTransactions(transData);
+          localStorage.setItem('cache_transactions', JSON.stringify(transData));
+        }
+        if (configData) {
+          setAppConfig(configData);
+          localStorage.setItem('cache_config', JSON.stringify(configData));
+        }
+      } catch (err) {
+        console.error('Failed to sync data', err);
+      } finally {
+        setLoading(false);
+      }
     };
     loadData();
   }, []);
@@ -150,102 +228,122 @@ const Dashboard = () => {
     return <div style={{ display: 'flex', justifyContent: 'center', padding: '100px' }}>Loading...</div>;
   }
 
-  const uniqueCards = ['All', ...new Set(transactions.map(t => t.Card).filter(Boolean))];
+  const transactionsWithIndex = useMemo(() => 
+    transactions.map((t, index) => ({ ...t, originalIndex: index })),
+  [transactions]);
   
-  const transactionsWithIndex = transactions.map((t, index) => ({ ...t, originalIndex: index }));
-  
-  const filteredTransactions = transactionsWithIndex.filter(t => {
-    const matchCard = selectedCard === 'All' || t.Card === selectedCard;
-    
-    let matchDate = true;
-    if (startDate && t.Date) matchDate = matchDate && t.Date >= startDate;
-    if (endDate && t.Date) matchDate = matchDate && t.Date <= endDate;
-    
-    const matchCategory = selectedCategory === 'All' || t.Category === selectedCategory;
-    const query = searchQuery.toLowerCase();
-    const matchSearch = query === '' || 
-      (t.Merchant && t.Merchant.toLowerCase().includes(query)) ||
-      (t.Category && t.Category.toLowerCase().includes(query)) ||
-      (t.Notes && t.Notes.toLowerCase().includes(query));
-    
-    return matchCard && matchDate && matchCategory && matchSearch;
-  });
+  const filteredTransactions = useMemo(() => {
+    return transactionsWithIndex.filter(t => {
+      const matchCard = selectedCard === 'All' || t.Card === selectedCard;
+      
+      let matchDate = true;
+      if (startDate && t.Date) matchDate = matchDate && t.Date >= startDate;
+      if (endDate && t.Date) matchDate = matchDate && t.Date <= endDate;
+      
+      const matchCategory = selectedCategory === 'All' || t.Category === selectedCategory;
+      const query = searchQuery.toLowerCase();
+      const matchSearch = query === '' || 
+        (t.Merchant && t.Merchant.toLowerCase().includes(query)) ||
+        (t.Category && t.Category.toLowerCase().includes(query)) ||
+        (t.Notes && t.Notes.toLowerCase().includes(query));
+      
+      return matchCard && matchDate && matchCategory && matchSearch;
+    });
+  }, [transactionsWithIndex, selectedCard, startDate, endDate, selectedCategory, searchQuery]);
 
   // Calculate category budgets
-  const categoryBudgets = appConfig.CATEGORIES.map(cat => {
-    const spent = transactions
-      .filter(t => {
-        let matchDate = true;
-        if (startDate && t.Date) matchDate = matchDate && t.Date >= startDate;
-        if (endDate && t.Date) matchDate = matchDate && t.Date <= endDate;
-        return t.Category === cat.value && matchDate;
-      })
-      .reduce((sum, t) => sum + (t.Amount || 0), 0);
-    const limit = appConfig.BUDGET_CONFIG[cat.value] || 0;
-    const percentage = limit > 0 ? Math.min((spent / limit) * 100, 100) : 0;
-    return { ...cat, spent, limit, percentage };
-  });
+  const categoryBudgets = useMemo(() => {
+    if (!appConfig) return [];
+    return appConfig.CATEGORIES.map(cat => {
+      const spent = transactions
+        .filter(t => {
+          let matchDate = true;
+          if (startDate && t.Date) matchDate = matchDate && t.Date >= startDate;
+          if (endDate && t.Date) matchDate = matchDate && t.Date <= endDate;
+          return t.Category === cat.value && matchDate;
+        })
+        .reduce((sum, t) => sum + (t.Amount || 0), 0);
+      const limit = appConfig.BUDGET_CONFIG[cat.value] || 0;
+      const percentage = limit > 0 ? Math.min((spent / limit) * 100, 100) : 0;
+      return { ...cat, spent, limit, percentage };
+    });
+  }, [transactions, appConfig, startDate, endDate]);
 
   // Smart Insights Logic
-  const topMerchant = Object.entries(
-    filteredTransactions.reduce((acc, t) => {
-      if (!t.Merchant) return acc;
-      acc[t.Merchant] = (acc[t.Merchant] || 0) + (t.Amount || 0);
-      return acc;
-    }, {})
-  ).sort((a, b) => b[1] - a[1])[0];
+  const insights = useMemo(() => {
+    const topMerchant = Object.entries(
+      filteredTransactions.reduce((acc, t) => {
+        if (!t.Merchant) return acc;
+        acc[t.Merchant] = (acc[t.Merchant] || 0) + (t.Amount || 0);
+        return acc;
+      }, {})
+    ).sort((a, b) => b[1] - a[1])[0];
 
-  const totalRewards = filteredTransactions.reduce((acc, t) => {
-    const r = calculateRewards(t.Card, t.Category, t.Amount, t.Merchant, appConfig.CARDS, appConfig.MERCHANT_REWARDS_OVERRIDES);
-    if (!r || typeof r.points !== 'number') return acc;
-    const currency = r.currency || 'Points';
-    acc[currency] = (acc[currency] || 0) + r.points;
-    return acc;
-  }, {});
-
-  // Calculate summary stats
-  const totalSpent = filteredTransactions.reduce((sum, t) => sum + (t.Amount || 0), 0);
-  
-  // Group by category for Pie Chart
-  const categoryMap = {};
-  filteredTransactions.forEach(t => {
-    const cat = t.Category || 'Other';
-    categoryMap[cat] = (categoryMap[cat] || 0) + (t.Amount || 0);
-  });
-  const pieData = Object.keys(categoryMap).map(key => ({ name: key, value: categoryMap[key] })).sort((a,b) => b.value - a.value);
-
-  // Group by date for Bar Chart
-  const dateMap = {};
-  filteredTransactions.forEach(t => {
-    if(!t.Date) return;
-    const dateStr = new Date(t.Date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    dateMap[dateStr] = (dateMap[dateStr] || 0) + (t.Amount || 0);
-  });
-  const barData = Object.keys(dateMap)
-    .sort((a,b) => new Date(a) - new Date(b))
-    .slice(-MAX_BAR_CHART_DAYS)
-    .map(key => ({ name: key, amount: dateMap[key] }));
-
-  // Subscription Logic
-  const subscriptions = transactions
-    .filter(t => t.Category === 'Subscriptions')
-    .reduce((acc, t) => {
-      // Keep only the latest unique subscription based on Merchant
-      if (!acc[t.Merchant] || new Date(t.Date) > new Date(acc[t.Merchant].Date)) {
-        acc[t.Merchant] = t;
-      }
+    const totalRewards = filteredTransactions.reduce((acc, t) => {
+      const r = calculateRewards(t.Card, t.Category, t.Amount, t.Merchant, appConfig?.CARDS, appConfig?.MERCHANT_REWARDS_OVERRIDES);
+      if (!r || typeof r.points !== 'number') return acc;
+      const currency = r.currency || 'Points';
+      acc[currency] = (acc[currency] || 0) + r.points;
       return acc;
     }, {});
-  
-  const subList = Object.values(subscriptions).sort((a,b) => (a.Amount || 0) - (b.Amount || 0));
-  const monthlyBurnRate = subList.reduce((sum, s) => sum + (s.Amount || 0), 0);
+
+    const totalSpent = filteredTransactions.reduce((sum, t) => sum + (t.Amount || 0), 0);
+
+    return { topMerchant, totalRewards, totalSpent };
+  }, [filteredTransactions, appConfig]);
+
+  // Group by category for Pie Chart
+  const pieData = useMemo(() => {
+    const categoryMap = {};
+    filteredTransactions.forEach(t => {
+      const cat = t.Category || 'Other';
+      categoryMap[cat] = (categoryMap[cat] || 0) + (t.Amount || 0);
+    });
+    return Object.keys(categoryMap)
+      .map(key => ({ name: key, value: categoryMap[key] }))
+      .sort((a,b) => b.value - a.value);
+  }, [filteredTransactions]);
+
+  // Group by date for Bar Chart
+  const barData = useMemo(() => {
+    const dateMap = {};
+    filteredTransactions.forEach(t => {
+      if(!t.Date) return;
+      const dateStr = new Date(t.Date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      dateMap[dateStr] = (dateMap[dateStr] || 0) + (t.Amount || 0);
+    });
+    return Object.keys(dateMap)
+      .sort((a,b) => new Date(a) - new Date(b))
+      .slice(-MAX_BAR_CHART_DAYS)
+      .map(key => ({ name: key, amount: dateMap[key] }));
+  }, [filteredTransactions]);
+
+  // Subscription Logic
+  const subscriptionData = useMemo(() => {
+    const subs = transactions
+      .filter(t => t.Category === 'Subscriptions')
+      .reduce((acc, t) => {
+        if (!acc[t.Merchant] || new Date(t.Date) > new Date(acc[t.Merchant].Date)) {
+          acc[t.Merchant] = t;
+        }
+        return acc;
+      }, {});
+    
+    const subList = Object.values(subs).sort((a,b) => (a.Amount || 0) - (b.Amount || 0));
+    const monthlyBurnRate = subList.reduce((sum, s) => sum + (s.Amount || 0), 0);
+    return { subList, monthlyBurnRate };
+  }, [transactions]);
+
+  // Destructure for ease of use
+  const { topMerchant, totalRewards, totalSpent } = insights;
+  const { subList, monthlyBurnRate } = subscriptionData;
 
   // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
-      transition: { staggerChildren: 0.1 }
+      transition: { staggerChildren: 0.05 }
     }
   };
 
@@ -463,61 +561,21 @@ const Dashboard = () => {
         </div>
         
         <div className="transaction-list">
-          {filteredTransactions.slice(0, MAX_VISIBLE_TRANSACTIONS).map((t, i) => {
-            const rewards = calculateRewards(t.Card, t.Category, t.Amount, t.Merchant, appConfig.CARDS, appConfig.MERCHANT_REWARDS_OVERRIDES);
-            return (
-            <motion.div 
-              key={i} 
-              className="transaction-item"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.05 }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <div className="transaction-icon">
-                  {getCategoryIcon(t.Category)}
-                </div>
-                <div className="transaction-details">
-                  <div className="transaction-merchant">{t.Merchant || 'Unknown Merchant'}</div>
-                  <div className="transaction-category">
-                    {t.Category || 'Other'} • {formatDate(t.Date)}
-                    {t.Notes && <span style={{ marginLeft: '8px', opacity: 0.7 }}>- {t.Notes}</span>}
-                  </div>
-                </div>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <div className="transaction-actions">
-                  {t.ReceiptUrl && (
-                    <button className="action-btn" onClick={() => setViewingReceipt(t.ReceiptUrl)} title="View Receipt">
-                      <Receipt size={18} />
-                    </button>
-                  )}
-                  <button className="action-btn" onClick={() => openEditModal(t, t.originalIndex)} title="Edit Transaction">
-                    <Pencil size={18} />
-                  </button>
-                  <button className="action-btn" onClick={() => handleDelete(t.originalIndex)} title="Delete Transaction" style={{ color: 'var(--accent-primary)' }}>
-                    <Trash2 size={18} />
-                  </button>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div className="transaction-amount">
-                    ${(t.Amount || 0).toFixed(2)}
-                  </div>
-                  {rewards && (
-                    <div style={{ fontSize: '12px', color: 'var(--success)', fontWeight: 600 }}>
-                      +{rewards.points} {rewards.currency}
-                      {rewards.note && (
-                        <div style={{ fontSize: '10px', opacity: 0.8, fontWeight: 400, marginTop: '2px' }}>
-                          {rewards.note}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-            );
-          })}
+          {filteredTransactions.slice(0, MAX_VISIBLE_TRANSACTIONS).map((t, i) => (
+            <TransactionItem 
+              key={`${t.Date}-${t.Merchant}-${i}`}
+              t={t}
+              i={i}
+              getCategoryIcon={getCategoryIcon}
+              formatDate={formatDate}
+              calculateRewards={calculateRewards}
+              viewingReceipt={viewingReceipt}
+              setViewingReceipt={setViewingReceipt}
+              openEditModal={openEditModal}
+              handleDelete={handleDelete}
+              appConfig={appConfig}
+            />
+          ))}
         </div>
       </motion.div>
 

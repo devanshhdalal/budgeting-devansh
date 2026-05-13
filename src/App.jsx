@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Wallet, PlusCircle, LayoutDashboard, Moon, Sun } from 'lucide-react';
-import Dashboard from './pages/Dashboard';
-import AddTransaction from './pages/AddTransaction';
-import Settings from './pages/Settings';
+const Dashboard = React.lazy(() => import('./pages/Dashboard'));
+const AddTransaction = React.lazy(() => import('./pages/AddTransaction'));
+const Settings = React.lazy(() => import('./pages/Settings'));
 import './index.css';
 
 function NavLinks() {
@@ -72,11 +72,13 @@ function App() {
         </header>
 
         <main style={{ flex: 1 }}>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/add" element={<AddTransaction />} />
-            <Route path="/settings" element={<Settings />} />
-          </Routes>
+          <React.Suspense fallback={<div className="glass-panel" style={{ margin: '40px', padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading premium experience...</div>}>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/add" element={<AddTransaction />} />
+              <Route path="/settings" element={<Settings />} />
+            </Routes>
+          </React.Suspense>
         </main>
       </div>
     </Router>
