@@ -462,6 +462,112 @@ button {
   box-shadow: 0 0 0 4px var(--accent-light);
 }
 
+/* --- Premium Date Picker --- */
+.date-range-pill {
+  display: flex;
+  align-items: center;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  padding: 4px 8px;
+  height: 44px;
+  gap: 4px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.date-range-pill:focus-within {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+  background: var(--bg-color);
+}
+
+.date-range-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+}
+
+.date-icon {
+  color: var(--accent-primary);
+  opacity: 0.8;
+}
+
+.date-picker-clean {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+  padding: 4px 0;
+  width: 110px;
+}
+
+/* Customizing the native date picker appearance */
+.date-picker-clean::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  cursor: pointer;
+}
+
+.date-separator {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.4;
+  padding: 0 4px;
+}
+
+.quick-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.chip {
+  padding: 10px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+  background: var(--surface-color);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.chip:hover {
+  background: var(--bg-color);
+  border-color: var(--text-secondary);
+}
+
+.chip.active {
+  background: var(--accent-light);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+/* Fix for mobile responsiveness of the pill */
+@media (max-width: 600px) {
+  .date-range-pill {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .date-picker-clean {
+    width: 100px;
+  }
+}
+
 .date-input-minimal {
   background: transparent;
   border: none;

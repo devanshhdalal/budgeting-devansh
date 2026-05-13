@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, Coffee, Car, HeartPulse, Home, MoreHorizontal, Pencil, X, Save, Trash2, Search, Receipt, Upload, Image as ImageIcon, Plane } from 'lucide-react';
+import { ShoppingBag, Coffee, Car, HeartPulse, Home, MoreHorizontal, Pencil, X, Save, Trash2, Search, Receipt, Upload, Image as ImageIcon, Plane, Calendar } from 'lucide-react';
 import { fetchTransactions, saveTransaction, deleteTransaction, uploadReceipt, fetchConfig } from '../services/storage';
 import { SpendingPieChart, SpendingBarChart } from '../components/Charts';
 import { calculateRewards } from '../config/rewards';
@@ -275,24 +275,36 @@ const Dashboard = () => {
           />
         </div>
 
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--surface-color)', padding: '4px 12px', borderRadius: '24px', border: '1px solid var(--border-color)' }}>
-            <input 
-              type="date" 
-              className="date-input-minimal"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-            />
-            <span style={{ opacity: 0.5 }}>→</span>
-            <input 
-              type="date" 
-              className="date-input-minimal"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-            />
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <div className="date-range-pill">
+            <div className="date-range-input-wrapper">
+              <Calendar size={14} className="date-icon" />
+              <input 
+                type="date" 
+                className="date-picker-clean"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
+            </div>
+            <div className="date-separator">to</div>
+            <div className="date-range-input-wrapper">
+              <input 
+                type="date" 
+                className="date-picker-clean"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+              />
+            </div>
           </div>
-          <button onClick={setThisMonth} className="btn-secondary-sm">This Month</button>
-          <button onClick={clearDateRange} className="btn-secondary-sm">All Time</button>
+          
+          <div className="quick-actions">
+            <button onClick={setThisMonth} className={`chip ${startDate && endDate ? 'active' : ''}`}>
+              This Month
+            </button>
+            <button onClick={clearDateRange} className="chip">
+              All Time
+            </button>
+          </div>
         </div>
 
         <select 
