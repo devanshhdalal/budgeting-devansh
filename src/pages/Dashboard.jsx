@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, Coffee, Car, HeartPulse, Home, MoreHorizontal, Pencil, X, Save, Trash2, Search, Receipt, Upload, Image as ImageIcon, Plane, Calendar } from 'lucide-react';
 import { fetchTransactions, saveTransaction, deleteTransaction, uploadReceipt, fetchConfig } from '../services/storage';
@@ -133,28 +133,28 @@ const Dashboard = () => {
     loadData();
   }, []);
 
-  const getCategoryIcon = (category) => {
+  const getCategoryIcon = useCallback((category) => {
     if (!appConfig) return <MoreHorizontal size={24} />;
     const cat = appConfig.CATEGORIES.find(c => c.value.toLowerCase() === category?.toLowerCase());
     const iconName = cat?.icon || 'MoreHorizontal';
     const IconComponent = ICON_MAP[iconName] || MoreHorizontal;
     return <IconComponent size={24} />;
-  };
+  }, [appConfig]);
 
-  const setThisMonth = () => {
+  const setThisMonth = useCallback(() => {
     const now = new Date();
     const start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
     const end = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
     setStartDate(start);
     setEndDate(end);
-  };
+  }, []);
 
-  const clearDateRange = () => {
+  const clearDateRange = useCallback(() => {
     setStartDate('');
     setEndDate('');
-  };
+  }, []);
 
-  const openEditModal = (t, index) => {
+  const openEditModal = useCallback((t, index) => {
     setEditingTransaction(index);
     setEditFormData({
       Merchant: t.Merchant || '',
@@ -166,24 +166,24 @@ const Dashboard = () => {
       ReceiptUrl: t.ReceiptUrl || ''
     });
     setReceiptFile(null);
-  };
+  }, []);
 
-  const closeEditModal = () => {
+  const closeEditModal = useCallback(() => {
     setEditingTransaction(null);
     setEditFormData(null);
     setReceiptFile(null);
-  };
+  }, []);
 
-  const handleEditChange = (e) => {
+  const handleEditChange = useCallback((e) => {
     const { name, value } = e.target;
     setEditFormData(prev => ({ ...prev, [name]: value }));
-  };
+  }, []);
 
-  const handleFileChange = (e) => {
+  const handleFileChange = useCallback((e) => {
     if (e.target.files && e.target.files[0]) {
       setReceiptFile(e.target.files[0]);
     }
-  };
+  }, []);
 
   const handleEditSave = async (e) => {
     e.preventDefault();
@@ -215,14 +215,14 @@ const Dashboard = () => {
     closeEditModal();
   };
 
-  const handleDelete = async (index) => {
+  const handleDelete = useCallback(async (index) => {
     if (window.confirm('Are you sure you want to delete this transaction?')) {
       const newTransactions = [...transactions];
       newTransactions.splice(index, 1);
       setTransactions(newTransactions);
       await deleteTransaction(index);
     }
-  };
+  }, [transactions]);
 
   const transactionsWithIndex = useMemo(() => 
     transactions.map((t, index) => ({ ...t, originalIndex: index })),
