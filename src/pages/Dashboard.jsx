@@ -276,21 +276,27 @@ const Dashboard = () => {
           <div className="date-range-pill">
             <div className="date-range-input-wrapper">
               <Calendar size={14} className="date-icon" />
-              <input 
-                type="date" 
-                className="date-picker-clean"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-              />
+              <div className="date-display-container">
+                <span className="date-display-text">{formatDate(startDate) || 'Start Date'}</span>
+                <input 
+                  type="date" 
+                  className="date-picker-hidden"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+              </div>
             </div>
             <div className="date-separator">to</div>
             <div className="date-range-input-wrapper">
-              <input 
-                type="date" 
-                className="date-picker-clean"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-              />
+              <div className="date-display-container">
+                <span className="date-display-text">{formatDate(endDate) || 'End Date'}</span>
+                <input 
+                  type="date" 
+                  className="date-picker-hidden"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
+              </div>
             </div>
           </div>
           
@@ -557,14 +563,17 @@ const Dashboard = () => {
                   </div>
                   <div className="form-group">
                     <label className="form-label">Date</label>
-                    <input 
-                      type="date" 
-                      name="Date"
-                      className="form-input" 
-                      value={editFormData.Date}
-                      onChange={handleEditChange}
-                      required 
-                    />
+                    <div className="date-display-container form-input" style={{ position: 'relative' }}>
+                      <span className="date-display-text">{formatDate(editFormData.Date) || 'Select Date'}</span>
+                      <input 
+                        type="date" 
+                        name="Date"
+                        className="date-picker-hidden" 
+                        value={editFormData.Date}
+                        onChange={handleEditChange}
+                        required 
+                      />
+                    </div>
                   </div>
                 </div>
 

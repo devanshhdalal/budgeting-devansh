@@ -494,27 +494,40 @@ button {
   opacity: 0.8;
 }
 
-.date-picker-clean {
-  background: transparent;
-  border: none;
-  color: var(--text-primary);
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 500;
-  outline: none;
-  cursor: pointer;
-  padding: 4px 0;
-  width: 110px;
+.date-display-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 100px;
 }
 
-/* Customizing the native date picker appearance */
-.date-picker-clean::-webkit-calendar-picker-indicator {
-  opacity: 0;
+.date-display-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  pointer-events: none; /* Let clicks pass through to input */
+}
+
+.date-picker-hidden {
   position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  left: 0;
+  opacity: 0; /* Hidden but clickable */
+  cursor: pointer;
+  border: none;
+  background: transparent;
+}
+
+/* Fallback for browsers that don't support absolute input over text well */
+.date-picker-hidden::-webkit-calendar-picker-indicator {
+  position: absolute;
   top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   cursor: pointer;
 }
 

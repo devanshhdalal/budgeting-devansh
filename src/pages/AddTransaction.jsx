@@ -3,6 +3,13 @@ import { motion } from 'framer-motion';
 import { CheckCircle, ArrowRight, Upload, Image as ImageIcon } from 'lucide-react';
 import { saveTransaction, uploadReceipt, fetchConfig } from '../services/storage';
 
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  const dt = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+  return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+};
+
 const AddTransaction = () => {
   const [config, setConfig] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -137,14 +144,17 @@ const AddTransaction = () => {
               
               <div className="form-group">
                 <label className="form-label">Date</label>
-                <input 
-                  type="date" 
-                  name="Date"
-                  className="form-input" 
-                  value={formData.Date}
-                  onChange={handleChange}
-                  required 
-                />
+                <div className="date-display-container form-input" style={{ position: 'relative' }}>
+                  <span className="date-display-text">{formatDate(formData.Date) || 'Select Date'}</span>
+                  <input 
+                    type="date" 
+                    name="Date"
+                    className="date-picker-hidden" 
+                    value={formData.Date}
+                    onChange={handleChange}
+                    required 
+                  />
+                </div>
               </div>
             </div>
             
