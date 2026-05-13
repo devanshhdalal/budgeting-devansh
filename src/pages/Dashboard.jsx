@@ -334,6 +334,10 @@ const Dashboard = () => {
     return { subList, monthlyBurnRate };
   }, [transactions]);
 
+  const uniqueCards = useMemo(() => 
+    ['All', ...new Set(transactions.map(t => t.Card).filter(Boolean))],
+  [transactions]);
+
   // Destructure for ease of use
   const { topMerchant, totalRewards, totalSpent } = insights;
   const { subList, monthlyBurnRate } = subscriptionData;
