@@ -25,7 +25,7 @@ const itemVariants = {
 };
 
 const Dashboard = () => {
-  const { transactions, setTransactions, appConfig, loading, syncError } = useAppData();
+  const { transactions, setTransactions, appConfig, loading, syncError, user } = useAppData();
   const filters = useTransactionFilters(transactions);
 
   const startDateRef = useRef(null);
@@ -163,6 +163,9 @@ const Dashboard = () => {
 
   return (
     <motion.div className="dashboard-grid" variants={containerVariants} initial="hidden" animate="show">
+      <motion.div className="col-span-full" variants={itemVariants} style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
+        Viewing <strong style={{ color: 'var(--text-primary)' }}>{user.name}</strong>&apos;s budget
+      </motion.div>
       {syncError && (
         <motion.div className="col-span-full" variants={itemVariants} style={{ padding: '12px 16px', borderRadius: '12px', background: 'var(--accent-light)', color: 'var(--accent-primary)', fontSize: '14px', fontWeight: 600 }}>
           Could not reach the server — showing cached data. Run <code style={{ fontWeight: 700 }}>npm run dev</code> or <code style={{ fontWeight: 700 }}>npm start</code> so transactions save to disk.

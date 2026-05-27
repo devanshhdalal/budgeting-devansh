@@ -1,14 +1,11 @@
 import fs from 'fs';
-import path from 'path';
 import { randomUUID } from 'crypto';
-import { dataDir, useGitHub } from '../config.js';
+import { useGitHub } from '../config.js';
 import { normalizeDate } from '../utils/date.js';
 import { readJsonFile, writeJsonFile } from './fileStore.js';
+import { userPaths } from './paths.js';
 
-const dbFile = path.join(dataDir, 'transactions.json');
-const GITHUB_PATH = 'data/transactions.json';
-
-let cache = null;
+const caches = new Map();
 
 const ensureIds = (txs) => {
   let changed = false;
@@ -31,10 +28,9 @@ const normalizeDates = (txs) => {
   return { txs: normalized, changed };
 };
 
-const sortByDateDesc = (txs) =>
-  [...txs].sort((a, b) => new Date(b.Date) - new Date(a.Date));
+const sortByDateDesc = (txs) => [...txs].sort((a, b) => new Date(b.Date) - new Date(a.Date));
 
-const prepareTransactions = async (raw) => {
+const prepareTransactions = async (userId, raw, paths) => {
   if (!Array.isArray(raw)) return [];
 
   const { txs: withIds, changed: idsChanged } = ensureIds(raw);
@@ -42,63 +38,76 @@ const prepareTransactions = async (raw) => {
   const sorted = sortByDateDesc(dated);
 
   if (idsChanged || datesChanged) {
-    await writeJsonFile(dbFile, GITHUB_PATH, sorted, 'Normalize transaction records');
+    await writeJsonFile(
+      paths.transactionsFile,
+      paths.githubTransactions,
+      sorted,
+      `Normalize transactions (${userId})`
+    );
   }
 
   return sorted;
 };
 
-const loadFromSource = async () => {
-  if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
-  if (!fs.existsSync(dbFile)) fs.writeFileSync(dbFile, JSON.stringify([]));
+const loadFromSource = async (userId) => {
+  const paths = userPaths(userId);
+  fs.mkdirSync(paths.userDir, { recursive: true });
+  if (!fs.existsSync(paths.transactionsFile)) {
+    fs.writeFileSync(paths.transactionsFile, JSON.stringify([]));
+  }
 
-  const data = await readJsonFile(dbFile, GITHUB_PATH);
+  const data = await readJsonFile(paths.transactionsFile, paths.githubTransactions);
   const list = Array.isArray(data) ? data : [];
-  console.log(`Loaded ${list.length} transactions.`);
-  return prepareTransactions(list);
+  console.log(`[${userId}] Loaded ${list.length} transactions.`);
+  return prepareTransactions(userId, list, paths);
 };
 
-export const getTransactions = async () => {
-  if (useGitHub && cache) return cache;
-  cache = await loadFromSource();
-  return cache;
+export const getTransactions = async (userId) => {
+  if (useGitHub && caches.has(userId)) return caches.get(userId);
+  const txs = await loadFromSource(userId);
+  caches.set(userId, txs);
+  return txs;
 };
 
-export const saveTransactions = async (txs, message = 'Update transactions') => {
+export const saveTransactions = async (userId, txs, message = 'Update transactions') => {
+  const paths = userPaths(userId);
   const { txs: dated } = normalizeDates(txs);
-  cache = sortByDateDesc(dated);
-  await writeJsonFile(dbFile, GITHUB_PATH, cache, message);
-  return cache;
+  const sorted = sortByDateDesc(dated);
+  caches.set(userId, sorted);
+  await writeJsonFile(paths.transactionsFile, paths.githubTransactions, sorted, message);
+  return sorted;
 };
 
-export const upsertTransaction = async (payload) => {
-  const txs = await getTransactions();
+export const upsertTransaction = async (userId, payload) => {
+  const txs = await getTransactions(userId);
   const normalized = { ...payload };
 
   const isoDate = normalizeDate(normalized.Date);
   if (!isoDate) throw new Error('Invalid date');
   normalized.Date = isoDate;
+  delete normalized.User;
+  delete normalized.user;
 
   if (normalized.id) {
     const idx = txs.findIndex((tx) => tx.id === normalized.id);
     if (idx === -1) throw new Error('Transaction not found');
     txs[idx] = { ...txs[idx], ...normalized };
-    await saveTransactions(txs, 'Update transaction');
+    await saveTransactions(userId, txs, 'Update transaction');
     return txs[idx];
   }
 
   const created = { ...normalized, id: randomUUID() };
   txs.unshift(created);
-  await saveTransactions(txs, 'Add transaction');
+  await saveTransactions(userId, txs, 'Add transaction');
   return created;
 };
 
-export const deleteTransactionById = async (id) => {
-  const txs = await getTransactions();
+export const deleteTransactionById = async (userId, id) => {
+  const txs = await getTransactions(userId);
   const idx = txs.findIndex((tx) => tx.id === id);
   if (idx === -1) throw new Error('Transaction not found');
   txs.splice(idx, 1);
-  await saveTransactions(txs, 'Delete transaction');
+  await saveTransactions(userId, txs, 'Delete transaction');
 };
 
-export const getDataFilePath = () => dbFile;
+export const getDataFilePath = (userId) => userPaths(userId).transactionsFile;

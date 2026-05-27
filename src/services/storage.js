@@ -1,18 +1,24 @@
+import { getActiveUserId } from './session.js';
+
 const API_KEY = import.meta.env.VITE_API_KEY || '';
 
-const request = async (path, options = {}) => {
-  const headers = { 'x-api-key': API_KEY, ...options.headers };
+const request = async (url, options = {}) => {
+  const headers = {
+    'x-api-key': API_KEY,
+    'x-budget-user': getActiveUserId(),
+    ...options.headers,
+  };
   if (options.body && !(options.body instanceof FormData)) {
     headers['Content-Type'] = 'application/json';
   }
 
   try {
-    const response = await fetch(path, { ...options, headers });
+    const response = await fetch(url, { ...options, headers });
     if (!response.ok) return { ok: false, data: null };
     const data = await response.json();
     return { ok: true, data };
   } catch (error) {
-    console.error(`API request failed: ${path}`, error);
+    console.error(`API request failed: ${url}`, error);
     return { ok: false, data: null };
   }
 };

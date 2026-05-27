@@ -2,11 +2,19 @@ import { lazy, Suspense, useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Wallet, Moon, Sun } from 'lucide-react';
+import { UserProvider } from './context/UserProvider';
+import { useUser } from './hooks/useUser';
+import UserSwitcher from './components/UserSwitcher';
 import './index.css';
 
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const AddTransaction = lazy(() => import('./pages/AddTransaction'));
 const Settings = lazy(() => import('./pages/Settings'));
+
+const Scoped = ({ Page }) => {
+  const { userId } = useUser();
+  return <Page key={userId} />;
+};
 
 function NavLinks() {
   const location = useLocation();
@@ -35,6 +43,7 @@ function App() {
   }, [theme]);
 
   return (
+    <UserProvider>
     <Router>
       <div className="app-container">
         <header className="app-header">
@@ -42,7 +51,8 @@ function App() {
             <Wallet color="var(--accent-primary)" size={32} />
             <span>Budget<span className="text-gradient">Pro</span></span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
+            <UserSwitcher />
             <NavLinks />
             <button
               onClick={() => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))}
@@ -77,14 +87,15 @@ function App() {
             }
           >
             <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/add" element={<AddTransaction />} />
-              <Route path="/settings" element={<Settings />} />
+              <Route path="/" element={<Scoped Page={Dashboard} />} />
+              <Route path="/add" element={<Scoped Page={AddTransaction} />} />
+              <Route path="/settings" element={<Scoped Page={Settings} />} />
             </Routes>
           </Suspense>
         </main>
       </div>
     </Router>
+    </UserProvider>
   );
 }
 

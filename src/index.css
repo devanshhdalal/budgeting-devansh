@@ -202,6 +202,36 @@ button, input, select, textarea {
   gap: 12px;
 }
 
+.user-switcher {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 24px;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+}
+
+.user-switcher-btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 20px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.user-switcher-btn.active {
+  background: var(--accent-light);
+  color: var(--accent-primary);
+}
+
+.user-switcher-btn:hover:not(.active) {
+  color: var(--text-primary);
+}
+
 .nav-menu {
   display: flex;
   gap: 24px;

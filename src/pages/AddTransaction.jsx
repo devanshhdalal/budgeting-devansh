@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle, ArrowRight, Upload, Image as ImageIcon } from 'lucide-react';
 import { saveTransaction, uploadReceipt } from '../services/storage';
@@ -19,12 +19,6 @@ const AddTransaction = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [receiptFile, setReceiptFile] = useState(null);
-
-  useEffect(() => {
-    if (config?.CATEGORIES?.[0]) {
-      setFormData((prev) => ({ ...prev, Category: config.CATEGORIES[0].value }));
-    }
-  }, [config]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -140,7 +134,7 @@ const AddTransaction = () => {
                 <select 
                   name="Category"
                   className="form-input" 
-                  value={formData.Category}
+                  value={formData.Category || config.CATEGORIES[0]?.value || 'Other'}
                   onChange={handleChange}
                   required
                 >

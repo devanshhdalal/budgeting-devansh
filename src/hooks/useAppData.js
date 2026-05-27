@@ -1,35 +1,34 @@
 import { useEffect, useState, useCallback } from 'react';
 import { fetchTransactions, fetchConfig } from '../services/storage';
-import { CACHE_KEYS } from '../constants';
+import { cacheKeys } from '../constants';
 import { readCache, writeCache } from '../utils/localCache';
-
-const syncFromServer = async () => {
-  const [transData, configData] = await Promise.all([fetchTransactions(), fetchConfig()]);
-  return { transData, configData };
-};
+import { useUser } from './useUser';
 
 export const useAppData = () => {
-  const [transactions, setTransactions] = useState(() => readCache(CACHE_KEYS.transactions) ?? []);
-  const [appConfig, setAppConfig] = useState(() => readCache(CACHE_KEYS.config));
-  const [loading, setLoading] = useState(!readCache(CACHE_KEYS.config));
+  const { userId, user } = useUser();
+  const keys = cacheKeys(userId);
+
+  const [transactions, setTransactions] = useState(() => readCache(keys.transactions) ?? []);
+  const [appConfig, setAppConfig] = useState(() => readCache(keys.config));
+  const [loading, setLoading] = useState(true);
   const [syncError, setSyncError] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
-    syncFromServer()
-      .then(({ transData, configData }) => {
+    Promise.all([fetchTransactions(), fetchConfig()])
+      .then(([transData, configData]) => {
         if (cancelled) return;
         if (transData === null) {
           setSyncError(true);
           return;
         }
         setTransactions(transData);
-        writeCache(CACHE_KEYS.transactions, transData);
+        writeCache(keys.transactions, transData);
         setSyncError(false);
         if (configData) {
           setAppConfig(configData);
-          writeCache(CACHE_KEYS.config, configData);
+          writeCache(keys.config, configData);
         }
       })
       .catch((err) => {
@@ -43,15 +42,18 @@ export const useAppData = () => {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [userId, keys.transactions, keys.config]);
 
-  const setTransactionsAndCache = useCallback((updater) => {
-    setTransactions((prev) => {
-      const next = typeof updater === 'function' ? updater(prev) : updater;
-      writeCache(CACHE_KEYS.transactions, next);
-      return next;
-    });
-  }, []);
+  const setTransactionsAndCache = useCallback(
+    (updater) => {
+      setTransactions((prev) => {
+        const next = typeof updater === 'function' ? updater(prev) : updater;
+        writeCache(keys.transactions, next);
+        return next;
+      });
+    },
+    [keys.transactions]
+  );
 
   return {
     transactions,
@@ -59,5 +61,6 @@ export const useAppData = () => {
     appConfig,
     loading,
     syncError,
+    user,
   };
 };

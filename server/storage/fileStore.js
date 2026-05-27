@@ -1,6 +1,7 @@
 import fs from 'fs';
+import path from 'path';
 import { fetchGitHubFile, putGitHubFile } from '../github.js';
-import { dataDir, useGitHub } from '../config.js';
+import { useGitHub } from '../config.js';
 
 const readLocalJson = (localPath) => {
   try {
@@ -43,7 +44,7 @@ export const writeJsonFile = async (localPath, githubPath, data, message) => {
   }
 
   try {
-    fs.mkdirSync(dataDir, { recursive: true });
+    fs.mkdirSync(path.dirname(localPath), { recursive: true });
     fs.writeFileSync(localPath, content);
     return true;
   } catch (e) {
