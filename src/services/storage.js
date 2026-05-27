@@ -1,100 +1,60 @@
-// This service will fetch and push data to GitHub.
-// For now, it will fetch from our local public/transactions.json
-
 const API_KEY = import.meta.env.VITE_API_KEY || '';
 
-export const fetchTransactions = async () => {
-  try {
-    const response = await fetch('/api/transactions', {
-      headers: { 'x-api-key': API_KEY }
-    });
-    if (!response.ok) return [];
-    return await response.json();
-  } catch (error) {
-    console.error('Failed to fetch transactions:', error);
-    return [];
+const request = async (path, options = {}) => {
+  const headers = { 'x-api-key': API_KEY, ...options.headers };
+  if (options.body && !(options.body instanceof FormData)) {
+    headers['Content-Type'] = 'application/json';
   }
+
+  try {
+    const response = await fetch(path, { ...options, headers });
+    if (!response.ok) return { ok: false, data: null };
+    const data = await response.json();
+    return { ok: true, data };
+  } catch (error) {
+    console.error(`API request failed: ${path}`, error);
+    return { ok: false, data: null };
+  }
+};
+
+export const fetchTransactions = async () => {
+  const { ok, data } = await request('/api/transactions');
+  if (!ok) return null;
+  return Array.isArray(data) ? data : [];
 };
 
 export const saveTransaction = async (transaction) => {
-  try {
-    const response = await fetch('/api/transactions', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'x-api-key': API_KEY
-      },
-      body: JSON.stringify(transaction)
-    });
-    return response.ok;
-  } catch (error) {
-    console.error('Failed to save transaction:', error);
-    return false;
-  }
+  const { ok } = await request('/api/transactions', {
+    method: 'POST',
+    body: JSON.stringify(transaction),
+  });
+  return ok;
 };
 
 export const deleteTransaction = async (id) => {
-  try {
-    const response = await fetch(`/api/transactions/${id}`, {
-      method: 'DELETE',
-      headers: { 'x-api-key': API_KEY }
-    });
-    return response.ok;
-  } catch (error) {
-    console.error('Failed to delete transaction:', error);
-    return false;
-  }
+  if (!id) return false;
+  const { ok } = await request(`/api/transactions/${id}`, { method: 'DELETE' });
+  return ok;
 };
 
 export const uploadReceipt = async (file, date) => {
-  try {
-    const formData = new FormData();
-    formData.append('receipt', file);
-    formData.append('date', date);
-    
-    const response = await fetch('/api/upload', {
-      method: 'POST',
-      headers: { 'x-api-key': API_KEY },
-      body: formData
-    });
-    
-    if (response.ok) {
-      const data = await response.json();
-      return data.receiptUrl;
-    }
-    return null;
-  } catch (error) {
-    console.error('Failed to upload receipt:', error);
-    return null;
-  }
+  const formData = new FormData();
+  formData.append('receipt', file);
+  formData.append('date', date);
+
+  const { ok, data } = await request('/api/upload', { method: 'POST', body: formData });
+  return ok ? data.receiptUrl : null;
 };
 
 export const fetchConfig = async () => {
-  try {
-    const response = await fetch('/api/config', {
-      headers: { 'x-api-key': API_KEY }
-    });
-    if (!response.ok) return null;
-    return await response.json();
-  } catch (error) {
-    console.error('Failed to fetch config:', error);
-    return null;
-  }
+  const { ok, data } = await request('/api/config');
+  return ok ? data : null;
 };
 
 export const saveConfig = async (config) => {
-  try {
-    const response = await fetch('/api/config', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'x-api-key': API_KEY
-      },
-      body: JSON.stringify(config)
-    });
-    return response.ok;
-  } catch (error) {
-    console.error('Failed to save config:', error);
-    return false;
-  }
+  const { ok } = await request('/api/config', {
+    method: 'POST',
+    body: JSON.stringify(config),
+  });
+  return ok;
 };

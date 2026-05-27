@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Sector } from 'recharts';
+import { formatCurrency } from '../utils/format';
 
 const COLORS = ['#ff6b6b', '#ffa07a', '#10b981', '#3b82f6', '#8b5cf6', '#f59e0b'];
 
@@ -7,33 +8,16 @@ const COLORS = ['#ff6b6b', '#ffa07a', '#10b981', '#3b82f6', '#8b5cf6', '#f59e0b'
 const renderActiveShape = (props) => {
   const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
   return (
-    <g>
-      {/* Inactive background sector (keeps shape stable) */}
-      <Sector
-        cx={cx}
-        cy={cy}
-        innerRadius={innerRadius}
-        outerRadius={outerRadius}
-        startAngle={startAngle}
-        endAngle={endAngle}
-        fill={fill}
-        style={{ opacity: 0.4 }}
-      />
-      {/* Active expanded sector */}
-      <Sector
-        cx={cx}
-        cy={cy}
-        innerRadius={innerRadius - 4}
-        outerRadius={outerRadius + 10}
-        startAngle={startAngle}
-        endAngle={endAngle}
-        fill={fill}
-        style={{ 
-          filter: 'brightness(1.15)', 
-          transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)' 
-        }}
-      />
-    </g>
+    <Sector
+      cx={cx}
+      cy={cy}
+      innerRadius={innerRadius - 4}
+      outerRadius={outerRadius + 10}
+      startAngle={startAngle}
+      endAngle={endAngle}
+      fill={fill}
+      style={{ filter: 'brightness(1.15)' }}
+    />
   );
 };
 
@@ -95,7 +79,7 @@ export const SpendingPieChart = ({ data, onCategoryClick }) => {
           {activeItem ? activeItem.name : 'Hover to explore'}
         </div>
         <div style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '4px' }}>
-          {activeItem ? `$${activeItem.value.toFixed(2)}` : ''}
+          {activeItem ? formatCurrency(activeItem.value) : ''}
         </div>
       </div>
     </div>
@@ -116,7 +100,7 @@ const CustomBarTooltip = ({ active, payload }) => {
       color: 'var(--text-primary)',
       boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
     }}>
-      ${payload[0].value.toFixed(2)}
+      {formatCurrency(payload[0].value)}
     </div>
   );
 };

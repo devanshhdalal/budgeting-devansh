@@ -1,22 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle, ArrowRight, Upload, Image as ImageIcon } from 'lucide-react';
-import { saveTransaction, uploadReceipt, fetchConfig } from '../services/storage';
-
-const formatDate = (dateString) => {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  const dt = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-  return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-};
+import { saveTransaction, uploadReceipt } from '../services/storage';
+import { todayIsoDate } from '../utils/date';
+import { useConfig } from '../hooks/useConfig';
+import DateField from '../components/DateField';
 
 const AddTransaction = () => {
-  const [config, setConfig] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { config, loading } = useConfig();
   const [formData, setFormData] = useState({
     Amount: '',
-    Category: 'Food',
-    Date: new Date().toISOString().split('T')[0],
+    Category: 'Other',
+    Date: todayIsoDate(),
     Merchant: '',
     Card: '',
     Notes: '',
@@ -26,16 +21,10 @@ const AddTransaction = () => {
   const [receiptFile, setReceiptFile] = useState(null);
 
   useEffect(() => {
-    const loadConfig = async () => {
-      const data = await fetchConfig();
-      if (data) {
-        setConfig(data);
-        setFormData(prev => ({ ...prev, Category: data.CATEGORIES[0]?.value || 'Other' }));
-      }
-      setLoading(false);
-    };
-    loadConfig();
-  }, []);
+    if (config?.CATEGORIES?.[0]) {
+      setFormData((prev) => ({ ...prev, Category: config.CATEGORIES[0].value }));
+    }
+  }, [config]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -73,7 +62,7 @@ const AddTransaction = () => {
       setFormData({
         Amount: '',
         Category: config?.CATEGORIES[0]?.value || 'Food',
-        Date: new Date().toISOString().split('T')[0],
+        Date: todayIsoDate(),
         Merchant: '',
         Card: '',
         Notes: '',
@@ -142,24 +131,7 @@ const AddTransaction = () => {
                 />
               </div>
               
-              <div className="form-group">
-                <label className="form-label">Date</label>
-                <div 
-                  className="date-display-container form-input" 
-                  style={{ position: 'relative' }}
-                  onClick={(e) => e.currentTarget.querySelector('input')?.showPicker()}
-                >
-                  <span className="date-display-text">{formatDate(formData.Date) || 'Select Date'}</span>
-                  <input 
-                    type="date" 
-                    name="Date"
-                    className="date-picker-hidden" 
-                    value={formData.Date}
-                    onChange={handleChange}
-                    required 
-                  />
-                </div>
-              </div>
+              <DateField label="Date" name="Date" value={formData.Date} onChange={handleChange} />
             </div>
             
             <div className="form-grid-2">

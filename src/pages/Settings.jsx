@@ -1,25 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Save, Plus, Trash2, CreditCard, PieChart, DollarSign, Settings as SettingsIcon, X } from 'lucide-react';
-import { fetchConfig, saveConfig } from '../services/storage';
+import { Save, Plus, Trash2, CreditCard, DollarSign, X } from 'lucide-react';
+import { saveConfig } from '../services/storage';
+import { useConfig } from '../hooks/useConfig';
 
 const Settings = () => {
-  const [config, setConfig] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { config, setConfig, loading } = useConfig();
   const [message, setMessage] = useState('');
-  
-  // Card Editing State
-  const [editingCard, setEditingCard] = useState(null); // { id: 'Card Name', ...data }
+  const [editingCard, setEditingCard] = useState(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
-
-  useEffect(() => {
-    const loadConfig = async () => {
-      const data = await fetchConfig();
-      if (data) setConfig(data);
-      setLoading(false);
-    };
-    loadConfig();
-  }, []);
 
   const handleSave = async () => {
     setMessage('Saving...');

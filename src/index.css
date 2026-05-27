@@ -333,6 +333,12 @@ button, input, select, textarea {
   color: var(--text-secondary);
 }
 
+.transaction-date {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
 .transaction-amount {
   font-weight: 700;
   font-size: 16px;
