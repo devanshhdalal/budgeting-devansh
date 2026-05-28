@@ -1,25 +1,24 @@
-import { useState, useEffect, useMemo } from 'react';
-import { USERS, DEFAULT_USER_ID } from '../config/users';
+import { useEffect, useMemo, useState } from 'react';
+import { USERS } from '../config/users';
+import { getActiveUserId, setActiveUserId } from '../services/session';
 import { UserContext } from './userContext';
 
-const STORAGE_KEY = 'budget_active_user';
-
 export const UserProvider = ({ children }) => {
-  const [userId, setUserId] = useState(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return USERS.some((u) => u.id === saved) ? saved : DEFAULT_USER_ID;
-  });
+  const [userId, setUserId] = useState(getActiveUserId);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, userId);
-    window.dispatchEvent(new CustomEvent('budget-user-changed', { detail: userId }));
+    setActiveUserId(userId);
   }, [userId]);
 
-  const user = useMemo(() => USERS.find((u) => u.id === userId) ?? USERS[0], [userId]);
-
-  return (
-    <UserContext.Provider value={{ userId, setUserId, user, users: USERS }}>
-      {children}
-    </UserContext.Provider>
+  const value = useMemo(
+    () => ({
+      userId,
+      setUserId,
+      user: USERS.find((u) => u.id === userId) ?? USERS[0],
+      users: USERS,
+    }),
+    [userId]
   );
+
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };

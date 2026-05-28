@@ -6,14 +6,7 @@ import { formatDisplayDate } from '../utils/date';
 import { formatCurrency } from '../utils/format';
 import { calculateRewards } from '../config/rewards';
 
-const TransactionItem = memo(({
-  transaction,
-  index,
-  appConfig,
-  onEdit,
-  onDelete,
-  onViewReceipt,
-}) => {
+const TransactionItem = memo(({ transaction, index, appConfig, onEdit, onDelete, onViewReceipt }) => {
   const rewards = calculateRewards(
     transaction.Card,
     transaction.Category,
@@ -26,58 +19,44 @@ const TransactionItem = memo(({
   return (
     <motion.div
       className="transaction-item"
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: Math.min(index * 0.03, 0.3) }}
+      transition={{ delay: Math.min(index * 0.03, 0.25) }}
     >
-      <div style={{ display: 'flex', alignItems: 'center' }}>
+      <div className="transaction-left">
         <div className="transaction-icon">
           <CategoryIcon category={transaction.Category} categories={appConfig.CATEGORIES} />
         </div>
-        <div className="transaction-details">
-          <div className="transaction-merchant">{transaction.Merchant || 'Unknown Merchant'}</div>
-          <div className="transaction-category">
+        <div>
+          <div className="transaction-merchant">{transaction.Merchant || 'Unknown'}</div>
+          <div className="transaction-meta">
             {transaction.Category || 'Other'}
             {transaction.Notes && (
-              <span style={{ marginLeft: '8px', opacity: 0.7 }}>— {transaction.Notes}</span>
+              <span className="transaction-note"> · {transaction.Notes}</span>
             )}
           </div>
           <div className="transaction-date">{formatDisplayDate(transaction.Date)}</div>
         </div>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
         <div className="transaction-actions">
           {transaction.ReceiptUrl && (
-            <button
-              className="action-btn"
-              onClick={() => onViewReceipt(transaction.ReceiptUrl)}
-              title="View Receipt"
-            >
-              <Receipt size={18} />
+            <button type="button" className="action-btn" onClick={() => onViewReceipt(transaction.ReceiptUrl)} title="View receipt">
+              <Receipt size={17} />
             </button>
           )}
-          <button className="action-btn" onClick={() => onEdit(transaction)} title="Edit Transaction">
-            <Pencil size={18} />
+          <button type="button" className="action-btn" onClick={() => onEdit(transaction)} title="Edit">
+            <Pencil size={17} />
           </button>
-          <button
-            className="action-btn"
-            onClick={() => onDelete(transaction)}
-            title="Delete Transaction"
-            style={{ color: 'var(--accent-primary)' }}
-          >
-            <Trash2 size={18} />
+          <button type="button" className="action-btn action-btn-danger" onClick={() => onDelete(transaction)} title="Delete">
+            <Trash2 size={17} />
           </button>
         </div>
-        <div style={{ textAlign: 'right' }}>
+        <div className="transaction-right">
           <div className="transaction-amount">{formatCurrency(transaction.Amount)}</div>
           {rewards && (
-            <div style={{ fontSize: '12px', color: 'var(--success)', fontWeight: 600 }}>
+            <div className="transaction-reward">
               +{rewards.points} {rewards.currency}
-              {rewards.note && (
-                <div style={{ fontSize: '10px', opacity: 0.8, fontWeight: 400, marginTop: '2px' }}>
-                  {rewards.note}
-                </div>
-              )}
             </div>
           )}
         </div>

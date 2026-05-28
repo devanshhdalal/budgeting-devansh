@@ -2,34 +2,45 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Save, Plus, Trash2, CreditCard, DollarSign, X } from 'lucide-react';
 import { saveConfig } from '../services/storage';
-import { useConfig } from '../hooks/useConfig';
+import { useData } from '../hooks/useData';
+import { useToast } from '../hooks/useToast';
+import PageHeader from '../components/ui/PageHeader';
+import SectionCard from '../components/ui/SectionCard';
+import PageError from '../components/ui/PageError';
+import LoadingScreen from '../components/layout/LoadingScreen';
+import { stagger } from '../motion/presets';
 
-const Settings = () => {
-  const { config, setConfig, loading } = useConfig();
-  const [message, setMessage] = useState('');
+const cloneConfig = (config) => structuredClone(config);
+
+/**
+ * Settings keeps its own working copy so sliders feel snappy, then commits to the
+ * shared data context and the server on Save. This avoids other pages seeing
+ * un-saved budget changes flicker through.
+ */
+const SettingsForm = ({ initialConfig, commitConfig }) => {
+  const toast = useToast();
+  const [draft, setDraft] = useState(() => cloneConfig(initialConfig));
   const [editingCard, setEditingCard] = useState(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
-    setMessage('Saving...');
-    const success = await saveConfig(config);
-    if (success) {
-      setMessage('Settings saved successfully!');
-      setTimeout(() => setMessage(''), 3000);
+    setIsSaving(true);
+    const { ok, error } = await saveConfig(draft);
+    setIsSaving(false);
+    if (ok) {
+      commitConfig(draft);
+      toast.success('Settings saved');
     } else {
-      setMessage('Failed to save settings.');
+      toast.error('Save failed', { description: error });
     }
   };
 
-  const updateBudget = (category, value) => {
-    setConfig(prev => ({
+  const updateBudget = (category, value) =>
+    setDraft((prev) => ({
       ...prev,
-      BUDGET_CONFIG: {
-        ...prev.BUDGET_CONFIG,
-        [category]: parseFloat(value) || 0
-      }
+      BUDGET_CONFIG: { ...prev.BUDGET_CONFIG, [category]: parseFloat(value) || 0 },
     }));
-  };
 
   const openCardEditor = (name, data) => {
     setEditingCard({ name, ...data });
@@ -37,277 +48,187 @@ const Settings = () => {
   };
 
   const openNewCardEditor = () => {
-    const defaultMultipliers = {};
-    config.CATEGORIES.forEach(cat => { defaultMultipliers[cat.value] = 1; });
-    defaultMultipliers['Base'] = 1;
-
-    setEditingCard({
-      name: '',
-      currency: 'Points',
-      multipliers: defaultMultipliers
-    });
+    const multipliers = Object.fromEntries(draft.CATEGORIES.map((c) => [c.value, 1]));
+    multipliers.Base = 1;
+    setEditingCard({ name: '', currency: 'Points', multipliers });
     setIsAddingNew(true);
   };
 
   const saveCardChanges = () => {
-    const newCards = { ...config.CARDS };
-    
-    if (isAddingNew) {
-      if (!editingCard.name) return alert('Card name is required');
-      newCards[editingCard.name] = {
-        currency: editingCard.currency,
-        multipliers: editingCard.multipliers
-      };
-    } else {
-      // If name changed, we need to delete old key
-      const oldName = Object.keys(config.CARDS).find(k => k === editingCard.name) || editingCard.name;
-      delete newCards[oldName];
-      newCards[editingCard.name] = {
-        currency: editingCard.currency,
-        multipliers: editingCard.multipliers
-      };
-    }
-
-    setConfig(prev => ({ ...prev, CARDS: newCards }));
+    if (isAddingNew && !editingCard.name) return alert('Card name is required');
+    setDraft((prev) => ({
+      ...prev,
+      CARDS: {
+        ...prev.CARDS,
+        [editingCard.name]: {
+          currency: editingCard.currency,
+          multipliers: editingCard.multipliers,
+        },
+      },
+    }));
     setEditingCard(null);
   };
 
   const deleteCard = (name) => {
-    if (window.confirm(`Are you sure you want to delete ${name}?`)) {
-      const newCards = { ...config.CARDS };
-      delete newCards[name];
-      setConfig(prev => ({ ...prev, CARDS: newCards }));
-      setEditingCard(null);
-    }
+    if (!window.confirm(`Delete ${name}?`)) return;
+    setDraft((prev) => {
+      const nextCards = { ...prev.CARDS };
+      delete nextCards[name];
+      return { ...prev, CARDS: nextCards };
+    });
+    setEditingCard(null);
   };
 
-  if (loading) return <div style={{ textAlign: 'center', padding: '100px' }}>Loading Settings...</div>;
-  if (!config) return <div style={{ textAlign: 'center', padding: '100px' }}>Failed to load configuration.</div>;
-
   return (
-    <div className="settings-container" style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 12px 40px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', paddingTop: '20px' }}>
-        <div>
-          <h1 style={{ fontSize: '28px', fontWeight: 800, letterSpacing: '-0.02em' }}>Preferences</h1>
-          <p style={{ color: 'var(--text-secondary)', marginTop: '4px', fontSize: '14px' }}>Customize your budgets and accounts</p>
-        </div>
-        <button className="btn btn-primary" onClick={handleSave} style={{ padding: '10px 16px' }}>
-          <Save size={18} /> <span className="hide-mobile">Save Changes</span>
-        </button>
-      </div>
+    <motion.div className="settings-page" variants={stagger} initial="hidden" animate="show">
+      <PageHeader
+        eyebrow="Preferences"
+        title="Settings"
+        subtitle="Budget limits, cards, and reward multipliers for this profile."
+        action={
+          <button type="button" className="btn btn-primary" onClick={handleSave} disabled={isSaving}>
+            <Save size={18} />
+            <span className="hide-mobile">{isSaving ? 'Saving...' : 'Save'}</span>
+          </button>
+        }
+      />
 
-      <AnimatePresence>
-        {message && (
-          <motion.div 
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            style={{ 
-              padding: '16px', 
-              borderRadius: '16px', 
-              background: message.includes('success') ? 'var(--success-light)' : 'var(--accent-light)', 
-              color: message.includes('success') ? 'var(--success)' : 'var(--accent-primary)', 
-              marginBottom: '24px', 
-              fontWeight: 600,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              border: `1px solid ${message.includes('success') ? 'var(--success)' : 'var(--accent-primary)'}22`,
-              fontSize: '14px'
-            }}
-          >
-            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: message.includes('success') ? 'var(--success)' : 'var(--accent-primary)' }} />
-            {message}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-        {/* Budget Management */}
-        <motion.div className="card" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ padding: '24px', overflow: 'hidden' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--accent-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-primary)' }}>
+      <div className="settings-grid">
+        <SectionCard>
+          <div className="settings-section-head">
+            <div className="settings-section-icon settings-section-icon-accent">
               <DollarSign size={20} />
             </div>
             <div>
-              <h2 style={{ fontSize: '18px', fontWeight: 700 }}>Monthly Budgets</h2>
-              <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Set spending limits</p>
+              <h2>Monthly budgets</h2>
+              <p>Set spending limits per category</p>
             </div>
           </div>
-          
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '24px' }}>
-            {config.CATEGORIES.map(cat => (
+          <div className="budget-slider-grid">
+            {draft.CATEGORIES.map((cat) => (
               <div key={cat.value} className="budget-settings-row">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '8px' }}>
-                  <span style={{ fontWeight: 600, fontSize: '14px' }}>{cat.label}</span>
-                  <span style={{ fontWeight: 800, color: 'var(--accent-primary)', fontSize: '15px' }}>
-                    ${config.BUDGET_CONFIG[cat.value] || 0}
-                  </span>
+                <div className="budget-row-head">
+                  <span>{cat.label}</span>
+                  <span>${draft.BUDGET_CONFIG[cat.value] || 0}</span>
                 </div>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="3000" 
+                <input
+                  type="range"
+                  className="range-input"
+                  min="0"
+                  max="3000"
                   step="50"
-                  style={{ 
-                    width: '100%', 
-                    height: '6px',
-                    borderRadius: '3px',
-                    accentColor: 'var(--accent-primary)',
-                    cursor: 'pointer',
-                    display: 'block'
-                  }}
-                  value={config.BUDGET_CONFIG[cat.value] || 0}
+                  value={draft.BUDGET_CONFIG[cat.value] || 0}
                   onChange={(e) => updateBudget(cat.value, e.target.value)}
                 />
               </div>
             ))}
           </div>
-        </motion.div>
+        </SectionCard>
 
-        {/* Card Management */}
-        <motion.div className="card" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} style={{ padding: '24px', overflow: 'hidden' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--bg-color)', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-primary)' }}>
+        <SectionCard>
+          <div className="settings-section-head">
+            <div className="settings-section-icon settings-section-icon-muted">
               <CreditCard size={20} />
             </div>
             <div>
-              <h2 style={{ fontSize: '18px', fontWeight: 700 }}>Payment Methods</h2>
-              <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Manage accounts and multipliers</p>
+              <h2>Payment methods</h2>
+              <p>Cards and reward multipliers</p>
             </div>
           </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '16px' }}>
-            {Object.entries(config.CARDS).map(([name, data]) => (
-              <div key={name} 
-                onClick={() => openCardEditor(name, data)}
-                style={{ 
-                  padding: '16px', 
-                  borderRadius: '16px', 
-                  background: 'var(--bg-color)', 
-                  border: '1px solid var(--border-color)', 
-                  display: 'flex', 
-                  flexDirection: 'column',
-                  gap: '8px',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  cursor: 'pointer'
-                }}>
-                <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: 'var(--accent-primary)' }} />
+          <div className="card-grid">
+            {Object.entries(draft.CARDS).map(([name, data]) => (
+              <div key={name} className="payment-card" onClick={() => openCardEditor(name, data)} role="button" tabIndex={0}>
+                <div className="payment-card-accent" />
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div>
-                    <div style={{ fontWeight: 700, fontSize: '15px' }}>{name}</div>
-                    <div style={{ fontSize: '11px', opacity: 0.6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{data.currency}</div>
+                    <div className="payment-card-name">{name}</div>
+                    <div className="payment-card-currency">{data.currency}</div>
                   </div>
-                  <div style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: 'var(--success-light)', color: 'var(--success)' }}>
-                    ACTIVE
-                  </div>
+                  <span className="badge-active">Active</span>
                 </div>
               </div>
             ))}
-            
-            <button 
-              className="add-card-btn"
-              style={{ 
-                border: '2px dashed var(--border-color)', 
-                borderRadius: '16px', 
-                padding: '16px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                background: 'transparent',
-                color: 'var(--text-secondary)',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                minHeight: '60px'
-              }}
-              onClick={openNewCardEditor}
-            >
+            <button type="button" className="add-card-btn" onClick={openNewCardEditor}>
               <Plus size={20} />
-              <span style={{ fontWeight: 600, fontSize: '14px' }}>Add Account</span>
+              Add account
             </button>
           </div>
-        </motion.div>
+        </SectionCard>
       </div>
 
-      {/* Card Edit Modal */}
       <AnimatePresence>
         {editingCard && (
-          <div className="modal-overlay" style={{ zIndex: 1000 }}>
-            <motion.div 
-              className="modal-content"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              style={{ maxWidth: '500px', width: '95%' }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                <h2 style={{ fontSize: '20px', fontWeight: 700 }}>{isAddingNew ? 'Add New Card' : 'Edit Card'}</h2>
-                <button onClick={() => setEditingCard(null)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}>
-                  <X size={24} />
-                </button>
-              </div>
-
+          <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <motion.div className="modal-content" initial={{ scale: 0.96, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.96, opacity: 0 }}>
+              <button type="button" className="modal-close" onClick={() => setEditingCard(null)} aria-label="Close">
+                <X size={22} />
+              </button>
+              <h2 className="page-title" style={{ fontSize: '1.25rem', marginBottom: '20px' }}>
+                {isAddingNew ? 'Add card' : 'Edit card'}
+              </h2>
               <div className="form-group">
-                <label className="form-label">Card Name</label>
-                <input 
-                  className="form-input"
-                  value={editingCard.name}
-                  onChange={(e) => setEditingCard({ ...editingCard, name: e.target.value })}
-                  placeholder="e.g. AMEX Cobalt"
-                />
+                <label className="form-label">Card name</label>
+                <input className="form-input" value={editingCard.name} onChange={(e) => setEditingCard({ ...editingCard, name: e.target.value })} placeholder="AMEX Cobalt" />
               </div>
-
               <div className="form-group">
-                <label className="form-label">Reward Currency</label>
-                <input 
-                  className="form-input"
-                  value={editingCard.currency}
-                  onChange={(e) => setEditingCard({ ...editingCard, currency: e.target.value })}
-                  placeholder="e.g. Points, Cashback, Scene+"
-                />
+                <label className="form-label">Reward currency</label>
+                <input className="form-input" value={editingCard.currency} onChange={(e) => setEditingCard({ ...editingCard, currency: e.target.value })} placeholder="Points" />
               </div>
-
-              <h3 style={{ fontSize: '16px', fontWeight: 700, margin: '24px 0 16px' }}>Multipliers</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', maxHeight: '300px', overflowY: 'auto', paddingRight: '4px' }}>
-                {Object.keys(editingCard.multipliers).map(key => (
+              <p className="form-label" style={{ marginTop: '16px' }}>Multipliers</p>
+              <div className="form-grid-2" style={{ maxHeight: '280px', overflowY: 'auto' }}>
+                {Object.keys(editingCard.multipliers).map((key) => (
                   <div key={key} className="form-group" style={{ marginBottom: '8px' }}>
-                    <label className="form-label" style={{ fontSize: '12px' }}>{key}</label>
-                    <input 
+                    <label className="form-label">{key}</label>
+                    <input
                       type="number"
                       step="0.01"
                       className="form-input"
-                      style={{ padding: '8px' }}
                       value={editingCard.multipliers[key]}
-                      onChange={(e) => setEditingCard({
-                        ...editingCard,
-                        multipliers: {
-                          ...editingCard.multipliers,
-                          [key]: parseFloat(e.target.value) || 0
-                        }
-                      })}
+                      onChange={(e) =>
+                        setEditingCard({
+                          ...editingCard,
+                          multipliers: { ...editingCard.multipliers, [key]: parseFloat(e.target.value) || 0 },
+                        })
+                      }
                     />
                   </div>
                 ))}
               </div>
-
-              <div style={{ display: 'flex', gap: '12px', marginTop: '32px' }}>
+              <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
                 {!isAddingNew && (
-                  <button className="btn btn-secondary" style={{ color: 'var(--accent-primary)', flex: 1 }} onClick={() => deleteCard(editingCard.name)}>
+                  <button type="button" className="btn btn-ghost" style={{ flex: 1 }} onClick={() => deleteCard(editingCard.name)}>
                     <Trash2 size={18} /> Delete
                   </button>
                 )}
-                <button className="btn btn-primary" style={{ flex: 2 }} onClick={saveCardChanges}>
-                  <Save size={18} /> {isAddingNew ? 'Add Card' : 'Update Card'}
+                <button type="button" className="btn btn-primary" style={{ flex: 2 }} onClick={saveCardChanges}>
+                  <Save size={18} /> {isAddingNew ? 'Add' : 'Update'}
                 </button>
               </div>
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
+};
+
+const Settings = () => {
+  const { config, setConfig, loading, syncError, refresh } = useData();
+
+  if (!config && loading) return <LoadingScreen label="Loading preferences" />;
+  if (!config) {
+    return (
+      <PageError
+        variant="network"
+        title="Could not load preferences"
+        description={syncError ?? 'No configuration found for this profile.'}
+        onRetry={refresh}
+        retrying={loading}
+      />
+    );
+  }
+
+  return <SettingsForm key={config} initialConfig={config} commitConfig={setConfig} />;
 };
 
 export default Settings;

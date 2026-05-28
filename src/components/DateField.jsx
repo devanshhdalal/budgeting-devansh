@@ -1,24 +1,31 @@
+import { useRef } from 'react';
 import { formatDisplayDate } from '../utils/date';
 
-const DateField = ({ label, name, value, onChange, required = true, className = 'form-input' }) => (
-  <div className="form-group">
-    {label && <label className="form-label">{label}</label>}
-    <div
-      className={`date-display-container ${className}`}
-      style={{ position: 'relative' }}
-      onClick={(e) => e.currentTarget.querySelector('input')?.showPicker()}
-    >
-      <span className="date-display-text">{formatDisplayDate(value) || 'Select Date'}</span>
-      <input
-        type="date"
-        name={name}
-        className="date-picker-hidden"
-        value={value}
-        onChange={onChange}
-        required={required}
-      />
+const DateField = ({ label, name, value, onChange, required = true }) => {
+  const inputRef = useRef(null);
+  const openPicker = () => inputRef.current?.showPicker?.();
+
+  return (
+    <div className="form-group">
+      {label && <label className="form-label">{label}</label>}
+      <button
+        type="button"
+        className="date-display-container form-input"
+        onClick={openPicker}
+      >
+        <span className="date-display-text">{formatDisplayDate(value) || 'Select date'}</span>
+        <input
+          ref={inputRef}
+          type="date"
+          name={name}
+          className="date-picker-hidden"
+          value={value}
+          onChange={onChange}
+          required={required}
+        />
+      </button>
     </div>
-  </div>
-);
+  );
+};
 
 export default DateField;

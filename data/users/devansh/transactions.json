@@ -6,7 +6,8 @@
     "Amount": 17.24,
     "Category": "Food",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "723dfb96-f6c3-45ff-8be1-54a5fbed10ac"
   },
   {
     "Date": "2026-05-07",
@@ -15,7 +16,8 @@
     "Amount": 57.47,
     "Category": "Personal Items",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "5e8b5675-122d-4bcd-953b-7424f63c5892"
   },
   {
     "Date": "2026-05-07",
@@ -24,7 +26,8 @@
     "Amount": 40.84,
     "Category": "Groceries",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "a4364b6c-71ea-42ea-9030-f418e30bf2ce"
   },
   {
     "Date": "2026-05-07",
@@ -34,7 +37,8 @@
     "Category": "Groceries",
     "Card": "AMEX Cobalt",
     "Notes": "Schezwan Chutney, Carrot Pickle, Spice Mixes",
-    "ReceiptUrl": ""
+    "ReceiptUrl": "",
+    "id": "e01000b8-d163-4859-9189-e3135027b5d8"
   },
   {
     "Date": "2026-05-07",
@@ -44,7 +48,8 @@
     "Category": "Food",
     "Card": "AMEX Cobalt",
     "Notes": "Shikha's Birthday Dinner",
-    "ReceiptUrl": ""
+    "ReceiptUrl": "",
+    "id": "38c40dfb-b2db-4aca-b8f3-50b636739477"
   },
   {
     "Date": "2026-05-07",
@@ -53,7 +58,8 @@
     "Amount": 13.86,
     "Category": "Food",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "11f4ddaf-638c-4f14-86b2-c6f43b907080"
   },
   {
     "Date": "2026-05-06",
@@ -62,7 +68,8 @@
     "Amount": 47.43,
     "Category": "Car",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "079d9992-9b3f-4ca7-997d-d4eb72bf30eb"
   },
   {
     "Date": "2026-05-06",
@@ -71,7 +78,8 @@
     "Amount": 57.65,
     "Category": "Health",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "15d950b8-1853-4355-9b2f-0ebe4c8929cc"
   },
   {
     "Date": "2026-05-06",
@@ -80,7 +88,8 @@
     "Amount": 10.42,
     "Category": "Food",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "f83ee966-8787-44e6-8be3-0cf74b870267"
   },
   {
     "Date": "2026-05-06",
@@ -89,7 +98,8 @@
     "Amount": 19.54,
     "Category": "Groceries",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "b80afc8a-1a7f-45f7-b21e-de79ddc3c361"
   },
   {
     "Date": "2026-05-06",
@@ -98,7 +108,8 @@
     "Amount": 39.1,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "b1550d3b-9868-4ef0-9652-82f64376924b"
   },
   {
     "Date": "2026-05-06",
@@ -107,7 +118,8 @@
     "Amount": 241.39,
     "Category": "Groceries",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "716cd038-09ff-4f64-aa1b-9a5b82056dc5"
   },
   {
     "Date": "2026-05-06",
@@ -116,7 +128,8 @@
     "Amount": 11.3,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "082164bc-e251-4c2e-b076-e9a6d02a963c"
   },
   {
     "Date": "2026-05-06",
@@ -125,7 +138,8 @@
     "Amount": 39.1,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "4fa0890a-e1ec-4cd4-9efc-c6948e878c63"
   },
   {
     "Date": "2026-05-05",
@@ -134,7 +148,8 @@
     "Amount": 13.37,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "6c905f05-c14b-474c-b25a-63904f0bc83d"
   },
   {
     "Date": "2026-05-05",
@@ -143,7 +158,8 @@
     "Amount": 28.14,
     "Category": "Food",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "e7f0979b-a57f-41db-b170-64b938ba6b59"
   },
   {
     "Date": "2026-05-05",
@@ -152,7 +168,8 @@
     "Amount": 2.82,
     "Category": "Car",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "a89d3c7b-67b9-48c1-b8a7-1769b4b2dfa3"
   },
   {
     "Date": "2026-05-05",
@@ -161,7 +178,8 @@
     "Amount": 34.14,
     "Category": "Groceries",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "4cc7d81d-e09a-4db8-ba7f-913d1898ad17"
   },
   {
     "Date": "2026-05-05",
@@ -170,7 +188,8 @@
     "Amount": 138.51,
     "Category": "Travel",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "fce2403c-e10d-471f-987d-1a9893945a1f"
   },
   {
     "Date": "2026-05-05",
@@ -179,7 +198,8 @@
     "Amount": 21.93,
     "Category": "Food",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "09a4ff64-22ae-4b72-8c45-7dd77d165e93"
   },
   {
     "Date": "2026-05-04",
@@ -188,7 +208,8 @@
     "Amount": 11.99,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "73d9b7b3-6066-4607-8ac0-2c4addf6884b"
   },
   {
     "Date": "2026-05-04",
@@ -197,7 +218,8 @@
     "Amount": 8.04,
     "Category": "Food",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "7272be96-afa8-4c2e-ba12-7d2aa9f4ac2f"
   },
   {
     "Date": "2026-05-04",
@@ -206,7 +228,8 @@
     "Amount": 7.54,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "3e53b4b9-313f-4275-8b2a-9ca845d22dea"
   },
   {
     "Date": "2026-05-03",
@@ -215,7 +238,8 @@
     "Amount": 8.33,
     "Category": "Other",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "4f366fd8-d1b8-4d59-a5ea-a526e281539a"
   },
   {
     "Date": "2026-05-03",
@@ -224,7 +248,8 @@
     "Amount": 18.61,
     "Category": "Food",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "382d4e4c-5482-4305-b141-e54a28c79148"
   },
   {
     "Date": "2026-05-03",
@@ -233,7 +258,8 @@
     "Amount": 14.94,
     "Category": "Personal Items",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "6cf54eb9-c021-48e8-86af-010d9ad13937"
   },
   {
     "Date": "2026-05-03",
@@ -242,7 +268,8 @@
     "Amount": 55.32,
     "Category": "Other",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "217b2d6a-4825-437b-8c41-61cf6b3f027b"
   },
   {
     "Date": "2026-05-03",
@@ -251,7 +278,8 @@
     "Amount": 79.48,
     "Category": "Other",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "b8116fa1-0ba6-48da-81b5-1204be1c06cd"
   },
   {
     "Date": "2026-05-02",
@@ -260,7 +288,8 @@
     "Amount": 14.64,
     "Category": "Other",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "b844ccce-9444-49ba-affa-329a3fcb00da"
   },
   {
     "Date": "2026-05-01",
@@ -269,7 +298,8 @@
     "Amount": 8.49,
     "Category": "Food",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "fe01b21b-6725-446b-b4a4-3d25481517f9"
   },
   {
     "Date": "2026-05-01",
@@ -278,7 +308,8 @@
     "Amount": 11.3,
     "Category": "Personal Items",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "9cfde8b8-a8a0-4712-b499-a110817da2ba"
   },
   {
     "Date": "2026-05-01",
@@ -287,7 +318,8 @@
     "Amount": 9.89,
     "Category": "Subscriptions",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "508c7aa4-0cb0-4053-afe0-ff536ee34676"
   },
   {
     "Date": "2026-04-30",
@@ -296,7 +328,8 @@
     "Amount": 114.66,
     "Category": "Personal Items",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "57fdf10a-e5a7-46c4-ab13-5e7d6830540e"
   },
   {
     "Date": "2026-04-30",
@@ -305,7 +338,8 @@
     "Amount": 13.17,
     "Category": "Food",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "3dff7c53-258d-43b0-87fe-b8d283bc0e5a"
   },
   {
     "Date": "2026-04-30",
@@ -314,7 +348,8 @@
     "Amount": 15.01,
     "Category": "Food",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "f47aea66-569c-4414-bd0d-5de85960d35b"
   },
   {
     "Date": "2026-04-30",
@@ -323,7 +358,8 @@
     "Amount": 3.53,
     "Category": "Utilities",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "7aa8cb46-7a68-4b42-96e0-5ab6901c008c"
   },
   {
     "Date": "2026-04-30",
@@ -332,7 +368,8 @@
     "Amount": 75.54,
     "Category": "Car",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "d2c5a626-e37d-4e5d-a62d-b98f0976a066"
   },
   {
     "Date": "2026-04-29",
@@ -341,7 +378,8 @@
     "Amount": 9.58,
     "Category": "Food",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "c945d011-562e-4860-91ba-f8190a324718"
   },
   {
     "Date": "2026-04-29",
@@ -350,7 +388,8 @@
     "Amount": 453.9,
     "Category": "Travel",
     "Card": "AMEX Cobalt",
-    "Notes": "Flight from YYT St. John's to Ottawa"
+    "Notes": "Flight from YYT St. John's to Ottawa",
+    "id": "1f94e9a8-d319-4e17-8758-9d7726fbaccc"
   },
   {
     "Date": "2026-04-28",
@@ -359,7 +398,8 @@
     "Amount": 16.89,
     "Category": "Food",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "78c3ddc9-0d76-4142-9c6f-b3fd28f4763d"
   },
   {
     "Date": "2026-04-28",
@@ -368,7 +408,8 @@
     "Amount": 18.49,
     "Category": "Food",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "019eb059-e68a-485c-b0dc-d06e2ad8e8ce"
   },
   {
     "Date": "2026-04-27",
@@ -377,7 +418,8 @@
     "Amount": 3,
     "Category": "Travel",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "7fc97cdd-c38f-48c3-b3b4-548901343869"
   },
   {
     "Date": "2026-04-27",
@@ -386,7 +428,8 @@
     "Amount": 9.99,
     "Category": "Other",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "686541fc-3b5f-4a5b-afb7-85b1b7ee5fda"
   },
   {
     "Date": "2026-04-27",
@@ -395,7 +438,8 @@
     "Amount": 100,
     "Category": "Other",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "988e06a2-0c7c-476c-b3b9-1ccb01b85853"
   },
   {
     "Date": "2026-04-27",
@@ -404,7 +448,8 @@
     "Amount": 2.5,
     "Category": "Travel",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "98136147-25a9-4f7a-b459-b4f4826193fa"
   },
   {
     "Date": "2026-04-26",
@@ -413,7 +458,8 @@
     "Amount": 6.63,
     "Category": "Other",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "a4524ebd-dc9a-43f1-be02-6ed5e82e54c6"
   },
   {
     "Date": "2026-04-26",
@@ -422,7 +468,8 @@
     "Amount": 12.72,
     "Category": "Other",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "fc3b6da8-8121-42e7-a7d9-f14098414584"
   },
   {
     "Date": "2026-04-25",
@@ -431,7 +478,8 @@
     "Amount": 35.97,
     "Category": "Food",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "108cc8b4-eda6-4a5f-a5ca-7b0c9d0884db"
   },
   {
     "Date": "2026-04-25",
@@ -440,7 +488,8 @@
     "Amount": 46.85,
     "Category": "Food",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "4b90c107-8eb4-4814-a60a-95cd9dc6e4cc"
   },
   {
     "Date": "2026-04-24",
@@ -449,7 +498,8 @@
     "Amount": 6.72,
     "Category": "Other",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "77e9797a-d9f1-4882-a574-e626ff6469e3"
   },
   {
     "Date": "2026-04-24",
@@ -458,7 +508,8 @@
     "Amount": 8.33,
     "Category": "Other",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "241fd8ce-b90d-4aa0-b422-d9ddab372e5b"
   },
   {
     "Date": "2026-04-23",
@@ -467,7 +518,8 @@
     "Amount": 16.5,
     "Category": "Food",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "87ee0364-25a5-4d1c-a698-89034e23c891"
   },
   {
     "Date": "2026-04-23",
@@ -476,7 +528,8 @@
     "Amount": 14.13,
     "Category": "Food",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "91243c1a-fd45-47d6-9c99-c5f5c694d16e"
   },
   {
     "Date": "2026-04-23",
@@ -485,7 +538,8 @@
     "Amount": 24.27,
     "Category": "Personal Items",
     "Card": "AMEX Cobalt",
-    "Notes": null
+    "Notes": null,
+    "id": "c9c11f0e-9427-4547-8d71-0c4996d5cb21"
   },
   {
     "Date": "2026-04-22",
@@ -494,7 +548,8 @@
     "Amount": 22.99,
     "Category": "Other",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "70efed37-1684-47da-b267-54d3a6fe4a3a"
   },
   {
     "Date": "2026-04-21",
@@ -503,7 +558,8 @@
     "Amount": 39.1,
     "Category": "Personal Items",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "e805e389-754a-456c-8621-a42311aa18b9"
   },
   {
     "Date": "2026-04-21",
@@ -512,7 +568,8 @@
     "Amount": 18.97,
     "Category": "Food",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "8326d441-d9f1-49ba-a7c6-71f66edb3072"
   },
   {
     "Date": "2026-04-21",
@@ -521,7 +578,8 @@
     "Amount": 58.97,
     "Category": "Car",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "6d9e8328-015c-4501-b88c-af2108ad0a47"
   },
   {
     "Date": "2026-04-21",
@@ -530,7 +588,8 @@
     "Amount": 17.68,
     "Category": "Food",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "a7249506-2c9a-4843-b245-60e7ba6ec7ee"
   },
   {
     "Date": "2026-04-21",
@@ -539,7 +598,8 @@
     "Amount": 216.66,
     "Category": "Groceries",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "6754f952-455d-4bbc-9956-e69c99fb68b2"
   },
   {
     "Date": "2026-04-20",
@@ -548,7 +608,8 @@
     "Amount": 11.99,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "118fa62d-06ac-475a-a112-760836e4fa7c"
   },
   {
     "Date": "2026-04-20",
@@ -557,7 +618,8 @@
     "Amount": 13.37,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "a0cea532-08ac-492a-8d64-edb511550a95"
   },
   {
     "Date": "2026-04-20",
@@ -566,7 +628,8 @@
     "Amount": 7.53,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "f2c4ca28-caa2-4a9b-917f-7ed70b134613"
   },
   {
     "Date": "2026-04-19",
@@ -575,7 +638,8 @@
     "Amount": 9.58,
     "Category": "Health",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "28db9530-b0c0-4d8c-bea2-743bd22fd514"
   },
   {
     "Date": "2026-04-18",
@@ -584,7 +648,8 @@
     "Amount": 57.68,
     "Category": "Groceries",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "7d6fbf08-3586-4183-96eb-3987d2144a57"
   },
   {
     "Date": "2026-04-18",
@@ -593,7 +658,8 @@
     "Amount": 12.65,
     "Category": "Other",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "7ff3e658-4fd3-4ef3-bd03-71e31924d89b"
   },
   {
     "Date": "2026-04-17",
@@ -602,7 +668,8 @@
     "Amount": 29.88,
     "Category": "Health",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "4b9c96da-792a-41b4-96ea-433c4cd7ad1e"
   },
   {
     "Date": "2026-04-17",
@@ -611,7 +678,8 @@
     "Amount": 29.99,
     "Category": "Food",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "ec098b31-d3a8-4caf-95e7-ccfde97dc341"
   },
   {
     "Date": "2026-04-16",
@@ -620,7 +688,8 @@
     "Amount": 11.3,
     "Category": "Personal Items",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "114c947a-05cf-43e4-b163-5e70547d4bc3"
   },
   {
     "Date": "2026-04-14",
@@ -629,7 +698,8 @@
     "Amount": 6.31,
     "Category": "Subscriptions",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "183dffa0-ab22-47f2-a980-96df951545f8"
   },
   {
     "Date": "2026-04-14",
@@ -638,7 +708,8 @@
     "Amount": 17.24,
     "Category": "Personal Items",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "7a44bf21-e8e4-459f-9523-51daaaf5b219"
   },
   {
     "Date": "2026-04-13",
@@ -647,7 +718,8 @@
     "Amount": 26.23,
     "Category": "Food",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "de13f2cf-dd54-465e-999c-5943f13e7730"
   },
   {
     "Date": "2026-04-13",
@@ -656,7 +728,8 @@
     "Amount": 16.89,
     "Category": "Food",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "f4180194-aeae-42e8-a96b-f93f1f3372ea"
   },
   {
     "Date": "2026-04-13",
@@ -665,7 +738,8 @@
     "Amount": 15,
     "Category": "Other",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "e14b44fe-d4c5-48aa-a6b8-16d46b75411b"
   },
   {
     "Date": "2026-04-13",
@@ -674,7 +748,8 @@
     "Amount": 29.86,
     "Category": "Food",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "fb180a3a-ae6d-4be4-a6be-1fe0a48964e8"
   },
   {
     "Date": "2026-04-12",
@@ -683,7 +758,8 @@
     "Amount": 12.72,
     "Category": "Other",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "08c4b634-4643-4c13-9c19-8a0294ab8bc3"
   },
   {
     "Date": "2026-04-12",
@@ -692,7 +768,8 @@
     "Amount": 8.33,
     "Category": "Other",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "3fd442ef-acd7-49a5-b748-a2e9d6f2a767"
   },
   {
     "Date": "2026-04-11",
@@ -701,7 +778,8 @@
     "Amount": 8.79,
     "Category": "Health",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "aec5f466-aa7c-431a-9d0a-e2ad66b9bac9"
   },
   {
     "Date": "2026-04-11",
@@ -710,7 +788,8 @@
     "Amount": 14.94,
     "Category": "Utilities",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "34a4c988-8ec1-4eae-980a-fcf9c30e6203"
   },
   {
     "Date": "2026-04-11",
@@ -719,7 +798,8 @@
     "Amount": 7.56,
     "Category": "Food",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "28136f41-aeab-40e7-a414-0b5a233f9c36"
   },
   {
     "Date": "2026-04-11",
@@ -728,7 +808,8 @@
     "Amount": 2.86,
     "Category": "Utilities",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "8ed4643f-aa1c-4a77-b34d-f650c2372161"
   },
   {
     "Date": "2026-04-08",
@@ -737,7 +818,8 @@
     "Amount": 29.89,
     "Category": "Other",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "c4fe851a-6c37-47c8-a719-3173c8d7bc6d"
   },
   {
     "Date": "2026-04-08",
@@ -746,7 +828,8 @@
     "Amount": 184.97,
     "Category": "Groceries",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "a15577a9-b202-4acd-9740-811cf1ac4a43"
   },
   {
     "Date": "2026-04-08",
@@ -755,7 +838,8 @@
     "Amount": 15.61,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "ca3c413d-6325-4385-9c4b-ed604a9ccd32"
   },
   {
     "Date": "2026-04-07",
@@ -764,7 +848,8 @@
     "Amount": 84.49,
     "Category": "Car",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "dd31bc4d-9b1b-4b57-8744-df5493ca4e0a"
   },
   {
     "Date": "2026-04-07",
@@ -773,7 +858,8 @@
     "Amount": 11.81,
     "Category": "Car",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "22f840cb-88e0-444e-8f62-2640d32ed558"
   },
   {
     "Date": "2026-04-07",
@@ -782,7 +868,8 @@
     "Amount": 8.48,
     "Category": "Food",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "6a8a09a3-a66a-4fad-9775-087766aaf433"
   },
   {
     "Date": "2026-04-07",
@@ -791,7 +878,8 @@
     "Amount": 203.56,
     "Category": "Groceries",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "8554890f-39af-4fb3-9929-7d76e4ab1426"
   },
   {
     "Date": "2026-04-06",
@@ -800,7 +888,8 @@
     "Amount": 11.98,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "bd9fdda2-7279-4594-8f78-05d04b2b9632"
   },
   {
     "Date": "2026-04-06",
@@ -809,7 +898,8 @@
     "Amount": 13.37,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "1bcd75e4-96be-4ee9-bf8e-251841942f1e"
   },
   {
     "Date": "2026-04-06",
@@ -818,7 +908,8 @@
     "Amount": 7.53,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "2f89f98b-4fb2-4d60-a631-5e90d63e5f64"
   },
   {
     "Date": "2026-04-05",
@@ -827,7 +918,8 @@
     "Amount": 13.2,
     "Category": "Other",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "ab67cc5e-d44b-4c23-a0c8-f625737c4cb7"
   },
   {
     "Date": "2026-04-03",
@@ -836,7 +928,8 @@
     "Amount": 11.29,
     "Category": "Personal Items",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "2daf4fff-43b5-47a0-a85b-b59b51b886cc"
   },
   {
     "Date": "2026-04-03",
@@ -845,7 +938,8 @@
     "Amount": 5.74,
     "Category": "Food",
     "Card": "Neo Mastercard",
-    "Notes": null
+    "Notes": null,
+    "id": "af26476f-adce-4546-b88b-4e57c6c40dc0"
   },
   {
     "Date": "2026-04-03",
@@ -854,7 +948,8 @@
     "Amount": 78,
     "Category": "Travel",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "b0cce301-e6ce-41e1-af34-3bd089ae4dea"
   },
   {
     "Date": "2026-04-01",
@@ -863,6 +958,7 @@
     "Amount": 14.94,
     "Category": "Personal Items",
     "Card": "Scene+ Visa",
-    "Notes": null
+    "Notes": null,
+    "id": "b9bd520e-4142-4e98-b9a0-f3d19391b892"
   }
 ]

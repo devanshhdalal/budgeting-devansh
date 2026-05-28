@@ -1,113 +1,94 @@
 import fs from 'fs';
 import { randomUUID } from 'crypto';
-import { useGitHub } from '../config.js';
 import { normalizeDate } from '../utils/date.js';
 import { readJsonFile, writeJsonFile } from './fileStore.js';
 import { userPaths } from './paths.js';
 
 const caches = new Map();
 
-const ensureIds = (txs) => {
+const sortByDateDesc = (txs) => [...txs].sort((a, b) => (a.Date < b.Date ? 1 : -1));
+
+/** Add UUIDs and normalize dates, reporting whether anything changed. */
+const normalizeAll = (raw) => {
   let changed = false;
-  const withIds = txs.map((tx) => {
-    if (tx.id) return tx;
-    changed = true;
-    return { ...tx, id: randomUUID() };
+  const txs = raw.map((tx) => {
+    const next = { ...tx };
+    if (!next.id) {
+      next.id = randomUUID();
+      changed = true;
+    }
+    const iso = normalizeDate(next.Date);
+    if (iso && next.Date !== iso) {
+      next.Date = iso;
+      changed = true;
+    }
+    return next;
   });
-  return { txs: withIds, changed };
+  return { txs, changed };
 };
 
-const normalizeDates = (txs) => {
-  let changed = false;
-  const normalized = txs.map((tx) => {
-    const iso = normalizeDate(tx.Date);
-    if (!iso) return tx;
-    if (tx.Date !== iso) changed = true;
-    return { ...tx, Date: iso };
-  });
-  return { txs: normalized, changed };
-};
-
-const sortByDateDesc = (txs) => [...txs].sort((a, b) => new Date(b.Date) - new Date(a.Date));
-
-const prepareTransactions = async (userId, raw, paths) => {
-  if (!Array.isArray(raw)) return [];
-
-  const { txs: withIds, changed: idsChanged } = ensureIds(raw);
-  const { txs: dated, changed: datesChanged } = normalizeDates(withIds);
-  const sorted = sortByDateDesc(dated);
-
-  if (idsChanged || datesChanged) {
-    await writeJsonFile(
-      paths.transactionsFile,
-      paths.githubTransactions,
-      sorted,
-      `Normalize transactions (${userId})`
-    );
-  }
-
-  return sorted;
+const persist = (userId, txs, message) => {
+  const paths = userPaths(userId);
+  caches.set(userId, txs);
+  return writeJsonFile(paths.transactionsFile, paths.githubTransactions, txs, message);
 };
 
 const loadFromSource = async (userId) => {
   const paths = userPaths(userId);
   fs.mkdirSync(paths.userDir, { recursive: true });
   if (!fs.existsSync(paths.transactionsFile)) {
-    fs.writeFileSync(paths.transactionsFile, JSON.stringify([]));
+    fs.writeFileSync(paths.transactionsFile, '[]');
   }
 
-  const data = await readJsonFile(paths.transactionsFile, paths.githubTransactions);
-  const list = Array.isArray(data) ? data : [];
-  console.log(`[${userId}] Loaded ${list.length} transactions.`);
-  return prepareTransactions(userId, list, paths);
-};
+  const raw = await readJsonFile(paths.transactionsFile, paths.githubTransactions);
+  const list = Array.isArray(raw) ? raw : [];
 
-export const getTransactions = async (userId) => {
-  if (useGitHub && caches.has(userId)) return caches.get(userId);
-  const txs = await loadFromSource(userId);
-  caches.set(userId, txs);
-  return txs;
-};
+  const { txs, changed } = normalizeAll(list);
+  const sorted = sortByDateDesc(txs);
+  console.log(`[${userId}] Loaded ${sorted.length} transactions.`);
 
-export const saveTransactions = async (userId, txs, message = 'Update transactions') => {
-  const paths = userPaths(userId);
-  const { txs: dated } = normalizeDates(txs);
-  const sorted = sortByDateDesc(dated);
-  caches.set(userId, sorted);
-  await writeJsonFile(paths.transactionsFile, paths.githubTransactions, sorted, message);
+  if (changed) {
+    await persist(userId, sorted, `Normalize transactions (${userId})`);
+  } else {
+    caches.set(userId, sorted);
+  }
   return sorted;
 };
 
-export const upsertTransaction = async (userId, payload) => {
-  const txs = await getTransactions(userId);
-  const normalized = { ...payload };
+export const getTransactions = async (userId) => {
+  if (caches.has(userId)) return caches.get(userId);
+  return loadFromSource(userId);
+};
 
-  const isoDate = normalizeDate(normalized.Date);
-  if (!isoDate) throw new Error('Invalid date');
-  normalized.Date = isoDate;
-  delete normalized.User;
-  delete normalized.user;
+export const upsertTransaction = async (userId, payload) => {
+  const iso = normalizeDate(payload.Date);
+  if (!iso) throw new Error('Invalid date');
+
+  // eslint-disable-next-line no-unused-vars
+  const { User, user, ...rest } = payload;
+  const normalized = { ...rest, Date: iso };
+
+  const txs = await getTransactions(userId);
 
   if (normalized.id) {
     const idx = txs.findIndex((tx) => tx.id === normalized.id);
     if (idx === -1) throw new Error('Transaction not found');
-    txs[idx] = { ...txs[idx], ...normalized };
-    await saveTransactions(userId, txs, 'Update transaction');
-    return txs[idx];
+    const updated = { ...txs[idx], ...normalized };
+    const next = sortByDateDesc(txs.map((tx, i) => (i === idx ? updated : tx)));
+    await persist(userId, next, 'Update transaction');
+    return updated;
   }
 
   const created = { ...normalized, id: randomUUID() };
-  txs.unshift(created);
-  await saveTransactions(userId, txs, 'Add transaction');
+  const next = sortByDateDesc([created, ...txs]);
+  await persist(userId, next, 'Add transaction');
   return created;
 };
 
 export const deleteTransactionById = async (userId, id) => {
   const txs = await getTransactions(userId);
-  const idx = txs.findIndex((tx) => tx.id === id);
-  if (idx === -1) throw new Error('Transaction not found');
-  txs.splice(idx, 1);
-  await saveTransactions(userId, txs, 'Delete transaction');
+  if (!txs.some((tx) => tx.id === id)) {
+    throw new Error('Transaction not found');
+  }
+  await persist(userId, txs.filter((tx) => tx.id !== id), 'Delete transaction');
 };
-
-export const getDataFilePath = (userId) => userPaths(userId).transactionsFile;

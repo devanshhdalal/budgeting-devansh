@@ -1,38 +1,26 @@
 /**
- * Calculates the reward points for a given transaction.
+ * Resolve the point/cashback multiplier for a transaction.
+ * Looks at per-merchant overrides first, then the card's category multiplier,
+ * then the card's "Base" multiplier, then 1.
  */
+const resolveMultiplier = (cardConfig, category, merchant, overridesConfig) => {
+  const override = overridesConfig?.[merchant]?.[cardConfig.name];
+  if (override) {
+    return { multiplier: override.multiplier, note: override.note ?? null };
+  }
+  const multipliers = cardConfig.multipliers || {};
+  const multiplier = multipliers[category] ?? multipliers.Base ?? 1;
+  return { multiplier, note: null };
+};
+
 export const calculateRewards = (cardName, category, amount, merchant, cardsConfig, overridesConfig) => {
-  if (!cardName || !cardsConfig || !cardsConfig[cardName] || !amount) return null;
+  if (!cardName || !amount || !cardsConfig?.[cardName]) return null;
 
-  const cardConfig = cardsConfig[cardName];
-  let multiplier = null;
-  let rewardNote = null;
+  const cardConfig = { name: cardName, ...cardsConfig[cardName] };
+  const { multiplier, note } = resolveMultiplier(cardConfig, category, merchant, overridesConfig);
 
-  // 1. Check for merchant-specific overrides first
-  if (merchant && overridesConfig && overridesConfig[merchant] && overridesConfig[merchant][cardName]) {
-    const override = overridesConfig[merchant][cardName];
-    multiplier = override.multiplier;
-    rewardNote = override.note;
-  }
+  const raw = amount * multiplier;
+  const points = cardConfig.currency === 'Cashback' ? `$${raw.toFixed(2)}` : Math.floor(raw);
 
-  // 2. Fallback to category multiplier
-  if (multiplier === null) {
-    multiplier = cardConfig.multipliers[category] !== undefined
-      ? cardConfig.multipliers[category]
-      : (cardConfig.multipliers["Base"] !== undefined ? cardConfig.multipliers["Base"] : 1);
-  }
-
-  let points = amount * multiplier;
-
-  if (cardConfig.currency === "Cashback") {
-    points = `$${points.toFixed(2)}`;
-  } else {
-    points = Math.floor(points);
-  }
-
-  return {
-    points,
-    currency: cardConfig.currency,
-    note: rewardNote
-  };
+  return { points, currency: cardConfig.currency, note };
 };
