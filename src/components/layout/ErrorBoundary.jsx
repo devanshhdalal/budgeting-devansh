@@ -34,7 +34,7 @@ class ErrorBoundary extends Component {
           </div>
           <h1 className="boundary-title">Something went sideways</h1>
           <p className="boundary-desc">
-            BudgetPro hit an unexpected snag rendering this view. Your data is safe and stored locally.
+            Savvr hit an unexpected snag rendering this view. Your data is safe and stored locally.
           </p>
           {this.state.error?.message && (
             <pre className="boundary-trace">{this.state.error.message}</pre>

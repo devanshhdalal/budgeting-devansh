@@ -1,5 +1,5 @@
 export const USERS = [
-  { id: 'devansh', name: 'Devansh' },
+  { id: 'devansh', name: 'Devansh Dalal' },
   { id: 'paula', name: 'Paula' },
 ];
 
@@ -15,7 +15,7 @@ export const buildApiKeyMap = () => {
   add(process.env.API_KEY_DEVANSH, 'devansh');
   add(process.env.API_KEY_PAULA, 'paula');
 
-  // Legacy single key → Devansh (existing Shortcut / deploys)
+  // Legacy single key -> Devansh Dalal (existing Shortcut / deploys)
   if (process.env.API_KEY && !process.env.API_KEY_DEVANSH) {
     add(process.env.API_KEY, 'devansh');
   }

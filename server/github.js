@@ -7,7 +7,7 @@ export const fetchGitHubFile = async (filePath) => {
       headers: {
         Authorization: `Bearer ${GITHUB_TOKEN}`,
         Accept: 'application/vnd.github.v3+json',
-        'User-Agent': 'Budgeting-App',
+        'User-Agent': 'Savvr',
       },
     });
     if (!response.ok) {
@@ -30,7 +30,7 @@ export const putGitHubFile = async (filePath, contentBase64, message, sha = null
     headers: {
       Authorization: `Bearer ${GITHUB_TOKEN}`,
       Accept: 'application/vnd.github.v3+json',
-      'User-Agent': 'Budgeting-App',
+      'User-Agent': 'Savvr',
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(body),

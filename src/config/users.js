@@ -1,5 +1,5 @@
 export const USERS = [
-  { id: 'devansh', name: 'Devansh' },
+  { id: 'devansh', name: 'Devansh Dalal' },
   { id: 'paula', name: 'Paula' },
 ];
 

@@ -88,7 +88,7 @@ const Header = ({ theme, onThemeToggle }) => (
         <span className="brand-mark-inner" aria-hidden />
       </motion.div>
       <div className="brand-text">
-        <span className="brand-name">BudgetPro</span>
+        <span className="brand-name">Savvr</span>
         <span className="brand-tagline">Personal finance</span>
       </div>
     </div>
