@@ -189,6 +189,14 @@
       "renewalDate": "2026-07-10",
       "card": "Platinum Card",
       "notes": "2 TB Storage"
+    },
+    {
+      "id": "sub-d42d6bcd-08f4-4805-ba80-a82fed91f496",
+      "name": "iCloud+",
+      "amount": 12.99,
+      "renewalDate": "2026-07-11",
+      "card": "Platinum Card",
+      "notes": "2 TB Storage"
     }
   ]
 }
