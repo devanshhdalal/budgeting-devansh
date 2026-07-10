@@ -2,50 +2,18 @@
   {
     "Date": "2026-06-10",
     "Month": null,
-    "Merchant": "Membership Fee Installment",
-    "Amount": 15.99,
+    "Merchant": "Gmail",
+    "Amount": 2.86,
     "Category": "Subscriptions",
-    "Card": "",
-    "Notes": "Cobalt Fees",
-    "id": "da8c6816-f88b-4913-919e-089fe0fa068c",
-    "ReceiptUrl": "",
-    "IsRefund": false,
-    "Source": "manual",
-    "IsTest": false,
-    "Currency": "CAD",
-    "CreatedAt": "2026-07-10T22:43:11.206Z"
-  },
-  {
-    "Date": "2026-06-10",
-    "Month": null,
-    "Merchant": "Creditor Insurance - Tax Applied",
-    "Amount": 0.46,
-    "Category": "Other",
-    "Card": "Cobalt",
+    "Card": "AMEX Cobalt",
     "Notes": "",
-    "id": "2b34089d-b334-4d09-b978-97fba2f9bef4",
+    "id": "650f3e13-a506-41bb-89c1-fc905ddac33e",
     "ReceiptUrl": "",
     "IsRefund": false,
     "Source": "manual",
     "IsTest": false,
     "Currency": "CAD",
-    "CreatedAt": "2026-07-10T23:06:14.503Z"
-  },
-  {
-    "Date": "2026-06-10",
-    "Month": null,
-    "Merchant": "Creditor Insurance",
-    "Amount": 3.05,
-    "Category": "Other",
-    "Card": "",
-    "Notes": "",
-    "id": "90762d70-15d6-4187-bae8-0d541629ab30",
-    "ReceiptUrl": "",
-    "IsRefund": false,
-    "Source": "manual",
-    "IsTest": false,
-    "Currency": "CAD",
-    "CreatedAt": "2026-07-10T23:06:42.244Z"
+    "CreatedAt": "2026-07-10T23:05:01.623Z"
   },
   {
     "Date": "2026-06-10",
@@ -66,34 +34,66 @@
   {
     "Date": "2026-06-10",
     "Month": null,
-    "Merchant": "Gmail",
-    "Amount": 2.86,
-    "Category": "Subscriptions",
-    "Card": "AMEX Cobalt",
+    "Merchant": "Creditor Insurance",
+    "Amount": 3.05,
+    "Category": "Other",
+    "Card": "",
     "Notes": "",
-    "id": "650f3e13-a506-41bb-89c1-fc905ddac33e",
+    "id": "90762d70-15d6-4187-bae8-0d541629ab30",
     "ReceiptUrl": "",
     "IsRefund": false,
     "Source": "manual",
     "IsTest": false,
     "Currency": "CAD",
-    "CreatedAt": "2026-07-10T23:05:01.623Z"
+    "CreatedAt": "2026-07-10T23:06:42.244Z"
+  },
+  {
+    "Date": "2026-06-10",
+    "Month": null,
+    "Merchant": "Creditor Insurance - Tax Applied",
+    "Amount": 0.46,
+    "Category": "Other",
+    "Card": "Cobalt",
+    "Notes": "",
+    "id": "2b34089d-b334-4d09-b978-97fba2f9bef4",
+    "ReceiptUrl": "",
+    "IsRefund": false,
+    "Source": "manual",
+    "IsTest": false,
+    "Currency": "CAD",
+    "CreatedAt": "2026-07-10T23:06:14.503Z"
+  },
+  {
+    "Date": "2026-06-10",
+    "Month": null,
+    "Merchant": "Membership Fee Installment",
+    "Amount": 15.99,
+    "Category": "Subscriptions",
+    "Card": "",
+    "Notes": "Cobalt Fees",
+    "id": "da8c6816-f88b-4913-919e-089fe0fa068c",
+    "ReceiptUrl": "",
+    "IsRefund": false,
+    "Source": "manual",
+    "IsTest": false,
+    "Currency": "CAD",
+    "CreatedAt": "2026-07-10T22:43:11.206Z"
   },
   {
     "Date": "2026-06-09",
     "Month": null,
-    "Merchant": "Uber Trip",
-    "Amount": 14.82,
-    "Category": "Car",
+    "Merchant": "Bell Mobility",
+    "Amount": 41.11,
+    "Category": "Utilities",
     "Card": "AMEX Cobalt",
-    "Notes": "",
-    "id": "80e07823-69e2-4015-a1f3-a41344385c6d",
+    "Notes": "Phone bill",
+    "id": "7fc42644-b9c8-478e-be0a-53479df5b31c",
     "ReceiptUrl": "",
     "IsRefund": false,
     "Source": "manual",
     "IsTest": false,
     "Currency": "CAD",
-    "CreatedAt": "2026-07-10T23:04:44.288Z"
+    "CreatedAt": "2026-07-10T23:04:32.586Z"
   },
   {
     "Date": "2026-06-09",
@@ -114,50 +114,34 @@
   {
     "Date": "2026-06-09",
     "Month": null,
-    "Merchant": "Bell Mobility",
-    "Amount": 41.11,
-    "Category": "Utilities",
+    "Merchant": "Uber Trip",
+    "Amount": 14.82,
+    "Category": "Car",
     "Card": "AMEX Cobalt",
-    "Notes": "Phone bill",
-    "id": "7fc42644-b9c8-478e-be0a-53479df5b31c",
+    "Notes": "",
+    "id": "80e07823-69e2-4015-a1f3-a41344385c6d",
     "ReceiptUrl": "",
     "IsRefund": false,
     "Source": "manual",
     "IsTest": false,
     "Currency": "CAD",
-    "CreatedAt": "2026-07-10T23:04:32.586Z"
+    "CreatedAt": "2026-07-10T23:04:44.288Z"
   },
   {
     "Date": "2026-06-08",
     "Month": null,
-    "Merchant": "Indian Burger Joint",
-    "Amount": 14.65,
-    "Category": "Food",
-    "Card": "Cobalt",
-    "Notes": "",
-    "id": "7fa154fb-b1cd-4a54-95bd-c9c7c3a77be2",
+    "Merchant": "Bounce Bag Storage",
+    "Amount": 4.75,
+    "Category": "Other",
+    "Card": "AMEX Cobalt",
+    "Notes": "Bag stored in Downtown vancouver. ",
+    "id": "963aba39-1f57-4241-81af-9d97bf0d99b5",
     "ReceiptUrl": "",
     "IsRefund": false,
     "Source": "manual",
     "IsTest": false,
     "Currency": "CAD",
-    "CreatedAt": "2026-07-10T23:06:54.589Z"
-  },
-  {
-    "Date": "2026-06-08",
-    "Month": null,
-    "Merchant": "Indian Burger Joint",
-    "Amount": 11.5,
-    "Category": "Food",
-    "Card": "Cobalt",
-    "Notes": "",
-    "id": "be943c55-0605-48d2-a2a8-d911af8c6e7d",
-    "ReceiptUrl": "",
-    "IsRefund": false,
-    "Source": "manual",
-    "IsTest": false,
-    "Currency": "CAD",
-    "CreatedAt": "2026-07-10T23:06:59.757Z"
+    "CreatedAt": "2026-07-10T23:03:50.188Z"
   },
   {
     "Date": "2026-06-08",
@@ -178,34 +162,64 @@
   {
     "Date": "2026-06-08",
     "Month": null,
-    "Merchant": "Bounce Bag Storage",
-    "Amount": 4.75,
-    "Category": "Other",
-    "Card": "AMEX Cobalt",
-    "Notes": "Bag stored in Downtown vancouver. ",
-    "id": "963aba39-1f57-4241-81af-9d97bf0d99b5",
+    "Merchant": "Indian Burger Joint",
+    "Amount": 11.5,
+    "Category": "Food",
+    "Card": "Cobalt",
+    "Notes": "",
+    "id": "be943c55-0605-48d2-a2a8-d911af8c6e7d",
     "ReceiptUrl": "",
     "IsRefund": false,
     "Source": "manual",
     "IsTest": false,
     "Currency": "CAD",
-    "CreatedAt": "2026-07-10T23:03:50.188Z"
+    "CreatedAt": "2026-07-10T23:06:59.757Z"
+  },
+  {
+    "Date": "2026-06-08",
+    "Month": null,
+    "Merchant": "Indian Burger Joint",
+    "Amount": 14.65,
+    "Category": "Food",
+    "Card": "Cobalt",
+    "Notes": "",
+    "id": "7fa154fb-b1cd-4a54-95bd-c9c7c3a77be2",
+    "ReceiptUrl": "",
+    "IsRefund": false,
+    "Source": "manual",
+    "IsTest": false,
+    "Currency": "CAD",
+    "CreatedAt": "2026-07-10T23:06:54.589Z"
   },
   {
     "Date": "2026-06-07",
     "Month": null,
-    "Merchant": "Real Fruit",
-    "Amount": 11.54,
-    "Category": "Food",
+    "Merchant": "Amazon",
+    "Amount": 17.63,
+    "Category": "Other",
     "Card": "AMEX Cobalt",
-    "Notes": "",
-    "id": "ea865760-5e17-4bb8-b46c-6d780ce48c37",
-    "ReceiptUrl": "",
-    "IsRefund": false,
-    "Source": "manual",
-    "IsTest": false,
-    "Currency": "CAD",
-    "CreatedAt": "2026-07-10T23:07:24.503Z"
+    "Notes": null,
+    "id": "df128cf8-786f-4102-b4b3-a1390d807de7"
+  },
+  {
+    "Date": "2026-06-07",
+    "Month": null,
+    "Merchant": "Amazon",
+    "Amount": 25.62,
+    "Category": "Other",
+    "Card": "AMEX Cobalt",
+    "Notes": null,
+    "id": "ac157b05-ecd8-46c4-83a4-3751f92db170"
+  },
+  {
+    "Date": "2026-06-07",
+    "Month": null,
+    "Merchant": "Compass Web Burnaby     Burnaby",
+    "Amount": 10,
+    "Category": "Other",
+    "Card": "AMEX Cobalt",
+    "Notes": null,
+    "id": "2b8df483-90d5-44f9-934a-e4d944b0ecce"
   },
   {
     "Date": "2026-06-07",
@@ -226,52 +240,28 @@
   {
     "Date": "2026-06-07",
     "Month": null,
-    "Merchant": "Compass Web Burnaby     Burnaby",
-    "Amount": 10,
-    "Category": "Other",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "2b8df483-90d5-44f9-934a-e4d944b0ecce"
-  },
-  {
-    "Date": "2026-06-07",
-    "Month": null,
-    "Merchant": "Amazon",
-    "Amount": 25.62,
-    "Category": "Other",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "ac157b05-ecd8-46c4-83a4-3751f92db170"
-  },
-  {
-    "Date": "2026-06-07",
-    "Month": null,
-    "Merchant": "Amazon",
-    "Amount": 17.63,
-    "Category": "Other",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "df128cf8-786f-4102-b4b3-a1390d807de7"
+    "Merchant": "Real Fruit",
+    "Amount": 11.54,
+    "Category": "Food",
+    "Card": "Cobalt",
+    "Notes": "va",
+    "id": "ea865760-5e17-4bb8-b46c-6d780ce48c37",
+    "ReceiptUrl": "",
+    "IsRefund": false,
+    "Source": "manual",
+    "IsTest": false,
+    "Currency": "CAD",
+    "CreatedAt": "2026-07-10T23:07:30.497Z"
   },
   {
     "Date": "2026-06-06",
     "Month": null,
-    "Merchant": "Jinya Ramen Bar",
-    "Amount": 31.4,
+    "Merchant": "Breka Bakery & Cafe",
+    "Amount": 15.88,
     "Category": "Other",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "a380d133-f96f-41b1-80fc-effcc732b9be"
-  },
-  {
-    "Date": "2026-06-06",
-    "Month": null,
-    "Merchant": "Indian Burger Joint",
-    "Amount": 17.96,
-    "Category": "Other",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "741a479e-33b1-4459-bbe2-cab7088c4bf4"
+    "id": "145c843d-2060-4c68-a3e7-8bcdce5fed32"
   },
   {
     "Date": "2026-06-06",
@@ -286,102 +276,32 @@
   {
     "Date": "2026-06-06",
     "Month": null,
-    "Merchant": "Breka Bakery & Cafe",
-    "Amount": 15.88,
+    "Merchant": "Indian Burger Joint",
+    "Amount": 17.96,
     "Category": "Other",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "145c843d-2060-4c68-a3e7-8bcdce5fed32"
+    "id": "741a479e-33b1-4459-bbe2-cab7088c4bf4"
   },
   {
-    "Date": "2026-06-05",
+    "Date": "2026-06-06",
     "Month": null,
-    "Merchant": "Uber One Membership",
-    "Amount": 10.49,
+    "Merchant": "Jinya Ramen Bar",
+    "Amount": 31.4,
     "Category": "Other",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "695d8054-6679-4953-b3b7-01ef58f6c8e2"
+    "id": "a380d133-f96f-41b1-80fc-effcc732b9be"
   },
   {
     "Date": "2026-06-05",
     "Month": null,
-    "Merchant": "Uber Eats",
-    "Amount": 20.85,
-    "Category": "Food",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "b24518a1-c15e-462c-ac24-0716cc4afac9"
-  },
-  {
-    "Date": "2026-06-05",
-    "Month": null,
-    "Merchant": "Tst-ignite Pizzeria Ga",
-    "Amount": 4.7,
+    "Merchant": "Birds & The Beets",
+    "Amount": 10.87,
     "Category": "Other",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "cccb73e8-2886-49dd-8895-aaa760d0b518"
-  },
-  {
-    "Date": "2026-06-05",
-    "Month": null,
-    "Merchant": "Shoppers Drug Mart",
-    "Amount": 27.99,
-    "Category": "Health",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "61117439-4e82-4550-84ee-d4647afe4840"
-  },
-  {
-    "Date": "2026-06-05",
-    "Month": null,
-    "Merchant": "Rain Or Shine Homemade",
-    "Amount": 5.71,
-    "Category": "Other",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "28a5c1cf-34f7-4516-8435-ce9459486fd3"
-  },
-  {
-    "Date": "2026-06-05",
-    "Month": null,
-    "Merchant": "Lee's Donuts Gastown",
-    "Amount": 10,
-    "Category": "Other",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "79d1d4f3-83e0-4b22-ac19-5702b89e7790"
-  },
-  {
-    "Date": "2026-06-05",
-    "Month": null,
-    "Merchant": "Heart Connection In",
-    "Amount": 18.52,
-    "Category": "Other",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "109fc385-121b-4bde-be1e-7e0b7b8becdc"
-  },
-  {
-    "Date": "2026-06-05",
-    "Month": null,
-    "Merchant": "Dollarama #",
-    "Amount": 13.23,
-    "Category": "Other",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "86efcd92-9423-4d60-a3a9-6d101e5b9258"
-  },
-  {
-    "Date": "2026-06-05",
-    "Month": null,
-    "Merchant": "Compass Walk            Burnaby",
-    "Amount": 26,
-    "Category": "Other",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "4fa7616d-5b0e-4258-b3da-7e92c5fd523f"
+    "id": "eccb6eea-7950-46a7-a425-29da7107fa56"
   },
   {
     "Date": "2026-06-05",
@@ -396,12 +316,92 @@
   {
     "Date": "2026-06-05",
     "Month": null,
-    "Merchant": "Birds & The Beets",
-    "Amount": 10.87,
+    "Merchant": "Compass Walk            Burnaby",
+    "Amount": 26,
     "Category": "Other",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "eccb6eea-7950-46a7-a425-29da7107fa56"
+    "id": "4fa7616d-5b0e-4258-b3da-7e92c5fd523f"
+  },
+  {
+    "Date": "2026-06-05",
+    "Month": null,
+    "Merchant": "Dollarama #",
+    "Amount": 13.23,
+    "Category": "Other",
+    "Card": "AMEX Cobalt",
+    "Notes": null,
+    "id": "86efcd92-9423-4d60-a3a9-6d101e5b9258"
+  },
+  {
+    "Date": "2026-06-05",
+    "Month": null,
+    "Merchant": "Heart Connection In",
+    "Amount": 18.52,
+    "Category": "Other",
+    "Card": "AMEX Cobalt",
+    "Notes": null,
+    "id": "109fc385-121b-4bde-be1e-7e0b7b8becdc"
+  },
+  {
+    "Date": "2026-06-05",
+    "Month": null,
+    "Merchant": "Lee's Donuts Gastown",
+    "Amount": 10,
+    "Category": "Other",
+    "Card": "AMEX Cobalt",
+    "Notes": null,
+    "id": "79d1d4f3-83e0-4b22-ac19-5702b89e7790"
+  },
+  {
+    "Date": "2026-06-05",
+    "Month": null,
+    "Merchant": "Rain Or Shine Homemade",
+    "Amount": 5.71,
+    "Category": "Other",
+    "Card": "AMEX Cobalt",
+    "Notes": null,
+    "id": "28a5c1cf-34f7-4516-8435-ce9459486fd3"
+  },
+  {
+    "Date": "2026-06-05",
+    "Month": null,
+    "Merchant": "Shoppers Drug Mart",
+    "Amount": 27.99,
+    "Category": "Health",
+    "Card": "AMEX Cobalt",
+    "Notes": null,
+    "id": "61117439-4e82-4550-84ee-d4647afe4840"
+  },
+  {
+    "Date": "2026-06-05",
+    "Month": null,
+    "Merchant": "Tst-ignite Pizzeria Ga",
+    "Amount": 4.7,
+    "Category": "Other",
+    "Card": "AMEX Cobalt",
+    "Notes": null,
+    "id": "cccb73e8-2886-49dd-8895-aaa760d0b518"
+  },
+  {
+    "Date": "2026-06-05",
+    "Month": null,
+    "Merchant": "Uber Eats",
+    "Amount": 20.85,
+    "Category": "Food",
+    "Card": "AMEX Cobalt",
+    "Notes": null,
+    "id": "b24518a1-c15e-462c-ac24-0716cc4afac9"
+  },
+  {
+    "Date": "2026-06-05",
+    "Month": null,
+    "Merchant": "Uber One Membership",
+    "Amount": 10.49,
+    "Category": "Other",
+    "Card": "AMEX Cobalt",
+    "Notes": null,
+    "id": "695d8054-6679-4953-b3b7-01ef58f6c8e2"
   },
   {
     "Date": "2026-06-04",
@@ -416,16 +416,6 @@
   {
     "Date": "2026-06-03",
     "Month": null,
-    "Merchant": "Rec Room",
-    "Amount": 8.33,
-    "Category": "Food",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "0d6c6a77-98bd-4619-a662-4718f1396a4b"
-  },
-  {
-    "Date": "2026-06-03",
-    "Month": null,
     "Merchant": "Airbnb * Hm8a4cawy4     London",
     "Amount": 387.6,
     "Category": "Other",
@@ -434,34 +424,24 @@
     "id": "8de371a4-03b7-402d-b655-90b0c1dd963a"
   },
   {
-    "Date": "2026-06-02",
+    "Date": "2026-06-03",
     "Month": null,
     "Merchant": "Rec Room",
     "Amount": 8.33,
     "Category": "Food",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "adf89d7c-c107-4aa3-9fc0-bf5bff8c0257"
+    "id": "0d6c6a77-98bd-4619-a662-4718f1396a4b"
   },
   {
     "Date": "2026-06-02",
     "Month": null,
-    "Merchant": "Five Guys",
-    "Amount": 30.82,
-    "Category": "Food",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "8bb0279c-1454-4f0f-9121-907b31e50864"
-  },
-  {
-    "Date": "2026-06-02",
-    "Month": null,
-    "Merchant": "Amazon",
-    "Amount": 11.49,
+    "Merchant": "Airbnb * Hmadwpwdqx     London",
+    "Amount": 623.04,
     "Category": "Other",
     "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "f89a5e17-6967-4929-87f1-f1f9e13c3354"
+    "Notes": "Refund: AIRBNB * HMADWPWDQX     LONDON",
+    "id": "6aa7fdb1-29d9-41df-bc5b-4a7b5ae91266"
   },
   {
     "Date": "2026-06-02",
@@ -476,12 +456,32 @@
   {
     "Date": "2026-06-02",
     "Month": null,
-    "Merchant": "Airbnb * Hmadwpwdqx     London",
-    "Amount": 623.04,
+    "Merchant": "Amazon",
+    "Amount": 11.49,
     "Category": "Other",
     "Card": "AMEX Cobalt",
-    "Notes": "Refund: AIRBNB * HMADWPWDQX     LONDON",
-    "id": "6aa7fdb1-29d9-41df-bc5b-4a7b5ae91266"
+    "Notes": null,
+    "id": "f89a5e17-6967-4929-87f1-f1f9e13c3354"
+  },
+  {
+    "Date": "2026-06-02",
+    "Month": null,
+    "Merchant": "Five Guys",
+    "Amount": 30.82,
+    "Category": "Food",
+    "Card": "AMEX Cobalt",
+    "Notes": null,
+    "id": "8bb0279c-1454-4f0f-9121-907b31e50864"
+  },
+  {
+    "Date": "2026-06-02",
+    "Month": null,
+    "Merchant": "Rec Room",
+    "Amount": 8.33,
+    "Category": "Food",
+    "Card": "AMEX Cobalt",
+    "Notes": null,
+    "id": "adf89d7c-c107-4aa3-9fc0-bf5bff8c0257"
   },
   {
     "Date": "2026-06-01",
@@ -506,12 +506,12 @@
   {
     "Date": "2026-05-30",
     "Month": null,
-    "Merchant": "McDonald's",
-    "Amount": 2.52,
-    "Category": "Food",
+    "Merchant": "Expedia",
+    "Amount": 318.63,
+    "Category": "Other",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "37e0a6cf-1c26-4901-9b8d-aa8f13b942d8"
+    "id": "774238ab-2107-4a1e-8dc9-dc0b11a9fa90"
   },
   {
     "Date": "2026-05-30",
@@ -526,12 +526,12 @@
   {
     "Date": "2026-05-30",
     "Month": null,
-    "Merchant": "Expedia",
-    "Amount": 318.63,
-    "Category": "Other",
+    "Merchant": "McDonald's",
+    "Amount": 2.52,
+    "Category": "Food",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "774238ab-2107-4a1e-8dc9-dc0b11a9fa90"
+    "id": "37e0a6cf-1c26-4901-9b8d-aa8f13b942d8"
   },
   {
     "Date": "2026-05-29",
@@ -556,22 +556,22 @@
   {
     "Date": "2026-05-27",
     "Month": null,
-    "Merchant": "Marie's Mini Mart",
-    "Amount": 24.67,
-    "Category": "Other",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "50146255-5c14-4c67-83e1-e6c02963e8e2"
-  },
-  {
-    "Date": "2026-05-27",
-    "Month": null,
     "Merchant": "Lawtons",
     "Amount": 14.94,
     "Category": "Health",
     "Card": "AMEX Cobalt",
     "Notes": null,
     "id": "45f56fe2-9b0c-470d-ad3d-88057ff2910c"
+  },
+  {
+    "Date": "2026-05-27",
+    "Month": null,
+    "Merchant": "Marie's Mini Mart",
+    "Amount": 24.67,
+    "Category": "Other",
+    "Card": "AMEX Cobalt",
+    "Notes": null,
+    "id": "50146255-5c14-4c67-83e1-e6c02963e8e2"
   },
   {
     "Date": "2026-05-26",
@@ -586,12 +586,12 @@
   {
     "Date": "2026-05-25",
     "Month": null,
-    "Merchant": "Tim Hortons",
-    "Amount": 16.15,
+    "Merchant": "Jiffy Cabs",
+    "Amount": 23.5,
     "Category": "Other",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "72e1c582-b8db-4335-b614-a03af150119b"
+    "id": "81a81943-1121-4429-b01f-d65a0002c804"
   },
   {
     "Date": "2026-05-25",
@@ -606,12 +606,12 @@
   {
     "Date": "2026-05-25",
     "Month": null,
-    "Merchant": "Jiffy Cabs",
-    "Amount": 23.5,
+    "Merchant": "Tim Hortons",
+    "Amount": 16.15,
     "Category": "Other",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "81a81943-1121-4429-b01f-d65a0002c804"
+    "id": "72e1c582-b8db-4335-b614-a03af150119b"
   },
   {
     "Date": "2026-05-24",
@@ -626,12 +626,12 @@
   {
     "Date": "2026-05-23",
     "Month": null,
-    "Merchant": "Strawberry Blonde Bak",
-    "Amount": 6.22,
+    "Merchant": "Macewen - Catherine St",
+    "Amount": 90.85,
     "Category": "Other",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "dee68bbb-af52-4cf5-95d6-5abb0cb52f47"
+    "id": "32302cee-3331-4731-85ad-4f01b5a7c60a"
   },
   {
     "Date": "2026-05-23",
@@ -646,62 +646,22 @@
   {
     "Date": "2026-05-23",
     "Month": null,
-    "Merchant": "Macewen - Catherine St",
-    "Amount": 90.85,
+    "Merchant": "Strawberry Blonde Bak",
+    "Amount": 6.22,
     "Category": "Other",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "32302cee-3331-4731-85ad-4f01b5a7c60a"
+    "id": "dee68bbb-af52-4cf5-95d6-5abb0cb52f47"
   },
   {
     "Date": "2026-05-21",
     "Month": null,
-    "Merchant": "Shawarma De Roza",
-    "Amount": 11.29,
+    "Merchant": "*Rfbt-rideau Centre Ott",
+    "Amount": 10.16,
     "Category": "Other",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "de63dbcd-6e04-47aa-bc72-893d64783503"
-  },
-  {
-    "Date": "2026-05-21",
-    "Month": null,
-    "Merchant": "McDonald's",
-    "Amount": 38.75,
-    "Category": "Food",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "2ee906c2-dcfd-49a7-af76-c1ae20a9fb48"
-  },
-  {
-    "Date": "2026-05-21",
-    "Month": null,
-    "Merchant": "McDonald's",
-    "Amount": 7.56,
-    "Category": "Food",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "45de0c68-74bb-43aa-bfb8-57ffcf406060"
-  },
-  {
-    "Date": "2026-05-21",
-    "Month": null,
-    "Merchant": "Lego Canada Inc,        Markham",
-    "Amount": 27.09,
-    "Category": "Other",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "1ff25256-50d0-4617-b11a-fc1a25370815"
-  },
-  {
-    "Date": "2026-05-21",
-    "Month": null,
-    "Merchant": "Dollarama",
-    "Amount": 10.74,
-    "Category": "Other",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "8dedd864-f469-442c-b9d6-2db33ee9a403"
+    "id": "afda595e-2675-4e7c-b44d-ff92f0820f62"
   },
   {
     "Date": "2026-05-21",
@@ -716,42 +676,62 @@
   {
     "Date": "2026-05-21",
     "Month": null,
-    "Merchant": "*Rfbt-rideau Centre Ott",
-    "Amount": 10.16,
+    "Merchant": "Dollarama",
+    "Amount": 10.74,
     "Category": "Other",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "afda595e-2675-4e7c-b44d-ff92f0820f62"
+    "id": "8dedd864-f469-442c-b9d6-2db33ee9a403"
   },
   {
-    "Date": "2026-05-20",
+    "Date": "2026-05-21",
     "Month": null,
-    "Merchant": "Too Good To Go Canada T",
-    "Amount": 5.99,
+    "Merchant": "Lego Canada Inc,        Markham",
+    "Amount": 27.09,
     "Category": "Other",
     "Card": "AMEX Cobalt",
-    "Notes": "Refund: TOO GOOD TO GO CANADA T VANCOUVER",
-    "id": "c6d547b2-f44e-43d4-a7f1-78db932cc8b1"
+    "Notes": null,
+    "id": "1ff25256-50d0-4617-b11a-fc1a25370815"
+  },
+  {
+    "Date": "2026-05-21",
+    "Month": null,
+    "Merchant": "McDonald's",
+    "Amount": 7.56,
+    "Category": "Food",
+    "Card": "AMEX Cobalt",
+    "Notes": null,
+    "id": "45de0c68-74bb-43aa-bfb8-57ffcf406060"
+  },
+  {
+    "Date": "2026-05-21",
+    "Month": null,
+    "Merchant": "McDonald's",
+    "Amount": 38.75,
+    "Category": "Food",
+    "Card": "AMEX Cobalt",
+    "Notes": null,
+    "id": "2ee906c2-dcfd-49a7-af76-c1ae20a9fb48"
+  },
+  {
+    "Date": "2026-05-21",
+    "Month": null,
+    "Merchant": "Shawarma De Roza",
+    "Amount": 11.29,
+    "Category": "Other",
+    "Card": "AMEX Cobalt",
+    "Notes": null,
+    "id": "de63dbcd-6e04-47aa-bc72-893d64783503"
   },
   {
     "Date": "2026-05-20",
     "Month": null,
-    "Merchant": "Rec Room",
-    "Amount": 9.08,
-    "Category": "Food",
+    "Merchant": "Apple.com/bill",
+    "Amount": 10.9,
+    "Category": "Other",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "c45b5f43-336e-4eee-8ddb-e41ac6114293"
-  },
-  {
-    "Date": "2026-05-20",
-    "Month": null,
-    "Merchant": "Osmow's",
-    "Amount": 17.24,
-    "Category": "Food",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "2cea551e-6d4d-4118-9aa9-01173fd31279"
+    "id": "f716e053-8679-4cfb-b0da-b47075df2795"
   },
   {
     "Date": "2026-05-20",
@@ -766,22 +746,42 @@
   {
     "Date": "2026-05-20",
     "Month": null,
-    "Merchant": "Apple.com/bill",
-    "Amount": 10.9,
-    "Category": "Other",
+    "Merchant": "Osmow's",
+    "Amount": 17.24,
+    "Category": "Food",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "f716e053-8679-4cfb-b0da-b47075df2795"
+    "id": "2cea551e-6d4d-4118-9aa9-01173fd31279"
+  },
+  {
+    "Date": "2026-05-20",
+    "Month": null,
+    "Merchant": "Rec Room",
+    "Amount": 9.08,
+    "Category": "Food",
+    "Card": "AMEX Cobalt",
+    "Notes": null,
+    "id": "c45b5f43-336e-4eee-8ddb-e41ac6114293"
+  },
+  {
+    "Date": "2026-05-20",
+    "Month": null,
+    "Merchant": "Too Good To Go Canada T",
+    "Amount": 5.99,
+    "Category": "Other",
+    "Card": "AMEX Cobalt",
+    "Notes": "Refund: TOO GOOD TO GO CANADA T VANCOUVER",
+    "id": "c6d547b2-f44e-43d4-a7f1-78db932cc8b1"
   },
   {
     "Date": "2026-05-19",
     "Month": null,
-    "Merchant": "Uber Trip",
-    "Amount": 16.91,
-    "Category": "Other",
+    "Merchant": "Rec Room",
+    "Amount": 8.33,
+    "Category": "Food",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "e1902a07-ab3d-4297-b886-d340c4466366"
+    "id": "be19fbbc-789e-4513-aec8-6355efb635d7"
   },
   {
     "Date": "2026-05-19",
@@ -796,12 +796,12 @@
   {
     "Date": "2026-05-19",
     "Month": null,
-    "Merchant": "Rec Room",
-    "Amount": 8.33,
-    "Category": "Food",
+    "Merchant": "Uber Trip",
+    "Amount": 16.91,
+    "Category": "Other",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "be19fbbc-789e-4513-aec8-6355efb635d7"
+    "id": "e1902a07-ab3d-4297-b886-d340c4466366"
   },
   {
     "Date": "2026-05-18",
@@ -816,22 +816,12 @@
   {
     "Date": "2026-05-17",
     "Month": null,
-    "Merchant": "Too Good To Go Canada T",
-    "Amount": 5.99,
+    "Merchant": "Amazon",
+    "Amount": 34.95,
     "Category": "Other",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "028c5f91-7044-4bcb-9e44-1ac13590bffd"
-  },
-  {
-    "Date": "2026-05-17",
-    "Month": null,
-    "Merchant": "Jns Salon Limited",
-    "Amount": 52.83,
-    "Category": "Other",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "649e41c5-696a-4d74-b2a8-2db40637696f"
+    "id": "25df4e8f-2b05-4566-ab08-f42852f3551e"
   },
   {
     "Date": "2026-05-17",
@@ -846,22 +836,22 @@
   {
     "Date": "2026-05-17",
     "Month": null,
-    "Merchant": "Amazon",
-    "Amount": 34.95,
+    "Merchant": "Jns Salon Limited",
+    "Amount": 52.83,
     "Category": "Other",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "25df4e8f-2b05-4566-ab08-f42852f3551e"
+    "id": "649e41c5-696a-4d74-b2a8-2db40637696f"
   },
   {
-    "Date": "2026-05-16",
+    "Date": "2026-05-17",
     "Month": null,
-    "Merchant": "Marie's Mini Mart",
-    "Amount": 5.19,
+    "Merchant": "Too Good To Go Canada T",
+    "Amount": 5.99,
     "Category": "Other",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "eabe28c1-8f0c-4f57-a9cc-663e297ec72b"
+    "id": "028c5f91-7044-4bcb-9e44-1ac13590bffd"
   },
   {
     "Date": "2026-05-16",
@@ -872,6 +862,16 @@
     "Card": "AMEX Cobalt",
     "Notes": null,
     "id": "79d57b0b-c5a7-43cd-a585-de8ed2c0bee4"
+  },
+  {
+    "Date": "2026-05-16",
+    "Month": null,
+    "Merchant": "Marie's Mini Mart",
+    "Amount": 5.19,
+    "Category": "Other",
+    "Card": "AMEX Cobalt",
+    "Notes": null,
+    "id": "eabe28c1-8f0c-4f57-a9cc-663e297ec72b"
   },
   {
     "Date": "2026-05-15",
@@ -886,22 +886,22 @@
   {
     "Date": "2026-05-14",
     "Month": null,
-    "Merchant": "Tidal",
-    "Amount": 6.31,
-    "Category": "Subscriptions",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "8a6f49c0-198a-4251-bae5-5c132e5a5cf5"
-  },
-  {
-    "Date": "2026-05-14",
-    "Month": null,
     "Merchant": "Keg -",
     "Amount": 230.46,
     "Category": "Other",
     "Card": "AMEX Cobalt",
     "Notes": null,
     "id": "56193627-8cdb-4091-9b80-436bdf072337"
+  },
+  {
+    "Date": "2026-05-14",
+    "Month": null,
+    "Merchant": "Tidal",
+    "Amount": 6.31,
+    "Category": "Subscriptions",
+    "Card": "AMEX Cobalt",
+    "Notes": null,
+    "id": "8a6f49c0-198a-4251-bae5-5c132e5a5cf5"
   },
   {
     "Date": "2026-05-12",
@@ -916,16 +916,6 @@
   {
     "Date": "2026-05-11",
     "Month": null,
-    "Merchant": "Marie's Mini Mart",
-    "Amount": 9.16,
-    "Category": "Other",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "f50b43d3-3c14-4b57-b656-619f920be368"
-  },
-  {
-    "Date": "2026-05-11",
-    "Month": null,
     "Merchant": "Circle K",
     "Amount": 10.38,
     "Category": "Car",
@@ -934,24 +924,24 @@
     "id": "a6fb7de0-8c4b-45c1-b75f-4d417ce9dd6a"
   },
   {
-    "Date": "2026-05-10",
+    "Date": "2026-05-11",
     "Month": null,
-    "Merchant": "Membership Fee Installment",
-    "Amount": 15.99,
+    "Merchant": "Marie's Mini Mart",
+    "Amount": 9.16,
     "Category": "Other",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "034f8735-2527-4a16-a364-57e72f1e8f04"
+    "id": "f50b43d3-3c14-4b57-b656-619f920be368"
   },
   {
     "Date": "2026-05-10",
     "Month": null,
-    "Merchant": "Creditor Insurance - Tax Applied",
-    "Amount": 0.29,
+    "Merchant": "Apple.com/bill",
+    "Amount": 14.94,
     "Category": "Other",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "15359c3c-cfd1-4623-a19a-d87017036b0d"
+    "id": "6368fee7-9635-434c-b337-f2117b78c29a"
   },
   {
     "Date": "2026-05-10",
@@ -966,12 +956,22 @@
   {
     "Date": "2026-05-10",
     "Month": null,
-    "Merchant": "Apple.com/bill",
-    "Amount": 14.94,
+    "Merchant": "Creditor Insurance - Tax Applied",
+    "Amount": 0.29,
     "Category": "Other",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "6368fee7-9635-434c-b337-f2117b78c29a"
+    "id": "15359c3c-cfd1-4623-a19a-d87017036b0d"
+  },
+  {
+    "Date": "2026-05-10",
+    "Month": null,
+    "Merchant": "Membership Fee Installment",
+    "Amount": 15.99,
+    "Category": "Other",
+    "Card": "AMEX Cobalt",
+    "Notes": null,
+    "id": "034f8735-2527-4a16-a364-57e72f1e8f04"
   },
   {
     "Date": "2026-05-08",
@@ -986,22 +986,23 @@
   {
     "Date": "2026-05-07",
     "Month": null,
-    "Merchant": "Sobeys",
-    "Amount": 40.84,
-    "Category": "Groceries",
+    "Merchant": "Haveli Restaurant",
+    "Amount": 125.51,
+    "Category": "Food",
     "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "a4364b6c-71ea-42ea-9030-f418e30bf2ce"
+    "Notes": "Shikha's Birthday Dinner",
+    "ReceiptUrl": "",
+    "id": "38c40dfb-b2db-4aca-b8f3-50b636739477"
   },
   {
     "Date": "2026-05-07",
     "Month": null,
-    "Merchant": "Rec Room",
-    "Amount": 13.86,
-    "Category": "Food",
+    "Merchant": "Marshalls",
+    "Amount": 57.47,
+    "Category": "Personal Items",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "11f4ddaf-638c-4f14-86b2-c6f43b907080"
+    "id": "5e8b5675-122d-4bcd-953b-7424f63c5892"
   },
   {
     "Date": "2026-05-07",
@@ -1017,83 +1018,32 @@
   {
     "Date": "2026-05-07",
     "Month": null,
-    "Merchant": "Marshalls",
-    "Amount": 57.47,
-    "Category": "Personal Items",
+    "Merchant": "Rec Room",
+    "Amount": 13.86,
+    "Category": "Food",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "5e8b5675-122d-4bcd-953b-7424f63c5892"
+    "id": "11f4ddaf-638c-4f14-86b2-c6f43b907080"
   },
   {
     "Date": "2026-05-07",
     "Month": null,
-    "Merchant": "Haveli Restaurant",
-    "Amount": 125.51,
-    "Category": "Food",
-    "Card": "AMEX Cobalt",
-    "Notes": "Shikha's Birthday Dinner",
-    "ReceiptUrl": "",
-    "id": "38c40dfb-b2db-4aca-b8f3-50b636739477"
-  },
-  {
-    "Date": "2026-05-06",
-    "Month": null,
-    "Merchant": "Walmart",
-    "Amount": 19.54,
+    "Merchant": "Sobeys",
+    "Amount": 40.84,
     "Category": "Groceries",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "b80afc8a-1a7f-45f7-b21e-de79ddc3c361"
+    "id": "a4364b6c-71ea-42ea-9030-f418e30bf2ce"
   },
   {
     "Date": "2026-05-06",
     "Month": null,
-    "Merchant": "Temu",
-    "Amount": 11.3,
-    "Category": "Personal Items",
+    "Merchant": "Costco Gas",
+    "Amount": 47.43,
+    "Category": "Car",
     "Card": "Neo Mastercard",
     "Notes": null,
-    "id": "082164bc-e251-4c2e-b076-e9a6d02a963c"
-  },
-  {
-    "Date": "2026-05-06",
-    "Month": null,
-    "Merchant": "Shoppers Drug Mart",
-    "Amount": 57.65,
-    "Category": "Health",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "15d950b8-1853-4355-9b2f-0ebe4c8929cc"
-  },
-  {
-    "Date": "2026-05-06",
-    "Month": null,
-    "Merchant": "Sephora",
-    "Amount": 39.1,
-    "Category": "Personal Items",
-    "Card": "Neo Mastercard",
-    "Notes": null,
-    "id": "4fa0890a-e1ec-4cd4-9efc-c6948e878c63"
-  },
-  {
-    "Date": "2026-05-06",
-    "Month": null,
-    "Merchant": "Sephora",
-    "Amount": 39.1,
-    "Category": "Personal Items",
-    "Card": "Neo Mastercard",
-    "Notes": null,
-    "id": "b1550d3b-9868-4ef0-9652-82f64376924b"
-  },
-  {
-    "Date": "2026-05-06",
-    "Month": null,
-    "Merchant": "McDonald's",
-    "Amount": 10.42,
-    "Category": "Food",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "f83ee966-8787-44e6-8be3-0cf74b870267"
+    "id": "079d9992-9b3f-4ca7-997d-d4eb72bf30eb"
   },
   {
     "Date": "2026-05-06",
@@ -1108,52 +1058,72 @@
   {
     "Date": "2026-05-06",
     "Month": null,
-    "Merchant": "Costco Gas",
-    "Amount": 47.43,
-    "Category": "Car",
-    "Card": "Neo Mastercard",
-    "Notes": null,
-    "id": "079d9992-9b3f-4ca7-997d-d4eb72bf30eb"
-  },
-  {
-    "Date": "2026-05-05",
-    "Month": null,
-    "Merchant": "Walmart",
-    "Amount": 34.14,
-    "Category": "Groceries",
+    "Merchant": "McDonald's",
+    "Amount": 10.42,
+    "Category": "Food",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "4cc7d81d-e09a-4db8-ba7f-913d1898ad17"
+    "id": "f83ee966-8787-44e6-8be3-0cf74b870267"
   },
   {
-    "Date": "2026-05-05",
-    "Month": null,
-    "Merchant": "Taco Bell",
-    "Amount": 28.14,
-    "Category": "Food",
-    "Card": "Scene+ Visa",
-    "Notes": null,
-    "id": "e7f0979b-a57f-41db-b170-64b938ba6b59"
-  },
-  {
-    "Date": "2026-05-05",
+    "Date": "2026-05-06",
     "Month": null,
     "Merchant": "Sephora",
-    "Amount": 13.37,
+    "Amount": 39.1,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
     "Notes": null,
-    "id": "6c905f05-c14b-474c-b25a-63904f0bc83d"
+    "id": "b1550d3b-9868-4ef0-9652-82f64376924b"
+  },
+  {
+    "Date": "2026-05-06",
+    "Month": null,
+    "Merchant": "Sephora",
+    "Amount": 39.1,
+    "Category": "Personal Items",
+    "Card": "Neo Mastercard",
+    "Notes": null,
+    "id": "4fa0890a-e1ec-4cd4-9efc-c6948e878c63"
+  },
+  {
+    "Date": "2026-05-06",
+    "Month": null,
+    "Merchant": "Shoppers Drug Mart",
+    "Amount": 57.65,
+    "Category": "Health",
+    "Card": "AMEX Cobalt",
+    "Notes": null,
+    "id": "15d950b8-1853-4355-9b2f-0ebe4c8929cc"
+  },
+  {
+    "Date": "2026-05-06",
+    "Month": null,
+    "Merchant": "Temu",
+    "Amount": 11.3,
+    "Category": "Personal Items",
+    "Card": "Neo Mastercard",
+    "Notes": null,
+    "id": "082164bc-e251-4c2e-b076-e9a6d02a963c"
+  },
+  {
+    "Date": "2026-05-06",
+    "Month": null,
+    "Merchant": "Walmart",
+    "Amount": 19.54,
+    "Category": "Groceries",
+    "Card": "AMEX Cobalt",
+    "Notes": null,
+    "id": "b80afc8a-1a7f-45f7-b21e-de79ddc3c361"
   },
   {
     "Date": "2026-05-05",
     "Month": null,
-    "Merchant": "Parking",
-    "Amount": 2.82,
-    "Category": "Car",
-    "Card": "Scene+ Visa",
+    "Merchant": "Despacito Bakery",
+    "Amount": 21.93,
+    "Category": "Food",
+    "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "a89d3c7b-67b9-48c1-b8a7-1769b4b2dfa3"
+    "id": "09a4ff64-22ae-4b72-8c45-7dd77d165e93"
   },
   {
     "Date": "2026-05-05",
@@ -1168,22 +1138,52 @@
   {
     "Date": "2026-05-05",
     "Month": null,
-    "Merchant": "Despacito Bakery",
-    "Amount": 21.93,
+    "Merchant": "Parking",
+    "Amount": 2.82,
+    "Category": "Car",
+    "Card": "Scene+ Visa",
+    "Notes": null,
+    "id": "a89d3c7b-67b9-48c1-b8a7-1769b4b2dfa3"
+  },
+  {
+    "Date": "2026-05-05",
+    "Month": null,
+    "Merchant": "Sephora",
+    "Amount": 13.37,
+    "Category": "Personal Items",
+    "Card": "Neo Mastercard",
+    "Notes": null,
+    "id": "6c905f05-c14b-474c-b25a-63904f0bc83d"
+  },
+  {
+    "Date": "2026-05-05",
+    "Month": null,
+    "Merchant": "Taco Bell",
+    "Amount": 28.14,
     "Category": "Food",
+    "Card": "Scene+ Visa",
+    "Notes": null,
+    "id": "e7f0979b-a57f-41db-b170-64b938ba6b59"
+  },
+  {
+    "Date": "2026-05-05",
+    "Month": null,
+    "Merchant": "Walmart",
+    "Amount": 34.14,
+    "Category": "Groceries",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "09a4ff64-22ae-4b72-8c45-7dd77d165e93"
+    "id": "4cc7d81d-e09a-4db8-ba7f-913d1898ad17"
   },
   {
     "Date": "2026-05-04",
     "Month": null,
-    "Merchant": "Sephora",
-    "Amount": 7.54,
-    "Category": "Personal Items",
-    "Card": "Neo Mastercard",
+    "Merchant": "Dairy Queen",
+    "Amount": 8.04,
+    "Category": "Food",
+    "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "3e53b4b9-313f-4275-8b2a-9ca845d22dea"
+    "id": "7272be96-afa8-4c2e-ba12-7d2aa9f4ac2f"
   },
   {
     "Date": "2026-05-04",
@@ -1198,42 +1198,22 @@
   {
     "Date": "2026-05-04",
     "Month": null,
-    "Merchant": "Dairy Queen",
-    "Amount": 8.04,
-    "Category": "Food",
-    "Card": "AMEX Cobalt",
+    "Merchant": "Sephora",
+    "Amount": 7.54,
+    "Category": "Personal Items",
+    "Card": "Neo Mastercard",
     "Notes": null,
-    "id": "7272be96-afa8-4c2e-ba12-7d2aa9f4ac2f"
+    "id": "3e53b4b9-313f-4275-8b2a-9ca845d22dea"
   },
   {
     "Date": "2026-05-03",
     "Month": null,
-    "Merchant": "McDonald's",
-    "Amount": 18.61,
-    "Category": "Food",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "382d4e4c-5482-4305-b141-e54a28c79148"
-  },
-  {
-    "Date": "2026-05-03",
-    "Month": null,
-    "Merchant": "Cineplex Rec Room",
-    "Amount": 8.33,
+    "Merchant": "Amazon",
+    "Amount": 55.32,
     "Category": "Other",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "4f366fd8-d1b8-4d59-a5ea-a526e281539a"
-  },
-  {
-    "Date": "2026-05-03",
-    "Month": null,
-    "Merchant": "Atlantic Cannabis",
-    "Amount": 14.94,
-    "Category": "Personal Items",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "6cf54eb9-c021-48e8-86af-010d9ad13937"
+    "id": "217b2d6a-4825-437b-8c41-61cf6b3f027b"
   },
   {
     "Date": "2026-05-03",
@@ -1248,12 +1228,32 @@
   {
     "Date": "2026-05-03",
     "Month": null,
-    "Merchant": "Amazon",
-    "Amount": 55.32,
+    "Merchant": "Atlantic Cannabis",
+    "Amount": 14.94,
+    "Category": "Personal Items",
+    "Card": "AMEX Cobalt",
+    "Notes": null,
+    "id": "6cf54eb9-c021-48e8-86af-010d9ad13937"
+  },
+  {
+    "Date": "2026-05-03",
+    "Month": null,
+    "Merchant": "Cineplex Rec Room",
+    "Amount": 8.33,
     "Category": "Other",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "217b2d6a-4825-437b-8c41-61cf6b3f027b"
+    "id": "4f366fd8-d1b8-4d59-a5ea-a526e281539a"
+  },
+  {
+    "Date": "2026-05-03",
+    "Month": null,
+    "Merchant": "McDonald's",
+    "Amount": 18.61,
+    "Category": "Food",
+    "Card": "AMEX Cobalt",
+    "Notes": null,
+    "id": "382d4e4c-5482-4305-b141-e54a28c79148"
   },
   {
     "Date": "2026-05-02",
@@ -1268,12 +1268,12 @@
   {
     "Date": "2026-05-01",
     "Month": null,
-    "Merchant": "SaucePlus",
-    "Amount": 9.89,
-    "Category": "Subscriptions",
+    "Merchant": "Klarna",
+    "Amount": 11.3,
+    "Category": "Personal Items",
     "Card": "Scene+ Visa",
     "Notes": null,
-    "id": "508c7aa4-0cb0-4053-afe0-ff536ee34676"
+    "id": "9cfde8b8-a8a0-4712-b499-a110817da2ba"
   },
   {
     "Date": "2026-05-01",
@@ -1288,42 +1288,22 @@
   {
     "Date": "2026-05-01",
     "Month": null,
-    "Merchant": "Klarna",
-    "Amount": 11.3,
-    "Category": "Personal Items",
+    "Merchant": "SaucePlus",
+    "Amount": 9.89,
+    "Category": "Subscriptions",
     "Card": "Scene+ Visa",
     "Notes": null,
-    "id": "9cfde8b8-a8a0-4712-b499-a110817da2ba"
+    "id": "508c7aa4-0cb0-4053-afe0-ff536ee34676"
   },
   {
     "Date": "2026-04-30",
     "Month": null,
-    "Merchant": "Uniqlo",
-    "Amount": 114.66,
-    "Category": "Personal Items",
-    "Card": "AMEX Cobalt",
+    "Merchant": "Costco Gas",
+    "Amount": 75.54,
+    "Category": "Car",
+    "Card": "Neo Mastercard",
     "Notes": null,
-    "id": "57fdf10a-e5a7-46c4-ab13-5e7d6830540e"
-  },
-  {
-    "Date": "2026-04-30",
-    "Month": null,
-    "Merchant": "Scotia CC Protection",
-    "Amount": 3.53,
-    "Category": "Utilities",
-    "Card": "Scene+ Visa",
-    "Notes": null,
-    "id": "7aa8cb46-7a68-4b42-96e0-5ab6901c008c"
-  },
-  {
-    "Date": "2026-04-30",
-    "Month": null,
-    "Merchant": "Quidi Vidi Brewing",
-    "Amount": 15.01,
-    "Category": "Food",
-    "Card": "Scene+ Visa",
-    "Notes": null,
-    "id": "f47aea66-569c-4414-bd0d-5de85960d35b"
+    "id": "d2c5a626-e37d-4e5d-a62d-b98f0976a066"
   },
   {
     "Date": "2026-04-30",
@@ -1338,22 +1318,32 @@
   {
     "Date": "2026-04-30",
     "Month": null,
-    "Merchant": "Costco Gas",
-    "Amount": 75.54,
-    "Category": "Car",
-    "Card": "Neo Mastercard",
+    "Merchant": "Quidi Vidi Brewing",
+    "Amount": 15.01,
+    "Category": "Food",
+    "Card": "Scene+ Visa",
     "Notes": null,
-    "id": "d2c5a626-e37d-4e5d-a62d-b98f0976a066"
+    "id": "f47aea66-569c-4414-bd0d-5de85960d35b"
   },
   {
-    "Date": "2026-04-29",
+    "Date": "2026-04-30",
     "Month": null,
-    "Merchant": "Travix",
-    "Amount": 453.9,
-    "Category": "Travel",
+    "Merchant": "Scotia CC Protection",
+    "Amount": 3.53,
+    "Category": "Utilities",
+    "Card": "Scene+ Visa",
+    "Notes": null,
+    "id": "7aa8cb46-7a68-4b42-96e0-5ab6901c008c"
+  },
+  {
+    "Date": "2026-04-30",
+    "Month": null,
+    "Merchant": "Uniqlo",
+    "Amount": 114.66,
+    "Category": "Personal Items",
     "Card": "AMEX Cobalt",
-    "Notes": "Flight from YYT St. John's to Ottawa",
-    "id": "1f94e9a8-d319-4e17-8758-9d7726fbaccc"
+    "Notes": null,
+    "id": "57fdf10a-e5a7-46c4-ab13-5e7d6830540e"
   },
   {
     "Date": "2026-04-29",
@@ -1366,14 +1356,14 @@
     "id": "c945d011-562e-4860-91ba-f8190a324718"
   },
   {
-    "Date": "2026-04-28",
+    "Date": "2026-04-29",
     "Month": null,
-    "Merchant": "Wok Box",
-    "Amount": 18.49,
-    "Category": "Food",
+    "Merchant": "Travix",
+    "Amount": 453.9,
+    "Category": "Travel",
     "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "019eb059-e68a-485c-b0dc-d06e2ad8e8ce"
+    "Notes": "Flight from YYT St. John's to Ottawa",
+    "id": "1f94e9a8-d319-4e17-8758-9d7726fbaccc"
   },
   {
     "Date": "2026-04-28",
@@ -1386,24 +1376,24 @@
     "id": "78c3ddc9-0d76-4142-9c6f-b3fd28f4763d"
   },
   {
-    "Date": "2026-04-27",
+    "Date": "2026-04-28",
     "Month": null,
-    "Merchant": "MyCreds",
-    "Amount": 9.99,
-    "Category": "Other",
+    "Merchant": "Wok Box",
+    "Amount": 18.49,
+    "Category": "Food",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "686541fc-3b5f-4a5b-afb7-85b1b7ee5fda"
+    "id": "019eb059-e68a-485c-b0dc-d06e2ad8e8ce"
   },
   {
     "Date": "2026-04-27",
     "Month": null,
-    "Merchant": "Immigration Canada",
-    "Amount": 100,
-    "Category": "Other",
+    "Merchant": "Air-Serv",
+    "Amount": 3,
+    "Category": "Travel",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "988e06a2-0c7c-476c-b3b9-1ccb01b85853"
+    "id": "7fc97cdd-c38f-48c3-b3b4-548901343869"
   },
   {
     "Date": "2026-04-27",
@@ -1418,22 +1408,22 @@
   {
     "Date": "2026-04-27",
     "Month": null,
-    "Merchant": "Air-Serv",
-    "Amount": 3,
-    "Category": "Travel",
-    "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "7fc97cdd-c38f-48c3-b3b4-548901343869"
-  },
-  {
-    "Date": "2026-04-26",
-    "Month": null,
-    "Merchant": "Cineplex Rec Room",
-    "Amount": 6.63,
+    "Merchant": "Immigration Canada",
+    "Amount": 100,
     "Category": "Other",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "a4524ebd-dc9a-43f1-be02-6ed5e82e54c6"
+    "id": "988e06a2-0c7c-476c-b3b9-1ccb01b85853"
+  },
+  {
+    "Date": "2026-04-27",
+    "Month": null,
+    "Merchant": "MyCreds",
+    "Amount": 9.99,
+    "Category": "Other",
+    "Card": "AMEX Cobalt",
+    "Notes": null,
+    "id": "686541fc-3b5f-4a5b-afb7-85b1b7ee5fda"
   },
   {
     "Date": "2026-04-26",
@@ -1446,14 +1436,14 @@
     "id": "fc3b6da8-8121-42e7-a7d9-f14098414584"
   },
   {
-    "Date": "2026-04-25",
+    "Date": "2026-04-26",
     "Month": null,
-    "Merchant": "Osmow's",
-    "Amount": 35.97,
-    "Category": "Food",
+    "Merchant": "Cineplex Rec Room",
+    "Amount": 6.63,
+    "Category": "Other",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "108cc8b4-eda6-4a5f-a5ca-7b0c9d0884db"
+    "id": "a4524ebd-dc9a-43f1-be02-6ed5e82e54c6"
   },
   {
     "Date": "2026-04-25",
@@ -1466,14 +1456,14 @@
     "id": "4b90c107-8eb4-4814-a60a-95cd9dc6e4cc"
   },
   {
-    "Date": "2026-04-24",
+    "Date": "2026-04-25",
     "Month": null,
-    "Merchant": "St. John's Topsail",
-    "Amount": 6.72,
-    "Category": "Other",
+    "Merchant": "Osmow's",
+    "Amount": 35.97,
+    "Category": "Food",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "77e9797a-d9f1-4882-a574-e626ff6469e3"
+    "id": "108cc8b4-eda6-4a5f-a5ca-7b0c9d0884db"
   },
   {
     "Date": "2026-04-24",
@@ -1486,14 +1476,24 @@
     "id": "241fd8ce-b90d-4aa0-b422-d9ddab372e5b"
   },
   {
-    "Date": "2026-04-23",
+    "Date": "2026-04-24",
     "Month": null,
-    "Merchant": "Sephora",
-    "Amount": 24.27,
-    "Category": "Personal Items",
+    "Merchant": "St. John's Topsail",
+    "Amount": 6.72,
+    "Category": "Other",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "c9c11f0e-9427-4547-8d71-0c4996d5cb21"
+    "id": "77e9797a-d9f1-4882-a574-e626ff6469e3"
+  },
+  {
+    "Date": "2026-04-23",
+    "Month": null,
+    "Merchant": "Five Guys",
+    "Amount": 16.5,
+    "Category": "Food",
+    "Card": "AMEX Cobalt",
+    "Notes": null,
+    "id": "87ee0364-25a5-4d1c-a698-89034e23c891"
   },
   {
     "Date": "2026-04-23",
@@ -1508,12 +1508,12 @@
   {
     "Date": "2026-04-23",
     "Month": null,
-    "Merchant": "Five Guys",
-    "Amount": 16.5,
-    "Category": "Food",
+    "Merchant": "Sephora",
+    "Amount": 24.27,
+    "Category": "Personal Items",
     "Card": "AMEX Cobalt",
     "Notes": null,
-    "id": "87ee0364-25a5-4d1c-a698-89034e23c891"
+    "id": "c9c11f0e-9427-4547-8d71-0c4996d5cb21"
   },
   {
     "Date": "2026-04-22",
@@ -1528,42 +1528,12 @@
   {
     "Date": "2026-04-21",
     "Month": null,
-    "Merchant": "The Olive Branch",
-    "Amount": 18.97,
-    "Category": "Food",
-    "Card": "Neo Mastercard",
-    "Notes": null,
-    "id": "8326d441-d9f1-49ba-a7c6-71f66edb3072"
-  },
-  {
-    "Date": "2026-04-21",
-    "Month": null,
-    "Merchant": "Sephora",
-    "Amount": 39.1,
-    "Category": "Personal Items",
+    "Merchant": "Apple.com/Bill",
+    "Amount": 10.9,
+    "Category": "Utilities",
     "Card": "Scene+ Visa",
     "Notes": null,
-    "id": "e805e389-754a-456c-8621-a42311aa18b9"
-  },
-  {
-    "Date": "2026-04-21",
-    "Month": null,
-    "Merchant": "McDonald's",
-    "Amount": 17.68,
-    "Category": "Food",
-    "Card": "Scene+ Visa",
-    "Notes": null,
-    "id": "a7249506-2c9a-4843-b245-60e7ba6ec7ee"
-  },
-  {
-    "Date": "2026-04-21",
-    "Month": null,
-    "Merchant": "Costco Wholesale",
-    "Amount": 216.66,
-    "Category": "Groceries",
-    "Card": "Neo Mastercard",
-    "Notes": null,
-    "id": "6754f952-455d-4bbc-9956-e69c99fb68b2"
+    "id": "af1afdac-f75b-482b-89d1-39954c334f77"
   },
   {
     "Date": "2026-04-21",
@@ -1578,22 +1548,82 @@
   {
     "Date": "2026-04-21",
     "Month": null,
-    "Merchant": "Apple.com/Bill",
-    "Amount": 10.9,
-    "Category": "Utilities",
+    "Merchant": "Costco Wholesale",
+    "Amount": 216.66,
+    "Category": "Groceries",
+    "Card": "Neo Mastercard",
+    "Notes": null,
+    "id": "6754f952-455d-4bbc-9956-e69c99fb68b2"
+  },
+  {
+    "Date": "2026-04-21",
+    "Month": null,
+    "Merchant": "McDonald's",
+    "Amount": 17.68,
+    "Category": "Food",
     "Card": "Scene+ Visa",
     "Notes": null,
-    "id": "af1afdac-f75b-482b-89d1-39954c334f77"
+    "id": "a7249506-2c9a-4843-b245-60e7ba6ec7ee"
+  },
+  {
+    "Date": "2026-04-21",
+    "Month": null,
+    "Merchant": "Sephora",
+    "Amount": 39.1,
+    "Category": "Personal Items",
+    "Card": "Scene+ Visa",
+    "Notes": null,
+    "id": "e805e389-754a-456c-8621-a42311aa18b9"
+  },
+  {
+    "Date": "2026-04-21",
+    "Month": null,
+    "Merchant": "The Olive Branch",
+    "Amount": 18.97,
+    "Category": "Food",
+    "Card": "Neo Mastercard",
+    "Notes": null,
+    "id": "8326d441-d9f1-49ba-a7c6-71f66edb3072"
+  },
+  {
+    "Date": "2026-04-20",
+    "Month": null,
+    "Merchant": "Cineplex Rec Room 80",
+    "Amount": 9.08,
+    "Category": "Other",
+    "Card": "Scene+ Visa",
+    "Notes": null,
+    "id": "32adf48d-6ce6-40c7-ab8b-575ab58b0db9"
+  },
+  {
+    "Date": "2026-04-20",
+    "Month": null,
+    "Merchant": "Metrobus/6496093 212194 St. John's",
+    "Amount": 22.5,
+    "Category": "Travel",
+    "Card": "Scene+ Visa",
+    "Notes": null,
+    "id": "93f7347d-6fa1-4d3b-94e0-da5e45f79cff"
+  },
+  {
+    "Date": "2026-04-20",
+    "Month": null,
+    "Merchant": "Osmow's Mediterranean C St. John's",
+    "Amount": 17.24,
+    "Category": "Food",
+    "Card": "Scene+ Visa",
+    "Notes": null,
+    "id": "e78032c4-8b21-4a45-ae8b-94c768c180b7"
   },
   {
     "Date": "2026-04-20",
     "Month": null,
     "Merchant": "Sephora",
-    "Amount": 7.53,
+    "Amount": 11.99,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
     "Notes": null,
-    "id": "f2c4ca28-caa2-4a9b-917f-7ed70b134613"
+    "id": "118fa62d-06ac-475a-a112-760836e4fa7c"
   },
   {
     "Date": "2026-04-20",
@@ -1609,41 +1639,11 @@
     "Date": "2026-04-20",
     "Month": null,
     "Merchant": "Sephora",
-    "Amount": 11.99,
+    "Amount": 7.53,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
     "Notes": null,
-    "id": "118fa62d-06ac-475a-a112-760836e4fa7c"
-  },
-  {
-    "Date": "2026-04-20",
-    "Month": null,
-    "Merchant": "Osmow's Mediterranean C St. John's",
-    "Amount": 17.24,
-    "Category": "Food",
-    "Card": "Scene+ Visa",
-    "Notes": null,
-    "id": "e78032c4-8b21-4a45-ae8b-94c768c180b7"
-  },
-  {
-    "Date": "2026-04-20",
-    "Month": null,
-    "Merchant": "Metrobus/6496093 212194 St. John's",
-    "Amount": 22.5,
-    "Category": "Travel",
-    "Card": "Scene+ Visa",
-    "Notes": null,
-    "id": "93f7347d-6fa1-4d3b-94e0-da5e45f79cff"
-  },
-  {
-    "Date": "2026-04-20",
-    "Month": null,
-    "Merchant": "Cineplex Rec Room 80",
-    "Amount": 9.08,
-    "Category": "Other",
-    "Card": "Scene+ Visa",
-    "Notes": null,
-    "id": "32adf48d-6ce6-40c7-ab8b-575ab58b0db9"
+    "id": "f2c4ca28-caa2-4a9b-917f-7ed70b134613"
   },
   {
     "Date": "2026-04-19",
@@ -1658,16 +1658,6 @@
   {
     "Date": "2026-04-18",
     "Month": null,
-    "Merchant": "Sobeys",
-    "Amount": 57.68,
-    "Category": "Groceries",
-    "Card": "Scene+ Visa",
-    "Notes": null,
-    "id": "7d6fbf08-3586-4183-96eb-3987d2144a57"
-  },
-  {
-    "Date": "2026-04-18",
-    "Month": null,
     "Merchant": "Cineplex",
     "Amount": 12.65,
     "Category": "Other",
@@ -1676,14 +1666,14 @@
     "id": "7ff3e658-4fd3-4ef3-bd03-71e31924d89b"
   },
   {
-    "Date": "2026-04-17",
+    "Date": "2026-04-18",
     "Month": null,
-    "Merchant": "Skip The Dishes",
-    "Amount": 29.99,
-    "Category": "Food",
+    "Merchant": "Sobeys",
+    "Amount": 57.68,
+    "Category": "Groceries",
     "Card": "Scene+ Visa",
     "Notes": null,
-    "id": "ec098b31-d3a8-4caf-95e7-ccfde97dc341"
+    "id": "7d6fbf08-3586-4183-96eb-3987d2144a57"
   },
   {
     "Date": "2026-04-17",
@@ -1694,6 +1684,16 @@
     "Card": "Scene+ Visa",
     "Notes": null,
     "id": "4b9c96da-792a-41b4-96ea-433c4cd7ad1e"
+  },
+  {
+    "Date": "2026-04-17",
+    "Month": null,
+    "Merchant": "Skip The Dishes",
+    "Amount": 29.99,
+    "Category": "Food",
+    "Card": "Scene+ Visa",
+    "Notes": null,
+    "id": "ec098b31-d3a8-4caf-95e7-ccfde97dc341"
   },
   {
     "Date": "2026-04-16",
@@ -1708,16 +1708,6 @@
   {
     "Date": "2026-04-14",
     "Month": null,
-    "Merchant": "Tidal",
-    "Amount": 6.31,
-    "Category": "Subscriptions",
-    "Card": "Scene+ Visa",
-    "Notes": null,
-    "id": "183dffa0-ab22-47f2-a980-96df951545f8"
-  },
-  {
-    "Date": "2026-04-14",
-    "Month": null,
     "Merchant": "The Herbal Centre",
     "Amount": 17.24,
     "Category": "Personal Items",
@@ -1726,24 +1716,24 @@
     "id": "7a44bf21-e8e4-459f-9523-51daaaf5b219"
   },
   {
-    "Date": "2026-04-13",
+    "Date": "2026-04-14",
     "Month": null,
-    "Merchant": "Uber Eats",
-    "Amount": 29.86,
-    "Category": "Food",
-    "Card": "Neo Mastercard",
+    "Merchant": "Tidal",
+    "Amount": 6.31,
+    "Category": "Subscriptions",
+    "Card": "Scene+ Visa",
     "Notes": null,
-    "id": "fb180a3a-ae6d-4be4-a6be-1fe0a48964e8"
+    "id": "183dffa0-ab22-47f2-a980-96df951545f8"
   },
   {
     "Date": "2026-04-13",
     "Month": null,
-    "Merchant": "Sushi Island",
-    "Amount": 26.23,
+    "Merchant": "Haveli Restaurant",
+    "Amount": 16.89,
     "Category": "Food",
     "Card": "Neo Mastercard",
     "Notes": null,
-    "id": "de13f2cf-dd54-465e-999c-5943f13e7730"
+    "id": "f4180194-aeae-42e8-a96b-f93f1f3372ea"
   },
   {
     "Date": "2026-04-13",
@@ -1758,22 +1748,22 @@
   {
     "Date": "2026-04-13",
     "Month": null,
-    "Merchant": "Haveli Restaurant",
-    "Amount": 16.89,
+    "Merchant": "Sushi Island",
+    "Amount": 26.23,
     "Category": "Food",
     "Card": "Neo Mastercard",
     "Notes": null,
-    "id": "f4180194-aeae-42e8-a96b-f93f1f3372ea"
+    "id": "de13f2cf-dd54-465e-999c-5943f13e7730"
   },
   {
-    "Date": "2026-04-12",
+    "Date": "2026-04-13",
     "Month": null,
-    "Merchant": "Cineplex",
-    "Amount": 8.33,
-    "Category": "Other",
-    "Card": "Scene+ Visa",
+    "Merchant": "Uber Eats",
+    "Amount": 29.86,
+    "Category": "Food",
+    "Card": "Neo Mastercard",
     "Notes": null,
-    "id": "3fd442ef-acd7-49a5-b748-a2e9d6f2a767"
+    "id": "fb180a3a-ae6d-4be4-a6be-1fe0a48964e8"
   },
   {
     "Date": "2026-04-12",
@@ -1786,24 +1776,24 @@
     "id": "08c4b634-4643-4c13-9c19-8a0294ab8bc3"
   },
   {
-    "Date": "2026-04-11",
+    "Date": "2026-04-12",
     "Month": null,
-    "Merchant": "McDonald's",
-    "Amount": 7.56,
-    "Category": "Food",
-    "Card": "Neo Mastercard",
+    "Merchant": "Cineplex",
+    "Amount": 8.33,
+    "Category": "Other",
+    "Card": "Scene+ Visa",
     "Notes": null,
-    "id": "28136f41-aeab-40e7-a414-0b5a233f9c36"
+    "id": "3fd442ef-acd7-49a5-b748-a2e9d6f2a767"
   },
   {
     "Date": "2026-04-11",
     "Month": null,
-    "Merchant": "Lawtons",
-    "Amount": 8.79,
-    "Category": "Health",
+    "Merchant": "Apple Bill",
+    "Amount": 14.94,
+    "Category": "Utilities",
     "Card": "Scene+ Visa",
     "Notes": null,
-    "id": "aec5f466-aa7c-431a-9d0a-e2ad66b9bac9"
+    "id": "34a4c988-8ec1-4eae-980a-fcf9c30e6203"
   },
   {
     "Date": "2026-04-11",
@@ -1818,22 +1808,32 @@
   {
     "Date": "2026-04-11",
     "Month": null,
-    "Merchant": "Apple Bill",
-    "Amount": 14.94,
-    "Category": "Utilities",
+    "Merchant": "Lawtons",
+    "Amount": 8.79,
+    "Category": "Health",
     "Card": "Scene+ Visa",
     "Notes": null,
-    "id": "34a4c988-8ec1-4eae-980a-fcf9c30e6203"
+    "id": "aec5f466-aa7c-431a-9d0a-e2ad66b9bac9"
+  },
+  {
+    "Date": "2026-04-11",
+    "Month": null,
+    "Merchant": "McDonald's",
+    "Amount": 7.56,
+    "Category": "Food",
+    "Card": "Neo Mastercard",
+    "Notes": null,
+    "id": "28136f41-aeab-40e7-a414-0b5a233f9c36"
   },
   {
     "Date": "2026-04-08",
     "Month": null,
-    "Merchant": "Steam",
-    "Amount": 29.89,
-    "Category": "Other",
-    "Card": "Scene+ Visa",
+    "Merchant": "Atlantic Cannabis",
+    "Amount": 15.61,
+    "Category": "Personal Items",
+    "Card": "Neo Mastercard",
     "Notes": null,
-    "id": "c4fe851a-6c37-47c8-a719-3173c8d7bc6d"
+    "id": "ca3c413d-6325-4385-9c4b-ed604a9ccd32"
   },
   {
     "Date": "2026-04-08",
@@ -1848,32 +1848,22 @@
   {
     "Date": "2026-04-08",
     "Month": null,
-    "Merchant": "Atlantic Cannabis",
-    "Amount": 15.61,
-    "Category": "Personal Items",
-    "Card": "Neo Mastercard",
+    "Merchant": "Steam",
+    "Amount": 29.89,
+    "Category": "Other",
+    "Card": "Scene+ Visa",
     "Notes": null,
-    "id": "ca3c413d-6325-4385-9c4b-ed604a9ccd32"
+    "id": "c4fe851a-6c37-47c8-a719-3173c8d7bc6d"
   },
   {
     "Date": "2026-04-07",
     "Month": null,
-    "Merchant": "Starbucks",
-    "Amount": 8.48,
-    "Category": "Food",
-    "Card": "Neo Mastercard",
+    "Merchant": "Circle K",
+    "Amount": 11.81,
+    "Category": "Car",
+    "Card": "Scene+ Visa",
     "Notes": null,
-    "id": "6a8a09a3-a66a-4fad-9775-087766aaf433"
-  },
-  {
-    "Date": "2026-04-07",
-    "Month": null,
-    "Merchant": "Costco Wholesale",
-    "Amount": 203.56,
-    "Category": "Groceries",
-    "Card": "Neo Mastercard",
-    "Notes": null,
-    "id": "8554890f-39af-4fb3-9929-7d76e4ab1426"
+    "id": "22f840cb-88e0-444e-8f62-2640d32ed558"
   },
   {
     "Date": "2026-04-07",
@@ -1888,22 +1878,32 @@
   {
     "Date": "2026-04-07",
     "Month": null,
-    "Merchant": "Circle K",
-    "Amount": 11.81,
-    "Category": "Car",
-    "Card": "Scene+ Visa",
+    "Merchant": "Costco Wholesale",
+    "Amount": 203.56,
+    "Category": "Groceries",
+    "Card": "Neo Mastercard",
     "Notes": null,
-    "id": "22f840cb-88e0-444e-8f62-2640d32ed558"
+    "id": "8554890f-39af-4fb3-9929-7d76e4ab1426"
+  },
+  {
+    "Date": "2026-04-07",
+    "Month": null,
+    "Merchant": "Starbucks",
+    "Amount": 8.48,
+    "Category": "Food",
+    "Card": "Neo Mastercard",
+    "Notes": null,
+    "id": "6a8a09a3-a66a-4fad-9775-087766aaf433"
   },
   {
     "Date": "2026-04-06",
     "Month": null,
     "Merchant": "Sephora",
-    "Amount": 7.53,
+    "Amount": 11.98,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
     "Notes": null,
-    "id": "2f89f98b-4fb2-4d60-a631-5e90d63e5f64"
+    "id": "bd9fdda2-7279-4594-8f78-05d04b2b9632"
   },
   {
     "Date": "2026-04-06",
@@ -1919,11 +1919,11 @@
     "Date": "2026-04-06",
     "Month": null,
     "Merchant": "Sephora",
-    "Amount": 11.98,
+    "Amount": 7.53,
     "Category": "Personal Items",
     "Card": "Neo Mastercard",
     "Notes": null,
-    "id": "bd9fdda2-7279-4594-8f78-05d04b2b9632"
+    "id": "2f89f98b-4fb2-4d60-a631-5e90d63e5f64"
   },
   {
     "Date": "2026-04-05",
@@ -1938,12 +1938,12 @@
   {
     "Date": "2026-04-03",
     "Month": null,
-    "Merchant": "Metrobus",
-    "Amount": 78,
-    "Category": "Travel",
-    "Card": "Scene+ Visa",
+    "Merchant": "DoorDash",
+    "Amount": 5.74,
+    "Category": "Food",
+    "Card": "Neo Mastercard",
     "Notes": null,
-    "id": "b0cce301-e6ce-41e1-af34-3bd089ae4dea"
+    "id": "af26476f-adce-4546-b88b-4e57c6c40dc0"
   },
   {
     "Date": "2026-04-03",
@@ -1958,12 +1958,12 @@
   {
     "Date": "2026-04-03",
     "Month": null,
-    "Merchant": "DoorDash",
-    "Amount": 5.74,
-    "Category": "Food",
-    "Card": "Neo Mastercard",
+    "Merchant": "Metrobus",
+    "Amount": 78,
+    "Category": "Travel",
+    "Card": "Scene+ Visa",
     "Notes": null,
-    "id": "af26476f-adce-4546-b88b-4e57c6c40dc0"
+    "id": "b0cce301-e6ce-41e1-af34-3bd089ae4dea"
   },
   {
     "Date": "2026-04-01",
