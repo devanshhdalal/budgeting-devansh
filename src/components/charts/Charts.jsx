@@ -13,9 +13,9 @@ import {
   Sector,
   CartesianGrid,
 } from 'recharts';
-import { formatCurrency } from '../utils/format';
-import { useChartColors } from '../hooks/useChartColors';
-import { getCategoryColor, formatAxisCurrency } from '../utils/chartTheme';
+import { formatCurrency } from '@/utils/format';
+import { useChartColors } from '@/hooks/useChartColors';
+import { getCategoryColor, formatAxisCurrency } from '@/utils/chartTheme';
 
 const DONUT_TRANSITION = { duration: 0.18, ease: [0.16, 1, 0.3, 1] };
 

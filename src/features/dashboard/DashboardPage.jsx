@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Search } from 'lucide-react';
 import { saveTransaction, deleteTransaction, uploadReceipt } from '@/services/storage';
 import { SpendingPieChart, SpendingBarChart } from '@/components/charts/Charts';
@@ -525,9 +525,8 @@ const Dashboard = () => {
         </SectionCard>
       </div>
 
-      <AnimatePresence>
-        {editing && editFormData && (
-          <EditTransactionModal
+      <EditTransactionModal
+            open={Boolean(editing && editFormData)}
             formData={editFormData}
             appConfig={appConfig}
             onChange={handleEditChange}
@@ -535,14 +534,12 @@ const Dashboard = () => {
             onClose={closeEditModal}
             saveStatus={saveStatus}
           />
-        )}
-      </AnimatePresence>
 
-      <AnimatePresence>
-        {viewingReceipt && (
-          <ReceiptLightbox src={viewingReceipt} onClose={() => setViewingReceipt(null)} />
-        )}
-      </AnimatePresence>
+      <ReceiptLightbox
+        open={Boolean(viewingReceipt)}
+        src={viewingReceipt}
+        onClose={() => setViewingReceipt(null)}
+      />
     </motion.div>
   );
 };

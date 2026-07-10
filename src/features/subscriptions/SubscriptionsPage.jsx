@@ -1,20 +1,21 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Pencil, Trash2, X, Calendar, RefreshCw } from 'lucide-react';
-import { saveConfig } from '../services/storage';
-import { useData } from '../hooks/useData';
-import { useToast } from '../hooks/useToast';
-import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
-import PageHeader from '../components/ui/PageHeader';
-import SectionCard from '../components/ui/SectionCard';
-import PageError from '../components/ui/PageError';
-import SyncBanner from '../components/ui/SyncBanner';
-import SaveIndicator from '../components/ui/SaveIndicator';
-import DateField from '../components/DateField';
-import LoadingScreen from '../components/layout/LoadingScreen';
-import { CategoryIcon } from '../utils/categoryIcons';
-import { formatCurrency } from '../utils/format';
-import { formatDisplayDate, todayIsoDate } from '../utils/date';
+import { motion } from 'framer-motion';
+import { Plus, Pencil, Trash2, Calendar, RefreshCw } from 'lucide-react';
+import { saveConfig } from '@/services/storage';
+import { useData } from '@/hooks/useData';
+import { useToast } from '@/hooks/useToast';
+import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
+import PageHeader from '@/components/ui/PageHeader';
+import SectionCard from '@/components/ui/SectionCard';
+import PageError from '@/components/ui/PageError';
+import SyncBanner from '@/components/ui/SyncBanner';
+import SaveIndicator from '@/components/ui/SaveIndicator';
+import Modal from '@/components/ui/Modal';
+import DateField from '@/components/forms/DateField';
+import LoadingScreen from '@/components/layout/LoadingScreen';
+import { CategoryIcon } from '@/utils/categoryIcons';
+import { formatCurrency } from '@/utils/format';
+import { formatDisplayDate, todayIsoDate } from '@/utils/date';
 import {
   formatRenewalLabel,
   getSubscriptions,
@@ -22,9 +23,9 @@ import {
   renewalUrgency,
   sortByRenewal,
   subscriptionMonthlyTotal,
-} from '../utils/subscriptions';
-import { getPageErrorTitle, getPageErrorVariant } from '../utils/apiErrors';
-import { stagger, fadeUp } from '../motion/presets';
+} from '@/utils/subscriptions';
+import { getPageErrorTitle, getPageErrorVariant } from '@/utils/apiErrors';
+import { stagger, fadeUp } from '@/motion/presets';
 
 const emptyForm = () => ({
   id: '',
@@ -275,25 +276,12 @@ const SubscriptionsPage = () => {
         </SectionCard>
       </motion.div>
 
-      <AnimatePresence>
-        {showModal && (
-          <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <motion.div
-              className="modal-content"
-              initial={{ scale: 0.96, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.96, opacity: 0 }}
-            >
-              <button type="button" className="modal-close" onClick={closeModal} aria-label="Close">
-                <X size={22} />
-              </button>
-              <div className="modal-title-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 20 }}>
-                <h2 className="page-title" style={{ fontSize: '1.25rem', margin: 0 }}>
-                  {isAdding ? 'Add subscription' : 'Edit subscription'}
-                </h2>
-                <SaveIndicator status={saveStatus} />
-              </div>
-
+      <Modal
+        open={showModal}
+        onClose={closeModal}
+        title={isAdding ? 'Add subscription' : 'Edit subscription'}
+        titleExtra={<SaveIndicator status={saveStatus} />}
+      >
               <div className="form-group">
                 <label className="form-label">Name</label>
                 <input
@@ -358,10 +346,7 @@ const SubscriptionsPage = () => {
                   <Trash2 size={18} /> Delete subscription
                 </button>
               )}
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      </Modal>
     </motion.div>
   );
 };

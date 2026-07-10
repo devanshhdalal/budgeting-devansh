@@ -1,24 +1,25 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Trash2, CreditCard, DollarSign, X } from 'lucide-react';
-import { saveConfig, uploadCardImage } from '../services/storage';
-import { useData } from '../hooks/useData';
-import { useToast } from '../hooks/useToast';
-import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
-import { inferNetworkFromName } from '../config/cardNetworks';
-import PageHeader from '../components/ui/PageHeader';
-import SectionCard from '../components/ui/SectionCard';
-import PageError from '../components/ui/PageError';
-import SyncBanner from '../components/ui/SyncBanner';
-import SaveIndicator from '../components/ui/SaveIndicator';
-import CardImageUpload from '../components/settings/CardImageUpload';
-import PaymentCardTile, { NetworkPicker } from '../components/settings/PaymentCardTile';
-import DateField from '../components/DateField';
-import { resolveBillingPeriod } from '../utils/billingCycle';
-import { formatDisplayDate } from '../utils/date';
-import { getPageErrorTitle, getPageErrorVariant } from '../utils/apiErrors';
-import LoadingScreen from '../components/layout/LoadingScreen';
-import { stagger } from '../motion/presets';
+import { motion } from 'framer-motion';
+import { Plus, Trash2, CreditCard, DollarSign } from 'lucide-react';
+import { saveConfig, uploadCardImage } from '@/services/storage';
+import { useData } from '@/hooks/useData';
+import { useToast } from '@/hooks/useToast';
+import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
+import { inferNetworkFromName } from '@/config/cardNetworks';
+import PageHeader from '@/components/ui/PageHeader';
+import SectionCard from '@/components/ui/SectionCard';
+import PageError from '@/components/ui/PageError';
+import SyncBanner from '@/components/ui/SyncBanner';
+import SaveIndicator from '@/components/ui/SaveIndicator';
+import Modal from '@/components/ui/Modal';
+import CardImageUpload from '@/features/settings/components/CardImageUpload';
+import PaymentCardTile, { NetworkPicker } from '@/features/settings/components/PaymentCardTile';
+import DateField from '@/components/forms/DateField';
+import { resolveBillingPeriod } from '@shared/billingCycle';
+import { formatDisplayDate } from '@/utils/date';
+import { getPageErrorTitle, getPageErrorVariant } from '@/utils/apiErrors';
+import LoadingScreen from '@/components/layout/LoadingScreen';
+import { stagger } from '@/motion/presets';
 
 const cloneConfig = (config) => structuredClone(config);
 
@@ -395,26 +396,14 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
         </SectionCard>
       </div>
 
-      <AnimatePresence>
-        {editingCard && (
-          <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <motion.div
-              className="modal-content modal-content-wide"
-              initial={{ scale: 0.96, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.96, opacity: 0 }}
-            >
-              <button type="button" className="modal-close" onClick={resetCardEditor} aria-label="Close">
-                <X size={22} />
-              </button>
-              <div className="modal-title-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 20 }}>
-                <h2 className="page-title" style={{ fontSize: '1.25rem', margin: 0 }}>
-                  {isAddingNew ? 'Add card' : 'Edit card'}
-                </h2>
-                <SaveIndicator status={isUploadingCard ? 'saving' : saveStatus} />
-              </div>
-
-              {editingCard.name?.trim().toLowerCase() !== 'cash' && (
+      <Modal
+        open={Boolean(editingCard)}
+        onClose={resetCardEditor}
+        wide
+        title={isAddingNew ? 'Add card' : 'Edit card'}
+        titleExtra={<SaveIndicator status={isUploadingCard ? 'saving' : saveStatus} />}
+      >
+              {editingCard?.name?.trim().toLowerCase() !== 'cash' && (
                 <>
                   <CardImageUpload
                     imageUrl={editingCard.imageUrl}
@@ -438,7 +427,7 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
                 </>
               )}
 
-              {editingCard.name?.trim().toLowerCase() === 'cash' && (
+              {editingCard?.name?.trim().toLowerCase() === 'cash' && (
                 <p className="card-image-hint" style={{ marginBottom: 16 }}>
                   Cash does not require a card photo or payment network.
                 </p>
@@ -510,10 +499,7 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
                   </button>
                 </div>
               )}
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      </Modal>
     </motion.div>
   );
 };

@@ -1,20 +1,20 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
-import { saveTransaction, uploadReceipt } from '../services/storage';
-import { todayIsoDate } from '../utils/date';
-import { getErrorCopy, getPageErrorTitle, getPageErrorVariant } from '../utils/apiErrors';
-import { useData } from '../hooks/useData';
-import { useToast } from '../hooks/useToast';
-import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
-import TransactionForm from '../components/TransactionForm';
-import Stepper, { Step } from '../components/ui/Stepper';
-import PageHeader from '../components/ui/PageHeader';
-import PageError from '../components/ui/PageError';
-import SyncBanner from '../components/ui/SyncBanner';
-import SaveIndicator from '../components/ui/SaveIndicator';
-import LoadingScreen from '../components/layout/LoadingScreen';
-import { stagger, fadeUp, scaleIn } from '../motion/presets';
+import { saveTransaction, uploadReceipt } from '@/services/storage';
+import { todayIsoDate } from '@/utils/date';
+import { getErrorCopy, getPageErrorTitle, getPageErrorVariant } from '@/utils/apiErrors';
+import { useData } from '@/hooks/useData';
+import { useToast } from '@/hooks/useToast';
+import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
+import TransactionForm from '@/features/transactions/components/TransactionForm';
+import Stepper, { Step } from '@/components/ui/Stepper';
+import PageHeader from '@/components/ui/PageHeader';
+import PageError from '@/components/ui/PageError';
+import SyncBanner from '@/components/ui/SyncBanner';
+import SaveIndicator from '@/components/ui/SaveIndicator';
+import LoadingScreen from '@/components/layout/LoadingScreen';
+import { stagger, fadeUp, scaleIn } from '@/motion/presets';
 
 const SUCCESS_RESET_MS = 2800;
 

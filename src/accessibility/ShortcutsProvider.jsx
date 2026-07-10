@@ -1,11 +1,8 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { isModKey } from './modKey';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
-
-const ShortcutsContext = createContext(null);
-
-export const useShortcuts = () => useContext(ShortcutsContext);
+import { ShortcutsContext } from './shortcutsContext';
 
 const isTypingTarget = (target) => {
   if (!target) return false;
@@ -22,7 +19,10 @@ export const ShortcutsProvider = ({ children, menuRef }) => {
   const location = useLocation();
   const [helpOpen, setHelpOpen] = useState(false);
   const helpOpenRef = useRef(helpOpen);
-  helpOpenRef.current = helpOpen;
+
+  useEffect(() => {
+    helpOpenRef.current = helpOpen;
+  }, [helpOpen]);
 
   const openHelp = useCallback(() => setHelpOpen(true), []);
   const closeHelp = useCallback(() => setHelpOpen(false), []);

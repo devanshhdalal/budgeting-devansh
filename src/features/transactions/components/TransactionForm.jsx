@@ -1,8 +1,8 @@
 import { Upload, Image as ImageIcon, CreditCard } from 'lucide-react';
-import DateField from './DateField';
-import CardImage from './ui/CardImage';
-import { getCardNetwork } from '../config/cardNetworks';
-import { NetworkBadge } from './settings/PaymentCardTile';
+import DateField from '@/components/forms/DateField';
+import CardImage from '@/components/ui/CardImage';
+import { getCardNetwork } from '@/config/cardNetworks';
+import { NetworkBadge } from '@/features/settings/components/PaymentCardTile';
 
 const TransactionForm = ({
   formData,

@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { Calendar } from 'lucide-react';
-import { formatDisplayDate } from '../../utils/date';
+import { formatDisplayDate } from '@/utils/date';
 
 const DateRangePicker = ({ startDate, endDate, setStartDate, setEndDate }) => {
   const startRef = useRef(null);

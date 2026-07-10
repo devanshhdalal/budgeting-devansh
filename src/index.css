@@ -2513,10 +2513,120 @@ optgroup {
     max-height: 100dvh;
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
     align-self: flex-end;
+    overscroll-behavior: contain;
   }
 
   .modal-overlay {
     align-items: flex-end;
     padding: 0;
   }
+
+  .modal-close {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* Accessibility */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 16px;
+  z-index: 2000;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: 16px;
+}
+
+.modal-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.shortcuts-help {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.shortcuts-group-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+  margin: 0 0 8px;
+}
+
+.shortcuts-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.shortcuts-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.shortcuts-label {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.shortcuts-keys {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.shortcut-kbd {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.shortcuts-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-faint);
+}
+
+.btn:focus-visible,
+.icon-btn:focus-visible,
+.chip:focus-visible,
+.payment-card:focus-visible,
+.card-picker-item:focus-visible,
+.form-input:focus-visible,
+.sm-toggle:focus-visible,
+.sm-panel-item:focus-visible,
+.action-btn:focus-visible,
+.add-card-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }

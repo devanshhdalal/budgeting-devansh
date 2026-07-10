@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { formatDisplayDate } from '../utils/date';
+import { formatDisplayDate } from '@/utils/date';
 
 const DateField = ({ label, name, value, onChange, required = true }) => {
   const inputRef = useRef(null);

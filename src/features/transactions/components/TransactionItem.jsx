@@ -1,10 +1,10 @@
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { Pencil, Trash2, Receipt } from 'lucide-react';
-import { CategoryIcon } from '../utils/categoryIcons';
-import { formatDisplayDate } from '../utils/date';
-import { formatCurrency } from '../utils/format';
-import { calculateRewards } from '../config/rewards';
+import { CategoryIcon } from '@/utils/categoryIcons';
+import { formatDisplayDate } from '@/utils/date';
+import { formatCurrency } from '@/utils/format';
+import { calculateRewards } from '@/config/rewards';
 
 const TransactionItem = memo(({ transaction, index, appConfig, onEdit, onDelete, onViewReceipt }) => {
   const rewards = calculateRewards(
@@ -46,14 +46,29 @@ const TransactionItem = memo(({ transaction, index, appConfig, onEdit, onDelete,
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <div className="transaction-actions">
           {transaction.ReceiptUrl && (
-            <button type="button" className="action-btn" onClick={() => onViewReceipt(transaction.ReceiptUrl)} title="View receipt">
+            <button
+              type="button"
+              className="action-btn"
+              onClick={() => onViewReceipt(transaction.ReceiptUrl)}
+              aria-label={`View receipt for ${transaction.Merchant || 'transaction'}`}
+            >
               <Receipt size={17} />
             </button>
           )}
-          <button type="button" className="action-btn" onClick={() => onEdit(transaction)} title="Edit">
+          <button
+            type="button"
+            className="action-btn"
+            onClick={() => onEdit(transaction)}
+            aria-label={`Edit ${transaction.Merchant || 'transaction'}`}
+          >
             <Pencil size={17} />
           </button>
-          <button type="button" className="action-btn action-btn-danger" onClick={() => onDelete(transaction)} title="Delete">
+          <button
+            type="button"
+            className="action-btn action-btn-danger"
+            onClick={() => onDelete(transaction)}
+            aria-label={`Delete ${transaction.Merchant || 'transaction'}`}
+          >
             <Trash2 size={17} />
           </button>
         </div>

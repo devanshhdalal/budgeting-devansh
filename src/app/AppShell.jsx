@@ -1,7 +1,7 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, Keyboard } from 'lucide-react';
 import AmbientBackground from '@/components/layout/AmbientBackground';
 import LoadingScreen from '@/components/layout/LoadingScreen';
 import ErrorBoundary from '@/components/layout/ErrorBoundary';
@@ -9,6 +9,7 @@ import PullToRefresh from '@/components/layout/PullToRefresh';
 import UserSwitcher from '@/components/layout/UserSwitcher';
 import StaggeredMenu from '@/components/layout/StaggeredMenu';
 import { ShortcutsProvider } from '@/accessibility/ShortcutsProvider';
+import { useShortcuts } from '@/accessibility/shortcutsContext';
 import { UserProvider } from '@/context/UserProvider';
 import { DataProvider } from '@/context/DataProvider';
 import { ToastProvider } from '@/context/ToastProvider';
@@ -27,6 +28,22 @@ const MENU_ITEMS = [
   { label: 'Add', ariaLabel: 'Add a transaction', link: '/add' },
   { label: 'Settings', ariaLabel: 'Open settings', link: '/settings' },
 ];
+
+const ShortcutsHelpButton = () => {
+  const shortcuts = useShortcuts();
+  if (!shortcuts) return null;
+  return (
+    <button
+      type="button"
+      className="icon-btn"
+      onClick={shortcuts.openHelp}
+      aria-label="Keyboard shortcuts"
+      title="Keyboard shortcuts (?)"
+    >
+      <Keyboard size={18} />
+    </button>
+  );
+};
 
 const PageTransition = ({ children }) => {
   const location = useLocation();
@@ -56,7 +73,8 @@ const ThemeToggle = ({ theme, onToggle }) => (
   </button>
 );
 
-const AppShell = () => {
+const AppShellInner = () => {
+  const menuRef = useRef(null);
   const [theme, setTheme] = useState(() => localStorage.getItem(THEME_KEY) || 'dark');
 
   useEffect(() => {
@@ -75,61 +93,67 @@ const AppShell = () => {
   const menuButtonColor = theme === 'dark' ? '#f4f4f6' : '#1a1a1f';
 
   return (
-    <ErrorBoundary>
-      <ToastProvider>
-        <UserProvider>
-          <DataProvider>
-            <Router>
-              <ShortcutsProvider menuItems={MENU_ITEMS}>
-                <div className="app-root">
-                  <a href="#main-content" className="skip-link">
-                    Skip to main content
-                  </a>
-                  <AmbientBackground theme={theme} />
-                  <PullToRefresh />
-                  <StaggeredMenu
-                    isFixed
-                    position="right"
-                    items={MENU_ITEMS}
-                    displaySocials={false}
-                    displayItemNumbering
-                    logoUrl="/favicon.svg"
-                    colors={menuColors}
-                    accentColor={accentColor}
-                    menuButtonColor={menuButtonColor}
-                    openMenuButtonColor={menuButtonColor}
-                    changeMenuColorOnOpen={false}
-                    footer={
-                      <>
-                        <UserSwitcher />
-                        <ThemeToggle theme={theme} onToggle={toggleTheme} />
-                      </>
-                    }
-                  />
-                  <div className="app-container">
-                    <main id="main-content" className="app-main" tabIndex={-1}>
-                      <ErrorBoundary>
-                        <Suspense fallback={<LoadingScreen />}>
-                          <PageTransition>
-                            <Routes>
-                              <Route path="/" element={<Dashboard />} />
-                              <Route path="/subscriptions" element={<Subscriptions />} />
-                              <Route path="/add" element={<AddTransaction />} />
-                              <Route path="/settings" element={<SettingsPage />} />
-                            </Routes>
-                          </PageTransition>
-                        </Suspense>
-                      </ErrorBoundary>
-                    </main>
-                  </div>
-                </div>
-              </ShortcutsProvider>
-            </Router>
-          </DataProvider>
-        </UserProvider>
-      </ToastProvider>
-    </ErrorBoundary>
+    <ShortcutsProvider menuRef={menuRef}>
+      <div className="app-root">
+        <a href="#main-content" className="skip-link">
+          Skip to main content
+        </a>
+        <AmbientBackground theme={theme} />
+        <PullToRefresh />
+        <StaggeredMenu
+          ref={menuRef}
+          isFixed
+          position="right"
+          items={MENU_ITEMS}
+          displaySocials={false}
+          displayItemNumbering
+          logoUrl="/favicon.svg"
+          colors={menuColors}
+          accentColor={accentColor}
+          menuButtonColor={menuButtonColor}
+          openMenuButtonColor={menuButtonColor}
+          changeMenuColorOnOpen={false}
+          footer={
+            <>
+              <UserSwitcher />
+              <ShortcutsHelpButton />
+              <ThemeToggle theme={theme} onToggle={toggleTheme} />
+            </>
+          }
+        />
+        <div className="app-container">
+          <main id="main-content" className="app-main" tabIndex={-1}>
+            <ErrorBoundary>
+              <Suspense fallback={<LoadingScreen />}>
+                <PageTransition>
+                  <Routes>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/subscriptions" element={<Subscriptions />} />
+                    <Route path="/add" element={<AddTransaction />} />
+                    <Route path="/settings" element={<SettingsPage />} />
+                  </Routes>
+                </PageTransition>
+              </Suspense>
+            </ErrorBoundary>
+          </main>
+        </div>
+      </div>
+    </ShortcutsProvider>
   );
 };
+
+const AppShell = () => (
+  <ErrorBoundary>
+    <ToastProvider>
+      <UserProvider>
+        <DataProvider>
+          <Router>
+            <AppShellInner />
+          </Router>
+        </DataProvider>
+      </UserProvider>
+    </ToastProvider>
+  </ErrorBoundary>
+);
 
 export default AppShell;

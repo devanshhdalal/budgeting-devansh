@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { gsap } from 'gsap';
 import './StaggeredMenu.css';
 
-const StaggeredMenu = ({
+const StaggeredMenu = forwardRef(({
   position = 'right',
   colors = ['#c45c4a', '#8b6fd4'],
   items = [],
@@ -22,7 +22,7 @@ const StaggeredMenu = ({
   onMenuOpen,
   onMenuClose,
   footer = null,
-}) => {
+}, ref) => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
   const openRef = useRef(false);
@@ -333,6 +333,16 @@ const StaggeredMenu = ({
     animateText(true);
   }, [animateColor, animateIcon, animateText, closeMenu, onMenuOpen, playOpen]);
 
+  useImperativeHandle(
+    ref,
+    () => ({
+      toggle: toggleMenu,
+      close: closeMenu,
+      isOpen: () => openRef.current,
+    }),
+    [toggleMenu, closeMenu]
+  );
+
   useEffect(() => {
     if (!closeOnClickAway || !open) return;
 
@@ -473,6 +483,8 @@ const StaggeredMenu = ({
       </aside>
     </div>
   );
-};
+});
+
+StaggeredMenu.displayName = 'StaggeredMenu';
 
 export default StaggeredMenu;

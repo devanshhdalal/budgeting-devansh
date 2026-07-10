@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Camera, Image as ImageIcon } from 'lucide-react';
-import CardImage from '../ui/CardImage';
-import { CARD_IMAGE_HEIGHT, CARD_IMAGE_WIDTH } from '../../config/cardImage';
+import CardImage from '@/components/ui/CardImage';
+import { CARD_IMAGE_HEIGHT, CARD_IMAGE_WIDTH } from '@/config/cardImage';
 
 const CardImageUpload = ({ imageUrl, previewUrl, onFileSelect, onClear, required = false, network = '' }) => {
   const cameraInputRef = useRef(null);

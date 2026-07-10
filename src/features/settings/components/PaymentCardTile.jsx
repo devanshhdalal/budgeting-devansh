@@ -1,5 +1,5 @@
-import CardImage from '../ui/CardImage';
-import { CARD_NETWORKS, getCardNetwork, getNetworkLabel } from '../../config/cardNetworks';
+import CardImage from '@/components/ui/CardImage';
+import { CARD_NETWORKS, getCardNetwork, getNetworkLabel } from '@/config/cardNetworks';
 
 const NETWORK_CLASS = {
   amex: 'network-amex',
@@ -24,9 +24,15 @@ const PaymentCardTile = ({ name, data, onClick }) => {
     <div
       className={`payment-card ${networkClass}`}
       onClick={onClick}
-      onKeyDown={(e) => e.key === 'Enter' && onClick?.()}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick?.();
+        }
+      }}
       role="button"
       tabIndex={0}
+      aria-label={`Edit ${name} card`}
     >
       <div className="payment-card-visual">
         <CardImage src={data.imageUrl} network={network} alt={name} size="md" />
