@@ -11,7 +11,7 @@ const StaggeredMenu = forwardRef(({
   displaySocials = false,
   displayItemNumbering = true,
   className,
-  logoUrl = '/favicon.svg',
+  logoUrl = '/brand/logo-mark.png',
   logoHref = '/',
   menuButtonColor = '#1a1a1f',
   openMenuButtonColor = '#1a1a1f',

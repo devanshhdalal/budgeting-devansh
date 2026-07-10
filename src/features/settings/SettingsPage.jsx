@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, CreditCard, DollarSign, Tag, Store } from 'lucide-react';
+import { Plus, CreditCard, DollarSign, Tag, Store, Minus } from 'lucide-react';
 import { saveConfig, uploadCardImage } from '@/services/storage';
 import { useData } from '@/hooks/useData';
 import { useToast } from '@/hooks/useToast';
@@ -9,6 +9,7 @@ import { useConfirm } from '@/hooks/useConfirm';
 import { inferNetworkFromName } from '@/config/cardNetworks';
 import PageHeader from '@/components/ui/PageHeader';
 import SectionCard from '@/components/ui/SectionCard';
+import ElasticSlider from '@/components/ui/ElasticSlider';
 import PageError from '@/components/ui/PageError';
 import SyncBanner from '@/components/ui/SyncBanner';
 import SaveIndicator from '@/components/ui/SaveIndicator';
@@ -310,14 +311,18 @@ const SettingsForm = ({ initialConfig, commitConfig, transactions, setTransactio
                   <span>{cat.label}</span>
                   <span>${draft.BUDGET_CONFIG[cat.value] || 0}</span>
                 </div>
-                <input
-                  type="range"
-                  className="range-input"
-                  min="0"
-                  max="3000"
-                  step="50"
+                <ElasticSlider
                   value={draft.BUDGET_CONFIG[cat.value] || 0}
-                  onChange={(e) => updateBudget(cat.value, e.target.value)}
+                  onChange={(v) => updateBudget(cat.value, v)}
+                  startingValue={0}
+                  maxValue={3000}
+                  isStepped
+                  stepSize={50}
+                  fullWidth
+                  hideValueIndicator
+                  ariaLabel={`${cat.label} monthly budget`}
+                  leftIcon={<Minus size={16} className="elastic-slider-icon" />}
+                  rightIcon={<Plus size={16} className="elastic-slider-icon" />}
                 />
               </div>
             ))}

@@ -107,7 +107,7 @@ const AppShellInner = () => {
           items={MENU_ITEMS}
           displaySocials={false}
           displayItemNumbering
-          logoUrl="/favicon.svg"
+          logoUrl="/brand/logo-mark.png"
           colors={menuColors}
           accentColor={accentColor}
           menuButtonColor={menuButtonColor}

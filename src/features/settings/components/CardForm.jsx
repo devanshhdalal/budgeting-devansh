@@ -1,8 +1,15 @@
 import CardImageUpload from '@/features/settings/components/CardImageUpload';
 import { NetworkPicker } from '@/features/settings/components/PaymentCardTile';
 import DateField from '@/components/forms/DateField';
+import ElasticSlider from '@/components/ui/ElasticSlider';
 import { describeBillingRule, resolveBillingPeriod } from '@shared/billingCycle';
 import { formatDisplayDate } from '@/utils/date';
+
+const formatMultiplier = (value) => {
+  const v = Number(value) || 0;
+  if (v > 0 && v < 1) return `${Math.round(v * 100)}%`;
+  return `${Number.isInteger(v) ? v : v.toFixed(2)}x`;
+};
 
 const emptyAnchor = () => ({ statementStart: '', statementEnd: '', dueDate: '' });
 
@@ -211,21 +218,25 @@ const CardForm = ({
     return (
       <div className="form-grid-2 card-multipliers-grid">
         {Object.keys(card.multipliers || {}).map((key) => (
-          <div key={key} className="form-group" style={{ marginBottom: 8 }}>
+          <div key={key} className="form-group card-multiplier-row" style={{ marginBottom: 8 }}>
             <label className="form-label">{key}</label>
-            <input
-              type="number"
-              step="0.01"
-              className="form-input"
-              value={card.multipliers[key]}
-              onChange={(e) =>
+            <ElasticSlider
+              value={card.multipliers[key] ?? 0}
+              onChange={(v) =>
                 onPatch({
                   multipliers: {
                     ...card.multipliers,
-                    [key]: parseFloat(e.target.value) || 0,
+                    [key]: v,
                   },
                 })
               }
+              startingValue={0}
+              maxValue={10}
+              isStepped
+              stepSize={0.01}
+              fullWidth
+              formatValue={formatMultiplier}
+              ariaLabel={`${key} reward multiplier`}
             />
           </div>
         ))}
