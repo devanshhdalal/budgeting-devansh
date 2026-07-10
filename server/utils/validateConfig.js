@@ -14,5 +14,8 @@ export const validateConfigShape = (body) => {
   if (typeof body.BUDGET_CONFIG !== 'object' || Array.isArray(body.BUDGET_CONFIG)) {
     return 'BUDGET_CONFIG must be an object';
   }
+  if ('SUBSCRIPTIONS' in body && !Array.isArray(body.SUBSCRIPTIONS)) {
+    return 'SUBSCRIPTIONS must be an array';
+  }
   return null;
 };

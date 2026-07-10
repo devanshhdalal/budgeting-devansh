@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search } from 'lucide-react';
 import { saveTransaction, deleteTransaction, uploadReceipt } from '../services/storage';
@@ -29,6 +30,13 @@ import AnimatedNumber from '../components/ui/AnimatedNumber';
 import PageError from '../components/ui/PageError';
 import { resolveBillingRange } from '../utils/billingCycle';
 import { getPageErrorTitle, getPageErrorVariant } from '../utils/apiErrors';
+import {
+  formatRenewalLabel,
+  getSubscriptions,
+  renewalUrgency,
+  sortByRenewal,
+  subscriptionMonthlyTotal,
+} from '../utils/subscriptions';
 
 const EMPTY_EDIT_FORM = (tx) => ({
   id: tx.id,
@@ -78,21 +86,57 @@ const useCategoryBudgets = (transactions, appConfig, startDate, endDate) =>
     });
   }, [transactions, appConfig, startDate, endDate]);
 
-const useSubscriptions = (transactions) =>
-  useMemo(() => {
-    const latestByMerchant = new Map();
-    for (const t of transactions) {
-      if (t.Category !== 'Subscriptions' || !t.Merchant) continue;
-      const existing = latestByMerchant.get(t.Merchant);
-      if (!existing || new Date(t.Date) > new Date(existing.Date)) {
-        latestByMerchant.set(t.Merchant, t);
-      }
-    }
+const SubscriptionsCard = ({ subscriptions, categories }) => {
+  const monthlyBurnRate = subscriptionMonthlyTotal(subscriptions);
+  const sorted = sortByRenewal(subscriptions).slice(0, 5);
 
-    const subList = [...latestByMerchant.values()].sort((a, b) => (a.Amount || 0) - (b.Amount || 0));
-    const monthlyBurnRate = subList.reduce((sum, s) => sum + (s.Amount || 0), 0);
-    return { subList, monthlyBurnRate };
-  }, [transactions]);
+  return (
+    <SectionCard
+      title="Subscriptions"
+      className="col-span-4"
+      action={
+        <Link to="/subscriptions" className="section-card-link">
+          Manage · {formatCurrency(monthlyBurnRate)}/mo
+        </Link>
+      }
+    >
+      <div className="sub-list">
+        {sorted.length === 0 && (
+          <p className="empty-state">
+            No subscriptions tracked.{' '}
+            <Link to="/subscriptions" className="inline-link">Add one</Link>
+          </p>
+        )}
+        {sorted.map((sub) => {
+          const urgency = renewalUrgency(sub.renewalDate);
+          return (
+            <div key={sub.id} className="sub-row">
+              <div className="sub-row-left">
+                <div className="sub-icon">
+                  <CategoryIcon category="Subscriptions" categories={categories} />
+                </div>
+                <div>
+                  <div className="sub-name">{sub.name}</div>
+                  <div className="sub-renewal-meta">
+                    <span className={`sub-renewal-badge sub-renewal-${urgency}`}>
+                      {formatRenewalLabel(sub.renewalDate)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <span className="sub-amount">{formatCurrency(sub.amount)}</span>
+            </div>
+          );
+        })}
+        {subscriptions.length > 5 && (
+          <Link to="/subscriptions" className="inline-link" style={{ textAlign: 'center', marginTop: 4 }}>
+            View all {subscriptions.length} subscriptions
+          </Link>
+        )}
+      </div>
+    </SectionCard>
+  );
+};
 
 const Toolbar = ({ filters, categories }) => (
   <motion.div className="toolbar" variants={fadeUp}>
@@ -182,32 +226,6 @@ const BudgetTrackingCardBody = ({ budgets, categories, colors, onSelect }) => {
     </div>
   );
 };
-
-const SubscriptionsCard = ({ subList, monthlyBurnRate, categories }) => (
-  <SectionCard
-    title="Subscriptions"
-    className="col-span-4"
-    action={<span className="sub-amount">{formatCurrency(monthlyBurnRate)}/mo</span>}
-  >
-    <div className="sub-list">
-      {subList.length === 0 && <p className="empty-state">No subscriptions yet</p>}
-      {subList.map((sub) => (
-        <div key={sub.id || sub.Merchant} className="sub-row">
-          <div className="sub-row-left">
-            <div className="sub-icon">
-              <CategoryIcon category="Subscriptions" categories={categories} />
-            </div>
-            <div>
-              <div className="sub-name">{sub.Merchant}</div>
-              <div className="sub-tag">Recurring</div>
-            </div>
-          </div>
-          <span className="sub-amount">{formatCurrency(sub.Amount)}</span>
-        </div>
-      ))}
-    </div>
-  </SectionCard>
-);
 
 const Dashboard = () => {
   const { transactions, setTransactions, config: appConfig, loading, syncError, syncStatus, refresh, user } = useData();
@@ -305,7 +323,7 @@ const Dashboard = () => {
     budgetRange.start,
     budgetRange.end
   );
-  const { subList, monthlyBurnRate } = useSubscriptions(transactions);
+  const subscriptions = useMemo(() => getSubscriptions(appConfig), [appConfig]);
 
   const pieData = useMemo(() => buildPieData(filters.filteredTransactions), [filters.filteredTransactions]);
   const barData = useMemo(() => buildBarData(filters.filteredTransactions), [filters.filteredTransactions]);
@@ -431,11 +449,7 @@ const Dashboard = () => {
           {isInitialSync ? <ChartSkeleton variant="bar" /> : <SpendingBarChart data={barData} />}
         </SectionCard>
 
-        <SubscriptionsCard
-          subList={subList}
-          monthlyBurnRate={monthlyBurnRate}
-          categories={appConfig.CATEGORIES}
-        />
+        <SubscriptionsCard subscriptions={subscriptions} categories={appConfig.CATEGORIES} />
 
         <SectionCard title="Recent activity" className="col-span-full">
           {isInitialSync ? (

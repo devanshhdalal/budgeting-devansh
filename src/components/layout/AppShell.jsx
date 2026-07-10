@@ -14,6 +14,7 @@ import { ToastProvider } from '../../context/ToastProvider';
 import { pageEnter } from '../../motion/presets';
 
 const Dashboard = lazy(() => import('../../pages/Dashboard'));
+const Subscriptions = lazy(() => import('../../pages/Subscriptions'));
 const AddTransaction = lazy(() => import('../../pages/AddTransaction'));
 const SettingsPage = lazy(() => import('../../pages/Settings'));
 
@@ -21,6 +22,7 @@ const THEME_KEY = 'app-theme';
 
 const MENU_ITEMS = [
   { label: 'Overview', ariaLabel: 'Go to overview', link: '/' },
+  { label: 'Subscriptions', ariaLabel: 'Manage subscriptions', link: '/subscriptions' },
   { label: 'Add', ariaLabel: 'Add a transaction', link: '/add' },
   { label: 'Settings', ariaLabel: 'Open settings', link: '/settings' },
 ];
@@ -106,6 +108,7 @@ const AppShell = () => {
                         <PageTransition>
                           <Routes>
                             <Route path="/" element={<Dashboard />} />
+                            <Route path="/subscriptions" element={<Subscriptions />} />
                             <Route path="/add" element={<AddTransaction />} />
                             <Route path="/settings" element={<SettingsPage />} />
                           </Routes>

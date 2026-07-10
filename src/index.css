@@ -1106,6 +1106,93 @@ optgroup {
   color: var(--text-faint);
 }
 
+.sub-renewal-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.sub-renewal-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--border);
+  color: var(--text-muted);
+}
+
+.sub-renewal-soon,
+.sub-renewal-overdue {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.sub-renewal-upcoming {
+  background: rgba(212, 146, 42, 0.15);
+  color: var(--warn);
+}
+
+.sub-amount-lg {
+  font-size: 1.1rem;
+}
+
+.sub-row-managed {
+  align-items: flex-start;
+}
+
+.sub-row-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.sub-row-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.subscriptions-page {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.subscriptions-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 40px 24px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.section-card-link {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.section-card-link:hover {
+  text-decoration: underline;
+}
+
+.inline-link {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.inline-link:hover {
+  text-decoration: underline;
+}
+
 .sub-amount {
   font-weight: 700;
   font-size: 0.9rem;
