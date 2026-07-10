@@ -6,6 +6,7 @@ import {
   Home,
   MoreHorizontal,
   Plane,
+  ShoppingCart,
 } from 'lucide-react';
 
 const ICON_MAP = {
@@ -16,6 +17,7 @@ const ICON_MAP = {
   ShoppingBag,
   MoreHorizontal,
   Plane,
+  ShoppingCart,
 };
 
 export const CategoryIcon = ({ category, categories }) => {

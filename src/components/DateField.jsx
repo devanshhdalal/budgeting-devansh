@@ -5,13 +5,22 @@ const DateField = ({ label, name, value, onChange, required = true }) => {
   const inputRef = useRef(null);
   const openPicker = () => inputRef.current?.showPicker?.();
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      openPicker();
+    }
+  };
+
   return (
     <div className="form-group">
       {label && <label className="form-label">{label}</label>}
-      <button
-        type="button"
+      <div
+        role="button"
+        tabIndex={0}
         className="date-display-container form-input"
         onClick={openPicker}
+        onKeyDown={handleKeyDown}
       >
         <span className="date-display-text">{formatDisplayDate(value) || 'Select date'}</span>
         <input
@@ -22,8 +31,10 @@ const DateField = ({ label, name, value, onChange, required = true }) => {
           value={value}
           onChange={onChange}
           required={required}
+          tabIndex={-1}
+          aria-hidden="true"
         />
-      </button>
+      </div>
     </div>
   );
 };

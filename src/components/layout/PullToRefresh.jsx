@@ -3,6 +3,7 @@ import { motion, useAnimationControls } from 'framer-motion';
 import { RefreshCw } from 'lucide-react';
 import { usePullToRefresh } from '../../hooks/usePullToRefresh';
 import { useData } from '../../hooks/useData';
+import { useToast } from '../../hooks/useToast';
 
 const vibrate = (pattern) => {
   if (typeof navigator !== 'undefined' && navigator.vibrate) {
@@ -16,7 +17,14 @@ const vibrate = (pattern) => {
  */
 const PullToRefresh = () => {
   const { refresh } = useData();
-  const { distance, progress, state } = usePullToRefresh(refresh);
+  const toast = useToast();
+
+  const handleRefresh = async () => {
+    const result = await refresh();
+    if (!result?.ok) toast.error('Refresh failed');
+  };
+
+  const { distance, progress, state } = usePullToRefresh(handleRefresh);
   const lastState = useRef(state);
   const flash = useAnimationControls();
 

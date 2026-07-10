@@ -445,8 +445,11 @@ Exports: `PORT`, `API_KEY`, GitHub env vars, `useGitHub` boolean, `dataDir`, `di
 
 ### `server/github.js`
 
-- `fetchGitHubFile(path)` - GET contents API
-- `putGitHubFile(path, base64, message, sha)` - PUT contents API
+- `fetchGitHubFile(path)` - GET contents API; discriminated result (success / 404 / error)
+- `putGitHubFile(path, base64, message, sha)` - PUT contents API; returns `{ ok, error }`
+- `serializeJson(data)` - canonical JSON with trailing newline
+- `decodeGitHubContent` / `encodeGitHubContent` - base64 helpers for Contents API
+- `encodeGitHubPath(path)` - URL-encode path segments
 - User-Agent: `Savvr`
 
 ---
@@ -657,15 +660,36 @@ Enable when all are set: `GITHUB_TOKEN`, `GITHUB_OWNER`, `GITHUB_REPO`.
 
 ## 15. Error, loading, and empty states
 
+### Server: `AppError` codes (`server/errors.js`)
+
+| Code | HTTP | When |
+|------|------|------|
+| `VALIDATION` | 400 | Bad input, oversize upload |
+| `UNAUTHORIZED` | 401 | Invalid API key |
+| `NOT_FOUND` | 404 | Transaction/config missing |
+| `CONFLICT` | 409 | Shrink guard blocked write |
+| `STORAGE` | 503 | GitHub/disk unavailable, corrupt JSON |
+| `INTERNAL` | 500 | Unexpected server error |
+
+Global `errorHandler` middleware returns `{ error, code }`. Routes use `asyncHandler` so rejections are caught.
+
+### Client status-aware UX
+
+- `src/utils/apiErrors.js` maps status/code to user copy
+- `storage.js` passes `status` and `code` on all API results
+- `DataProvider.refresh()` returns a promise; PTR and retry buttons await it
+- `SyncBanner` on Dashboard, Add, Settings when sync fails with cache
+
 | Scenario | UI behavior |
 |----------|-------------|
 | Initial load, no cache | `LoadingScreen` or section skeletons |
-| Load failed, no config | `PageError` with Retry |
+| Load failed, no config | `PageError` with Retry (variant by status) |
 | Load failed, has cache | Page renders + `SyncBanner` with error + Retry |
 | Mutation failed | Toast error with server message |
 | Render crash | `ErrorBoundary` card |
 | Empty filter results | `empty-state` copy in section |
 | Receipt image fail | Lightbox error + "Open original" link |
+| Pull-to-refresh fail | Toast error |
 
 ### Toast API
 
@@ -673,8 +697,19 @@ Enable when all are set: `GITHUB_TOKEN`, `GITHUB_OWNER`, `GITHUB_REPO`.
 const toast = useToast();
 toast.success('Saved');
 toast.error('Failed', { description: 'Server message' });
-toast.info('Retrying sync...');
 ```
+
+---
+
+## 15b. Ingestion pipeline
+
+See [INGESTION.md](INGESTION.md) for full detail.
+
+- `POST /api/ingest` - raw notification text → parsers → `upsertTransaction`
+- Parsers: `server/utils/parsers/amex.js`, `neo.js`, `scotiaEmail.js`
+- `CARD_IDENTIFIERS` in config maps last-4 → card name
+- `IsTest` transactions excluded from dashboard aggregates
+- Dedup via `DedupKey` within 24 hours
 
 ---
 
@@ -707,9 +742,9 @@ Charts read colors via `useChartColors()` hook (computed from CSS vars).
 
 ### Add a third user
 
-1. `server/config/users.js` + `src/config/users.js` - add `{ id, name }`
+1. `server/config/users.js` - add `{ id, name }` and `add(process.env.API_KEY_NEWUSER, 'newid')` in `buildApiKeyMap`
 2. `.env` - add `API_KEY_NEWUSER`
-3. `buildApiKeyMap` picks up `API_KEY_*` automatically if env name matches pattern... **Note:** currently only `API_KEY_DEVANSH` and `API_KEY_PAULA` are hardcoded in `buildApiKeyMap`. Extend that function for new users.
+3. Client picks up users from `GET /api/config/users` on boot (falls back to `FALLBACK_USERS`)
 
 ### Add merchant auto-categorization
 
@@ -753,7 +788,9 @@ Typical flow (e.g. Render):
 | `VITE_API_KEY` is build-time | Changing API key requires rebuild |
 | User lists duplicated | Server and client `users.js` must match manually |
 | No server-side filtering | All transactions loaded; filters in browser |
-| GitHub + local can drift | Local is always written; GitHub failures are logged only |
+| GitHub transient failure | Returns 503; does not fall back to stale/empty local data |
+| GitHub write failure | Returns 503; in-memory cache not updated |
+| Shrink guard | Blocks writes that would drop more than 2 records at once |
 | Windows dev script | Uses `node` directly for vite binary (not `npx.cmd`) to avoid EINVAL |
 | Paula config seed | Copies from Devansh once if missing |
 | Rewards `points` type | Cashback returns string like `"$1.23"`; points are integers |

@@ -2,14 +2,17 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchTransactions, fetchConfig } from '../services/storage';
 import { cacheKeys } from '../constants';
 import { readCache, writeCache } from '../utils/localCache';
+import { getErrorCopy } from '../utils/apiErrors';
 import { useUser } from '../hooks/useUser';
 import { DataContext } from './dataContext';
 
-/**
- * Inner provider that owns state for a single user.
- * The outer `DataProvider` keys this component on `userId`, so switching profile
- * remounts it cleanly without setState-in-effect resets.
- */
+const buildSyncMessage = (errors) => {
+  if (errors.transactions && errors.config) return errors.transactions;
+  if (errors.transactions) return `Transactions: ${errors.transactions}`;
+  if (errors.config) return `Settings: ${errors.config}`;
+  return null;
+};
+
 const UserDataProvider = ({ user, userId, children }) => {
   const keys = useMemo(() => cacheKeys(userId), [userId]);
 
@@ -17,44 +20,72 @@ const UserDataProvider = ({ user, userId, children }) => {
   const [config, setConfigState] = useState(() => readCache(keys.config));
   const [loading, setLoading] = useState(true);
   const [syncError, setSyncError] = useState(null);
-  const [refreshNonce, setRefreshNonce] = useState(0);
+  const [syncStatus, setSyncStatus] = useState(0);
+
+  const syncFromServer = useCallback(async () => {
+    const [tx, cfg] = await Promise.all([fetchTransactions(), fetchConfig()]);
+
+    const errors = {};
+    if (!tx.ok) errors.transactions = getErrorCopy({ status: tx.status, code: tx.code, error: tx.error });
+    if (!cfg.ok) errors.config = getErrorCopy({ status: cfg.status, code: cfg.code, error: cfg.error });
+
+    if (tx.ok) {
+      setTransactionsState(tx.data);
+      writeCache(keys.transactions, tx.data);
+    }
+    if (cfg.ok && cfg.data) {
+      setConfigState(cfg.data);
+      writeCache(keys.config, cfg.data);
+    }
+
+    const failed = !tx.ok || !cfg.ok;
+    if (failed) {
+      setSyncError(buildSyncMessage(errors));
+      setSyncStatus(tx.status || cfg.status || 0);
+    } else {
+      setSyncError(null);
+      setSyncStatus(0);
+    }
+
+    return { ok: !failed, errors };
+  }, [keys.transactions, keys.config]);
 
   useEffect(() => {
     let cancelled = false;
 
-    Promise.all([fetchTransactions(), fetchConfig()])
-      .then(([tx, cfg]) => {
-        if (cancelled) return;
-        if (tx.ok) {
-          setTransactionsState(tx.data);
-          writeCache(keys.transactions, tx.data);
+    const run = async () => {
+      setLoading(true);
+      try {
+        await syncFromServer();
+      } catch (err) {
+        if (!cancelled) {
+          setSyncError(err?.message ?? 'Unexpected sync error');
+          setSyncStatus(0);
         }
-        if (cfg.ok && cfg.data) {
-          setConfigState(cfg.data);
-          writeCache(keys.config, cfg.data);
-        }
-        const failed = !tx.ok || !cfg.ok;
-        if (failed) {
-          setSyncError(tx.error || cfg.error || 'Sync failed');
-        }
-      })
-      .catch((err) => {
-        if (!cancelled) setSyncError(err?.message ?? 'Unexpected sync error');
-      })
-      .finally(() => {
+      } finally {
         if (!cancelled) setLoading(false);
-      });
+      }
+    };
 
+    run();
     return () => {
       cancelled = true;
     };
-  }, [keys.transactions, keys.config, refreshNonce]);
+  }, [syncFromServer]);
 
-  const refresh = useCallback(() => {
-    setLoading(true);
+  const refresh = useCallback(async () => {
     setSyncError(null);
-    setRefreshNonce((n) => n + 1);
-  }, []);
+    setLoading(true);
+    try {
+      return await syncFromServer();
+    } catch (err) {
+      setSyncError(err?.message ?? 'Unexpected sync error');
+      setSyncStatus(0);
+      return { ok: false, errors: {} };
+    } finally {
+      setLoading(false);
+    }
+  }, [syncFromServer]);
 
   const setTransactions = useCallback(
     (updater) => {
@@ -86,11 +117,12 @@ const UserDataProvider = ({ user, userId, children }) => {
       setConfig,
       loading,
       syncError,
+      syncStatus,
       refresh,
       user,
       userId,
     }),
-    [transactions, setTransactions, config, setConfig, loading, syncError, refresh, user, userId]
+    [transactions, setTransactions, config, setConfig, loading, syncError, syncStatus, refresh, user, userId]
   );
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

@@ -8,6 +8,7 @@ export const matchesDateRange = (transactionDate, startDate, endDate) => {
 export const filterTransactions = (transactions, { selectedCard, startDate, endDate, selectedCategory, searchQuery }) => {
   const query = searchQuery.toLowerCase();
   return transactions.filter((t) => {
+    if (t.IsTest) return false;
     if (selectedCard !== 'All' && t.Card !== selectedCard) return false;
     if (!matchesDateRange(t.Date, startDate, endDate)) return false;
     if (selectedCategory !== 'All' && t.Category !== selectedCategory) return false;

@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { cleanMerchant, inferCategory } from '../utils/merchant.js';
 import { extractAmount } from '../utils/amount.js';
 import { normalizeDate } from '../utils/date.js';
+import { validation } from '../errors.js';
+import { asyncHandler } from '../middleware/asyncHandler.js';
 import {
   deleteTransactionById,
   getTransactions,
@@ -10,81 +12,94 @@ import {
 
 const router = Router();
 
-const normalizePayload = (body) => {
+const VALID_SOURCES = new Set([
+  'manual',
+  'shortcut',
+  'amex',
+  'neo',
+  'scotia_email',
+  'excel',
+  'test',
+]);
+
+export const normalizePayload = (body) => {
   const amount = extractAmount(body);
   if (amount === null) {
-    return {
-      error:
-        'Invalid or missing amount. Send JSON with "Amount" (e.g. 17.24 or "$17.24").',
-      status: 400,
-    };
+    throw validation(
+      'Invalid or missing amount. Send JSON with "Amount" (e.g. 17.24 or "$17.24").'
+    );
   }
-  if (amount === 0) {
-    return {
-      error: 'Amount is $0. Check that your Shortcut passes the wallet charge amount as "Amount".',
-      status: 400,
-    };
+
+  const isRefund = Boolean(body.IsRefund) || amount < 0;
+  const signedAmount = isRefund ? -Math.abs(amount) : Math.abs(amount);
+
+  if (signedAmount === 0) {
+    throw validation(
+      'Amount is $0. Check that your Shortcut passes the wallet charge amount as "Amount".'
+    );
   }
 
   const isoDate = normalizeDate(body.Date);
   if (!isoDate) {
-    return { error: 'Invalid or missing date.', status: 400 };
+    throw validation('Invalid or missing date.');
   }
 
   const merchant = cleanMerchant(body.Merchant);
   let category = body.Category;
-  if (!category || category === '' || category === 'Other') {
+  const hasExplicitCategory =
+    Object.prototype.hasOwnProperty.call(body, 'Category') &&
+    category !== '' &&
+    category != null;
+  if (!hasExplicitCategory) {
     category = inferCategory(merchant);
   }
 
+  const source = VALID_SOURCES.has(body.Source) ? body.Source : 'manual';
+  const isTest = source === 'test' || Boolean(body.IsTest);
+
   return {
-    payload: {
-      ...body,
-      Amount: amount,
-      Date: isoDate,
-      Merchant: merchant,
-      Category: category,
-    },
+    ...body,
+    Amount: signedAmount,
+    Date: isoDate,
+    Merchant: merchant,
+    Category: category,
+    IsRefund: isRefund,
+    Source: source,
+    IsTest: isTest,
+    Currency: body.Currency || 'CAD',
+    ...(body.ForeignAmount != null && { ForeignAmount: body.ForeignAmount }),
+    ...(body.ForeignCurrency && { ForeignCurrency: body.ForeignCurrency }),
+    ...(body.DedupKey && { DedupKey: body.DedupKey }),
   };
 };
 
-router.get('/', async (req, res) => {
-  try {
+router.get(
+  '/',
+  asyncHandler(async (req, res) => {
     const txs = await getTransactions(req.userId);
     res.json(txs);
-  } catch (e) {
-    console.error(`[${req.userId}] Failed to load transactions`, e);
-    res.status(503).json({ error: e.message || 'Storage unavailable' });
-  }
-});
+  })
+);
 
-router.post('/', async (req, res) => {
-  if (process.env.DEBUG_SHORTCUT === '1') {
-    console.log(`[${req.userId}] POST /api/transactions`, JSON.stringify(req.body));
-  }
+router.post(
+  '/',
+  asyncHandler(async (req, res) => {
+    if (process.env.DEBUG_INGEST === '1' || process.env.DEBUG_SHORTCUT === '1') {
+      console.log(`[${req.userId}] POST /api/transactions`, JSON.stringify(req.body));
+    }
 
-  const normalized = normalizePayload(req.body);
-  if (normalized.error) {
-    return res.status(normalized.status).json({ error: normalized.error });
-  }
-
-  try {
-    const transaction = await upsertTransaction(req.userId, normalized.payload);
+    const payload = normalizePayload(req.body);
+    const transaction = await upsertTransaction(req.userId, payload);
     res.json({ success: true, transaction });
-  } catch (e) {
-    const status = e.message === 'Transaction not found' ? 404 : 503;
-    res.status(status).json({ error: e.message });
-  }
-});
+  })
+);
 
-router.delete('/:id', async (req, res) => {
-  try {
+router.delete(
+  '/:id',
+  asyncHandler(async (req, res) => {
     await deleteTransactionById(req.userId, req.params.id);
     res.json({ success: true });
-  } catch (e) {
-    const status = e.message === 'Transaction not found' ? 404 : 503;
-    res.status(status).json({ error: e.message });
-  }
-});
+  })
+);
 
 export default router;

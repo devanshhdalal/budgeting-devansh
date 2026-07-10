@@ -1,13 +1,15 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, ArrowRight, Upload, Image as ImageIcon } from 'lucide-react';
+import { CheckCircle, ArrowRight } from 'lucide-react';
 import { saveTransaction, uploadReceipt } from '../services/storage';
 import { todayIsoDate } from '../utils/date';
+import { getErrorCopy, getPageErrorTitle, getPageErrorVariant } from '../utils/apiErrors';
 import { useData } from '../hooks/useData';
 import { useToast } from '../hooks/useToast';
-import DateField from '../components/DateField';
+import TransactionForm from '../components/TransactionForm';
 import PageHeader from '../components/ui/PageHeader';
 import PageError from '../components/ui/PageError';
+import SyncBanner from '../components/ui/SyncBanner';
 import LoadingScreen from '../components/layout/LoadingScreen';
 import { stagger, fadeUp, scaleIn } from '../motion/presets';
 
@@ -20,15 +22,19 @@ const emptyForm = (defaultCategory = 'Other') => ({
   Merchant: '',
   Card: '',
   Notes: '',
+  Source: 'manual',
 });
 
 const AddTransaction = () => {
-  const { config, loading, syncError, refresh, setTransactions } = useData();
+  const { config, loading, syncError, syncStatus, refresh, setTransactions } = useData();
   const toast = useToast();
   const defaultCategory = config?.CATEGORIES?.[0]?.value ?? 'Other';
 
   const [formData, setFormData] = useState(() => emptyForm(defaultCategory));
   const [receiptFile, setReceiptFile] = useState(null);
+  const [isRefund, setIsRefund] = useState(false);
+  const [foreignAmount, setForeignAmount] = useState('');
+  const [foreignCurrency, setForeignCurrency] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [submitError, setSubmitError] = useState(null);
@@ -36,6 +42,12 @@ const AddTransaction = () => {
   const handleChange = useCallback((e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  }, []);
+
+  const handleForeignChange = useCallback((e) => {
+    const { name, value } = e.target;
+    if (name === 'ForeignAmount') setForeignAmount(value);
+    if (name === 'ForeignCurrency') setForeignCurrency(value);
   }, []);
 
   const handleFileChange = useCallback((e) => {
@@ -46,7 +58,15 @@ const AddTransaction = () => {
   const resetForm = useCallback(() => {
     setFormData(emptyForm(defaultCategory));
     setReceiptFile(null);
+    setIsRefund(false);
+    setForeignAmount('');
+    setForeignCurrency('');
   }, [defaultCategory]);
+
+  const handleRetry = async () => {
+    const result = await refresh();
+    if (!result?.ok) toast.error('Sync failed', { description: syncError });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -65,24 +85,44 @@ const AddTransaction = () => {
       }
     }
 
+    const amount = parseFloat(formData.Amount);
+    if (!Number.isFinite(amount) || amount === 0) {
+      setIsSubmitting(false);
+      const msg = 'Enter an amount greater than $0.';
+      setSubmitError(msg);
+      toast.error('Invalid amount', { description: msg });
+      return;
+    }
+
+    const signedAmount = isRefund ? -Math.abs(amount) : Math.abs(amount);
+
     const payload = {
       ...formData,
-      Amount: parseFloat(formData.Amount) || 0,
+      Amount: signedAmount,
       Category: formData.Category || defaultCategory,
+      IsRefund: isRefund,
+      Source: 'manual',
+      Currency: 'CAD',
+      ...(foreignAmount && { ForeignAmount: parseFloat(foreignAmount) }),
+      ...(foreignCurrency && { ForeignCurrency: foreignCurrency }),
       ...(receiptUrl && { ReceiptUrl: receiptUrl }),
     };
 
-    const { ok, data, error } = await saveTransaction(payload);
+    const { ok, data, error, status, code } = await saveTransaction(payload);
     setIsSubmitting(false);
 
     if (!ok) {
-      setSubmitError(error || 'Could not save this transaction. Try again.');
-      toast.error('Save failed', { description: error });
+      const msg = getErrorCopy({ status, code, error });
+      setSubmitError(msg);
+      toast.error('Save failed', { description: msg });
       return;
     }
 
     const saved = data?.transaction ?? payload;
-    setTransactions((prev) => [{ ...saved, id: saved.id ?? `local-${Date.now()}` }, ...prev]);
+    setTransactions((prev) => [
+      { ...saved, id: saved.id ?? `local-${crypto.randomUUID()}` },
+      ...prev,
+    ]);
     toast.success('Transaction saved', { description: payload.Merchant || 'New entry added' });
 
     setIsSuccess(true);
@@ -92,16 +132,14 @@ const AddTransaction = () => {
     }, SUCCESS_RESET_MS);
   };
 
-  const cardOptions = useMemo(() => Object.keys(config?.CARDS ?? {}), [config]);
-
   if (!config && loading) return <LoadingScreen label="Preparing form" />;
   if (!config) {
     return (
       <PageError
-        variant="network"
-        title="We need your settings first"
-        description={syncError ?? 'Could not load this profile\'s configuration.'}
-        onRetry={refresh}
+        variant={getPageErrorVariant(syncStatus)}
+        title={getPageErrorTitle(syncStatus)}
+        description={syncError ?? "Could not load this profile's configuration."}
+        onRetry={handleRetry}
         retrying={loading}
       />
     );
@@ -112,8 +150,16 @@ const AddTransaction = () => {
       <PageHeader
         eyebrow="Manual entry"
         title="Add transaction"
-        subtitle="Log a purchase that did not come from your wallet shortcut."
+        subtitle="Log cash, card, or other spending not captured by a Shortcut."
       />
+
+      {syncError && (
+        <SyncBanner
+          message={`${syncError}. Showing cached settings.`}
+          onRetry={handleRetry}
+          retrying={loading}
+        />
+      )}
 
       <motion.div className="card form-card glass-panel" variants={fadeUp}>
         <AnimatePresence mode="wait">
@@ -138,83 +184,20 @@ const AddTransaction = () => {
                   </motion.div>
                 )}
               </AnimatePresence>
-              <div className="form-group">
-                <label className="form-label">Merchant</label>
-                <input
-                  type="text"
-                  name="Merchant"
-                  className="form-input"
-                  placeholder="Where did you spend?"
-                  value={formData.Merchant}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div className="form-grid-2">
-                <div className="form-group">
-                  <label className="form-label">Amount</label>
-                  <input
-                    type="number"
-                    name="Amount"
-                    step="0.01"
-                    className="form-input"
-                    placeholder="0.00"
-                    value={formData.Amount}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <DateField label="Date" name="Date" value={formData.Date} onChange={handleChange} />
-              </div>
-
-              <div className="form-grid-2">
-                <div className="form-group">
-                  <label className="form-label">Category</label>
-                  <select
-                    name="Category"
-                    className="form-input"
-                    value={formData.Category}
-                    onChange={handleChange}
-                    required
-                  >
-                    {config.CATEGORIES.map((cat) => (
-                      <option key={cat.value} value={cat.value}>{cat.label}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Card</label>
-                  <select name="Card" className="form-input" value={formData.Card} onChange={handleChange}>
-                    <option value="">Select card</option>
-                    {cardOptions.map((card) => (
-                      <option key={card} value={card}>{card}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Notes</label>
-                <input
-                  type="text"
-                  name="Notes"
-                  className="form-input"
-                  placeholder="Optional"
-                  value={formData.Notes}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Receipt</label>
-                <label className={`upload-zone ${receiptFile ? 'upload-zone-active' : ''}`}>
-                  {receiptFile ? <ImageIcon size={20} /> : <Upload size={20} />}
-                  <span>{receiptFile ? receiptFile.name : 'Tap to upload'}</span>
-                  <input type="file" accept="image/*" onChange={handleFileChange} hidden />
-                </label>
-              </div>
-
+              <TransactionForm
+                formData={formData}
+                onChange={handleChange}
+                onFileChange={handleFileChange}
+                receiptFile={receiptFile}
+                config={config}
+                showRefund
+                showForeign
+                isRefund={isRefund}
+                onRefundToggle={setIsRefund}
+                foreignAmount={foreignAmount}
+                foreignCurrency={foreignCurrency}
+                onForeignChange={handleForeignChange}
+              />
               <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={isSubmitting}>
                 {isSubmitting ? 'Saving...' : <>Save transaction <ArrowRight size={18} /></>}
               </button>

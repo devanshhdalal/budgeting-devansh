@@ -4,14 +4,20 @@ import path from 'path';
 import { PORT, dataDir, distDir, useGitHub } from './server/config.js';
 import { USERS } from './server/config/users.js';
 import { requireUser } from './server/middleware/auth.js';
+import { errorHandler } from './server/middleware/errorHandler.js';
 import { migrateLegacyData } from './server/storage/migrate.js';
 import transactionsRouter from './server/routes/transactions.js';
 import configRouter from './server/routes/config.js';
 import uploadRouter from './server/routes/upload.js';
+import ingestRouter from './server/routes/ingest.js';
 
 const app = express();
 
-migrateLegacyData();
+try {
+  migrateLegacyData();
+} catch (e) {
+  console.error('Migration error (non-fatal):', e);
+}
 
 app.use(cors());
 app.use(express.json());
@@ -26,17 +32,39 @@ for (const { id } of USERS) {
 }
 app.use('/images', express.static(path.join(dataDir, 'images')));
 
+app.get('/health', (_req, res) => {
+  res.json({ ok: true });
+});
+
 app.use('/api/config', configRouter);
 app.use('/api/transactions', transactionsRouter);
 app.use('/api/upload', uploadRouter);
+app.use('/api/ingest', ingestRouter);
 
 app.use(express.static(distDir));
 
-app.use((_req, res) => {
-  res.sendFile(path.join(distDir, 'index.html'));
+app.use((_req, res, next) => {
+  res.sendFile(path.join(distDir, 'index.html'), (err) => {
+    if (err) next(err);
+  });
 });
 
-app.listen(PORT, () => {
+app.use(errorHandler);
+
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled rejection:', reason);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught exception:', err);
+});
+
+const server = app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Data directory: ${path.join(dataDir, 'users')}`);
+});
+
+server.on('error', (err) => {
+  console.error('Server failed to start:', err);
+  process.exit(1);
 });

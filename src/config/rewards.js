@@ -20,7 +20,9 @@ export const calculateRewards = (cardName, category, amount, merchant, cardsConf
   const { multiplier, note } = resolveMultiplier(cardConfig, category, merchant, overridesConfig);
 
   const raw = amount * multiplier;
-  const points = cardConfig.currency === 'Cashback' ? `$${raw.toFixed(2)}` : Math.floor(raw);
+  const points = cardConfig.currency === 'Cashback' ? raw : Math.floor(raw);
+  const display =
+    cardConfig.currency === 'Cashback' ? `$${raw.toFixed(2)}` : String(Math.floor(raw));
 
-  return { points, currency: cardConfig.currency, note };
+  return { points, display, currency: cardConfig.currency, note };
 };

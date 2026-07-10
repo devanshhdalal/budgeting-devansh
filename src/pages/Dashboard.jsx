@@ -1,6 +1,6 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Save, Search, Upload, Image as ImageIcon, Calendar } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { saveTransaction, deleteTransaction, uploadReceipt } from '../services/storage';
 import { SpendingPieChart, SpendingBarChart } from '../components/Charts';
 import { useChartColors } from '../hooks/useChartColors';
@@ -10,10 +10,14 @@ import { CategoryIcon } from '../utils/categoryIcons';
 import PageHeader from '../components/ui/PageHeader';
 import StatCard from '../components/ui/StatCard';
 import SectionCard from '../components/ui/SectionCard';
-import { formatDisplayDate, todayIsoDate } from '../utils/date';
+import SyncBanner from '../components/ui/SyncBanner';
+import DateRangePicker from '../components/dashboard/DateRangePicker';
+import EditTransactionModal from '../components/dashboard/EditTransactionModal';
+import ReceiptLightbox from '../components/dashboard/ReceiptLightbox';
+import { BudgetSkeleton, ChartSkeleton, TransactionListSkeleton } from '../components/dashboard/DashboardSkeletons';
+import { todayIsoDate } from '../utils/date';
 import { formatCurrency } from '../utils/format';
 import { matchesDateRange } from '../utils/filters';
-import DateField from '../components/DateField';
 import { buildPieData, buildBarData, buildInsights } from '../utils/chartData';
 import { useData } from '../hooks/useData';
 import { useToast } from '../hooks/useToast';
@@ -22,8 +26,9 @@ import { MAX_VISIBLE_TRANSACTIONS } from '../constants';
 import { stagger, fadeUp } from '../motion/presets';
 import LoadingScreen from '../components/layout/LoadingScreen';
 import AnimatedNumber from '../components/ui/AnimatedNumber';
-import Skeleton from '../components/ui/Skeleton';
 import PageError from '../components/ui/PageError';
+import { resolveBillingRange } from '../utils/billingCycle';
+import { getPageErrorTitle, getPageErrorVariant } from '../utils/apiErrors';
 
 const EMPTY_EDIT_FORM = (tx) => ({
   id: tx.id,
@@ -45,7 +50,12 @@ const budgetColorOpacity = (percentage) => {
 const formatRewards = (totals) => {
   const entries = Object.entries(totals);
   if (!entries.length) return 'No rewards yet';
-  return entries.map(([currency, value]) => `+${value} ${currency}`).join(' · ');
+  return entries
+    .map(([currency, value]) => {
+      if (currency === 'Cashback') return `+$${value.toFixed(2)}`;
+      return `+${Math.floor(value)} ${currency}`;
+    })
+    .join(' · ');
 };
 
 const useCategoryBudgets = (transactions, appConfig, startDate, endDate) =>
@@ -84,42 +94,6 @@ const useSubscriptions = (transactions) =>
     return { subList, monthlyBurnRate };
   }, [transactions]);
 
-const DateRangePicker = ({ startDate, endDate, setStartDate, setEndDate }) => {
-  const startRef = useRef(null);
-  const endRef = useRef(null);
-
-  return (
-    <div className="date-range-pill">
-      <div className="date-range-input-wrapper">
-        <Calendar size={14} className="date-icon" />
-        <div className="date-display-container" onClick={() => startRef.current?.showPicker?.()}>
-          <span className="date-display-text">{formatDisplayDate(startDate) || 'Start'}</span>
-          <input
-            ref={startRef}
-            type="date"
-            className="date-picker-hidden"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
-        </div>
-      </div>
-      <span className="date-separator">to</span>
-      <div className="date-range-input-wrapper">
-        <div className="date-display-container" onClick={() => endRef.current?.showPicker?.()}>
-          <span className="date-display-text">{formatDisplayDate(endDate) || 'End'}</span>
-          <input
-            ref={endRef}
-            type="date"
-            className="date-picker-hidden"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-          />
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const Toolbar = ({ filters, categories }) => (
   <motion.div className="toolbar" variants={fadeUp}>
     <div className="search-wrap">
@@ -144,7 +118,7 @@ const Toolbar = ({ filters, categories }) => (
       <button
         type="button"
         onClick={filters.setThisMonth}
-        className={`chip ${filters.startDate && filters.endDate ? 'active' : ''}`}
+        className={`chip ${filters.isThisMonth ? 'active' : ''}`}
       >
         This month
       </button>
@@ -235,175 +209,8 @@ const SubscriptionsCard = ({ subList, monthlyBurnRate, categories }) => (
   </SectionCard>
 );
 
-const EditTransactionModal = ({ transaction, formData, onChange, onSave, onClose, onFile, file, isUploading, appConfig }) => (
-  <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-    <motion.div
-      className="modal-content modal-content-wide"
-      initial={{ scale: 0.96, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      exit={{ scale: 0.96, opacity: 0 }}
-    >
-      <button type="button" className="modal-close" onClick={onClose} aria-label="Close">
-        <X size={22} />
-      </button>
-      <h2 className="page-title" style={{ fontSize: '1.35rem', marginBottom: '24px' }}>Edit transaction</h2>
-      <form onSubmit={(e) => onSave(e, transaction)}>
-        <div className="form-group">
-          <label className="form-label">Merchant</label>
-          <input type="text" name="Merchant" className="form-input" value={formData.Merchant} onChange={onChange} required />
-        </div>
-        <div className="form-grid-2">
-          <div className="form-group">
-            <label className="form-label">Amount</label>
-            <input type="number" name="Amount" step="0.01" className="form-input" value={formData.Amount} onChange={onChange} required />
-          </div>
-          <DateField label="Date" name="Date" value={formData.Date} onChange={onChange} />
-        </div>
-        <div className="form-grid-2">
-          <div className="form-group">
-            <label className="form-label">Category</label>
-            <select name="Category" className="form-input" value={formData.Category} onChange={onChange} required>
-              {appConfig.CATEGORIES.map((cat) => (
-                <option key={cat.value} value={cat.value}>{cat.label}</option>
-              ))}
-            </select>
-          </div>
-          <div className="form-group">
-            <label className="form-label">Card</label>
-            <select name="Card" className="form-input" value={formData.Card} onChange={onChange}>
-              <option value="">Select card</option>
-              {Object.keys(appConfig.CARDS).map((card) => (
-                <option key={card} value={card}>{card}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-        <div className="form-group">
-          <label className="form-label">Notes</label>
-          <input type="text" name="Notes" className="form-input" placeholder="Optional" value={formData.Notes} onChange={onChange} />
-        </div>
-        <div className="form-group">
-          <label className="form-label">Receipt</label>
-          <label className={`upload-zone ${file || formData.ReceiptUrl ? 'upload-zone-active' : ''}`}>
-            {file || formData.ReceiptUrl ? <ImageIcon size={20} /> : <Upload size={20} />}
-            <span>
-              {file ? file.name : formData.ReceiptUrl ? 'Update receipt' : 'Upload image'}
-            </span>
-            <input type="file" accept="image/*" onChange={onFile} hidden />
-          </label>
-        </div>
-        <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={isUploading}>
-          {isUploading ? 'Saving...' : <><Save size={18} /> Save changes</>}
-        </button>
-      </form>
-    </motion.div>
-  </motion.div>
-);
-
-const TransactionListSkeleton = () => (
-  <div className="skeleton-list">
-    {Array.from({ length: 5 }).map((_, i) => (
-      <div key={i} className="skeleton-row">
-        <Skeleton width={40} height={40} radius={12} />
-        <div className="skeleton-row-text">
-          <Skeleton width="55%" height={12} />
-          <Skeleton width="35%" height={10} />
-        </div>
-        <Skeleton width={70} height={14} />
-      </div>
-    ))}
-  </div>
-);
-
-const ChartSkeleton = ({ variant = 'bar' }) => (
-  <div className="chart-skeleton" data-variant={variant}>
-    {variant === 'pie' ? (
-      <>
-        <Skeleton width={150} height={150} radius="50%" />
-        <div className="chart-skeleton-chips">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} width={70} height={22} radius={999} />
-          ))}
-        </div>
-      </>
-    ) : (
-      <div className="chart-skeleton-bars">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <Skeleton key={i} width={28} height={`${30 + (i * 11) % 70}%`} radius={6} />
-        ))}
-      </div>
-    )}
-  </div>
-);
-
-const BudgetSkeleton = () => (
-  <div className="summary-cards">
-    {Array.from({ length: 4 }).map((_, i) => (
-      <div key={i} className="budget-row">
-        <div className="budget-row-head">
-          <Skeleton width={90} height={12} />
-          <Skeleton width={70} height={12} />
-        </div>
-        <Skeleton width="100%" height={6} radius={999} />
-      </div>
-    ))}
-  </div>
-);
-
-const SyncBanner = ({ message, onRetry, retrying }) => (
-  <motion.div className="banner banner-warn" variants={fadeUp} role="alert">
-    <span className="banner-text">{message}</span>
-    <button
-      type="button"
-      className="banner-action"
-      onClick={onRetry}
-      disabled={retrying}
-    >
-      {retrying ? 'Retrying...' : 'Retry sync'}
-    </button>
-  </motion.div>
-);
-
-const ReceiptLightbox = ({ src, onClose }) => {
-  const [status, setStatus] = useState('loading');
-  return (
-    <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
-      <motion.div
-        className="modal-content modal-lightbox"
-        onClick={(e) => e.stopPropagation()}
-        initial={{ scale: 0.95 }}
-        animate={{ scale: 1 }}
-        exit={{ scale: 0.95 }}
-      >
-        <button type="button" className="modal-close" onClick={onClose} aria-label="Close">
-          <X size={22} />
-        </button>
-        {status === 'loading' && (
-          <div className="lightbox-loading" aria-live="polite">
-            <div className="loading-mark" aria-hidden />
-            <span>Loading receipt</span>
-          </div>
-        )}
-        {status === 'error' && (
-          <div className="lightbox-error" role="alert">
-            <p>Could not load this receipt image.</p>
-            <a className="btn btn-ghost" href={src} target="_blank" rel="noreferrer">Open original</a>
-          </div>
-        )}
-        <img
-          src={src}
-          alt="Receipt"
-          style={{ display: status === 'loaded' ? 'block' : 'none' }}
-          onLoad={() => setStatus('loaded')}
-          onError={() => setStatus('error')}
-        />
-      </motion.div>
-    </motion.div>
-  );
-};
-
 const Dashboard = () => {
-  const { transactions, setTransactions, config: appConfig, loading, syncError, refresh, user } = useData();
+  const { transactions, setTransactions, config: appConfig, loading, syncError, syncStatus, refresh, user } = useData();
   const filters = useTransactionFilters(transactions);
   const chartColors = useChartColors();
   const toast = useToast();
@@ -446,7 +253,9 @@ const Dashboard = () => {
       if (upload.ok) {
         receiptUrl = upload.receiptUrl;
       } else {
-        toast.error('Receipt upload failed', { description: upload.error });
+        toast.error('Receipt upload failed', {
+          description: `${upload.error}. Saving without receipt.`,
+        });
       }
     }
 
@@ -483,7 +292,19 @@ const Dashboard = () => {
     [setTransactions, toast]
   );
 
-  const categoryBudgets = useCategoryBudgets(transactions, appConfig, filters.startDate, filters.endDate);
+  const budgetRange = useMemo(() => {
+    if (filters.selectedCard !== 'All' && appConfig?.BILLING_CYCLES?.[filters.selectedCard]) {
+      return resolveBillingRange(filters.selectedCard, new Date(), appConfig.BILLING_CYCLES);
+    }
+    return { start: filters.startDate, end: filters.endDate };
+  }, [filters.selectedCard, filters.startDate, filters.endDate, appConfig]);
+
+  const categoryBudgets = useCategoryBudgets(
+    transactions,
+    appConfig,
+    budgetRange.start,
+    budgetRange.end
+  );
   const { subList, monthlyBurnRate } = useSubscriptions(transactions);
 
   const pieData = useMemo(() => buildPieData(filters.filteredTransactions), [filters.filteredTransactions]);
@@ -493,17 +314,17 @@ const Dashboard = () => {
     [filters.filteredTransactions, appConfig]
   );
 
-  const handleRetry = () => {
-    toast.info('Retrying sync...');
-    refresh();
+  const handleRetry = async () => {
+    const result = await refresh();
+    if (!result?.ok) toast.error('Sync failed', { description: syncError });
   };
 
   if (!appConfig && loading) return <LoadingScreen />;
   if (!appConfig) {
     return (
       <PageError
-        variant="network"
-        title="We could not load your workspace"
+        variant={getPageErrorVariant(syncStatus)}
+        title={getPageErrorTitle(syncStatus)}
         description={syncError ?? 'No configuration was found for this profile yet.'}
         onRetry={handleRetry}
         retrying={loading}
@@ -646,14 +467,13 @@ const Dashboard = () => {
       <AnimatePresence>
         {editing && editFormData && (
           <EditTransactionModal
-            transaction={editing}
             formData={editFormData}
             file={receiptFile}
             isUploading={isUploading}
             appConfig={appConfig}
             onChange={handleEditChange}
             onFile={handleFileChange}
-            onSave={handleEditSave}
+            onSave={(e) => handleEditSave(e, editing)}
             onClose={closeEditModal}
           />
         )}

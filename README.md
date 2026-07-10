@@ -35,7 +35,11 @@ Copy `.env.example` to `.env` at the project root.
 | `VITE_API_KEY` | Frontend | Same value as `API_KEY` (baked in at build time) |
 | `API_KEY_DEVANSH` | Server | Apple Shortcut key for Devansh profile |
 | `API_KEY_PAULA` | Server | Apple Shortcut key for Paula profile |
+| `API_KEY_AMEX` | Server | Ingest key for AMEX notifications |
+| `API_KEY_NEO` | Server | Ingest key for Neo notifications |
+| `API_KEY_SCOTIA` | Server | Ingest key for Scotiabank email |
 | `PORT` | Server | HTTP port (default `3000`) |
+| `DEBUG_INGEST` | Server | Set to `1` to log ingest attempts |
 | `DEBUG_SHORTCUT` | Server | Set to `1` to log Shortcut POST bodies |
 | `GITHUB_TOKEN`, `GITHUB_OWNER`, `GITHUB_REPO`, `GITHUB_BRANCH` | Server | Optional GitHub Contents API sync |
 
@@ -73,11 +77,9 @@ The UI user switcher writes `budget_active_user` to `localStorage` and sends `x-
 
 ## Apple Shortcuts
 
-POST JSON to `/api/transactions` with header `x-api-key: <personal key>`.
+POST JSON to `/api/transactions` (manual shape) or `/api/ingest` (raw notification text).
 
-Required fields: `Amount`, `Date`, `Merchant`. Category is inferred from merchant if omitted.
-
-See **docs/ARCHITECTURE.md** for payload formats, amount parsing, and troubleshooting `$0` amounts.
+See [docs/INGESTION.md](docs/INGESTION.md) for AMEX/Neo/Scotiabank automations, Excel VBA, and dedup.
 
 ---
 
@@ -85,9 +87,8 @@ See **docs/ARCHITECTURE.md** for payload formats, amount parsing, and troublesho
 
 | Doc | Contents |
 |-----|----------|
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Full system design, folder map, file reference, data flows, extension guide |
-
-Use **ARCHITECTURE.md** when onboarding another agent or continuing development.
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Full system design, folder map, data flows |
+| [docs/INGESTION.md](docs/INGESTION.md) | Notification ingest, Excel, Shortcuts, security |
 
 ---
 

@@ -1,4 +1,4 @@
-import { useUser } from '../hooks/useUser';
+import { useUser } from '../../hooks/useUser';
 
 const UserSwitcher = () => {
   const { userId, setUserId, users } = useUser();

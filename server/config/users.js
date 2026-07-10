@@ -3,6 +3,8 @@ export const USERS = [
   { id: 'paula', name: 'Paula' },
 ];
 
+export const DEFAULT_USER_ID = 'devansh';
+
 const USER_IDS = new Set(USERS.map((u) => u.id));
 
 /** API key → user id (Shortcuts use one key per person). */
@@ -14,6 +16,9 @@ export const buildApiKeyMap = () => {
 
   add(process.env.API_KEY_DEVANSH, 'devansh');
   add(process.env.API_KEY_PAULA, 'paula');
+  add(process.env.API_KEY_AMEX, 'devansh');
+  add(process.env.API_KEY_NEO, 'devansh');
+  add(process.env.API_KEY_SCOTIA, 'devansh');
 
   // Legacy single key -> Devansh Dalal (existing Shortcut / deploys)
   if (process.env.API_KEY && !process.env.API_KEY_DEVANSH) {

@@ -8,16 +8,19 @@ import {
   serializeJson,
 } from '../github.js';
 import { useGitHub } from '../config.js';
+import { conflict, storageError } from '../errors.js';
+
+const SHRINK_GUARD_MIN = 5;
+const SHRINK_GUARD_TOLERANCE = 2;
 
 const readLocalJson = (localPath) => {
+  if (!fs.existsSync(localPath)) return null;
   try {
-    if (fs.existsSync(localPath)) {
-      return JSON.parse(fs.readFileSync(localPath, 'utf8'));
-    }
+    return JSON.parse(fs.readFileSync(localPath, 'utf8'));
   } catch (e) {
-    console.error(`Failed to read ${localPath}`, e);
+    console.error(`Corrupt local JSON at ${localPath}`, e);
+    throw storageError('Local data file is corrupt', { cause: e });
   }
-  return null;
 };
 
 const writeLocalFile = (localPath, content) => {
@@ -31,11 +34,10 @@ const parseGitHubJson = (fileData) => {
     return JSON.parse(decodeGitHubContent(fileData.content));
   } catch (e) {
     console.error('Failed to parse GitHub JSON content', e);
-    throw new Error('Corrupt JSON on GitHub');
+    throw storageError('Corrupt JSON on GitHub', { cause: e });
   }
 };
 
-/** Refuse writes that would wipe most of an existing transaction history. */
 const assertNotDestructiveShrink = (existingContent, newData, githubPath) => {
   if (!existingContent) return;
 
@@ -51,17 +53,13 @@ const assertNotDestructiveShrink = (existingContent, newData, githubPath) => {
   const existingLen = existing.length;
   const newLen = newData.length;
 
-  if (existingLen >= 5 && newLen < existingLen - 2) {
-    throw new Error(
+  if (existingLen >= SHRINK_GUARD_MIN && newLen < existingLen - SHRINK_GUARD_TOLERANCE) {
+    throw conflict(
       `Refusing write to ${githubPath}: would shrink ${existingLen} records to ${newLen}`
     );
   }
 };
 
-/**
- * Read JSON from GitHub (authoritative when enabled) or local disk.
- * @throws on transient GitHub errors when useGitHub is true
- */
 export const readJsonFile = async (localPath, githubPath) => {
   if (!useGitHub) {
     return readLocalJson(localPath);
@@ -81,13 +79,9 @@ export const readJsonFile = async (localPath, githubPath) => {
     return readLocalJson(localPath);
   }
 
-  throw new Error(`GitHub read failed for ${githubPath}: ${result.error}`);
+  throw storageError(`GitHub read failed for ${githubPath}: ${result.error}`);
 };
 
-/**
- * Write JSON to durable storage. GitHub must succeed before local when enabled.
- * @returns {{ ok: true } | { ok: false, error: string }}
- */
 export const writeJsonFile = async (localPath, githubPath, data, message) => {
   const content = serializeJson(data);
 
@@ -104,7 +98,7 @@ export const writeJsonFile = async (localPath, githubPath, data, message) => {
       try {
         assertNotDestructiveShrink(current.data.content, data, githubPath);
       } catch (e) {
-        return { ok: false, error: e.message };
+        return { ok: false, error: e.message, code: e.code };
       }
     }
 
@@ -124,6 +118,10 @@ export const writeJsonFile = async (localPath, githubPath, data, message) => {
     writeLocalFile(localPath, content);
     return { ok: true };
   } catch (e) {
+    if (useGitHub) {
+      console.warn(`GitHub saved but local cache failed for ${localPath}:`, e.message);
+      return { ok: true, warning: 'local_cache_failed' };
+    }
     console.error(`Failed to save ${localPath}`, e);
     return { ok: false, error: `Local write failed: ${e.message}` };
   }

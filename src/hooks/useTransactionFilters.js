@@ -20,6 +20,11 @@ export const useTransactionFilters = (transactions) => {
     setEndDate('');
   }, []);
 
+  const isThisMonth = useMemo(() => {
+    const { start, end } = thisMonthRange();
+    return startDate === start && endDate === end;
+  }, [startDate, endDate]);
+
   const filteredTransactions = useMemo(
     () =>
       filterTransactions(transactions, {
@@ -50,6 +55,7 @@ export const useTransactionFilters = (transactions) => {
     setSearchQuery,
     setThisMonth,
     clearDateRange,
+    isThisMonth,
     filteredTransactions,
     uniqueCards,
   };

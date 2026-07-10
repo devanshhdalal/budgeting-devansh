@@ -28,7 +28,12 @@ const TransactionItem = memo(({ transaction, index, appConfig, onEdit, onDelete,
           <CategoryIcon category={transaction.Category} categories={appConfig.CATEGORIES} />
         </div>
         <div>
-          <div className="transaction-merchant">{transaction.Merchant || 'Unknown'}</div>
+          <div className="transaction-merchant">
+            {transaction.Merchant || 'Unknown'}
+            {transaction.Merchant === 'Needs review' && (
+              <span className="badge-needs-review">Needs review</span>
+            )}
+          </div>
           <div className="transaction-meta">
             {transaction.Category || 'Other'}
             {transaction.Notes && (
@@ -56,7 +61,7 @@ const TransactionItem = memo(({ transaction, index, appConfig, onEdit, onDelete,
           <div className="transaction-amount">{formatCurrency(transaction.Amount)}</div>
           {rewards && (
             <div className="transaction-reward">
-              +{rewards.points} {rewards.currency}
+              +{rewards.display ?? rewards.points} {rewards.currency === 'Cashback' ? '' : rewards.currency}
             </div>
           )}
         </div>

@@ -26,7 +26,20 @@
         "Groceries": 0,
         "Base": 0
       }
+    },
+    "Cash": {
+      "currency": "Cash",
+      "multipliers": {
+        "Base": 0
+      }
     }
+  },
+  "CARD_IDENTIFIERS": {},
+  "BILLING_CYCLES": {
+    "AMEX Cobalt": { "type": "monthly" },
+    "Scene+ Visa": { "type": "monthly" },
+    "Neo Mastercard": { "type": "monthly" },
+    "Cash": { "type": "monthly" }
   },
   "MERCHANT_REWARDS_OVERRIDES": {
     "Rec Room": {
@@ -43,7 +56,7 @@
   },
   "CATEGORIES": [
     { "value": "Food", "label": "Food & Dining", "icon": "Coffee" },
-    { "value": "Groceries", "label": "Groceries", "icon": "Coffee" },
+    { "value": "Groceries", "label": "Groceries", "icon": "ShoppingCart" },
     { "value": "Car", "label": "Transportation & Car", "icon": "Car" },
     { "value": "Health", "label": "Health & Wellness", "icon": "HeartPulse" },
     { "value": "Personal Items", "label": "Personal Items", "icon": "ShoppingBag" },

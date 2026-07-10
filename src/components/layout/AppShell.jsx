@@ -6,7 +6,7 @@ import AmbientBackground from './AmbientBackground';
 import LoadingScreen from './LoadingScreen';
 import ErrorBoundary from './ErrorBoundary';
 import PullToRefresh from './PullToRefresh';
-import UserSwitcher from '../UserSwitcher';
+import UserSwitcher from './UserSwitcher';
 import { UserProvider } from '../../context/UserProvider';
 import { DataProvider } from '../../context/DataProvider';
 import { ToastProvider } from '../../context/ToastProvider';

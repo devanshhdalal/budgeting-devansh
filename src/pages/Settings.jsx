@@ -7,6 +7,8 @@ import { useToast } from '../hooks/useToast';
 import PageHeader from '../components/ui/PageHeader';
 import SectionCard from '../components/ui/SectionCard';
 import PageError from '../components/ui/PageError';
+import SyncBanner from '../components/ui/SyncBanner';
+import { getPageErrorTitle, getPageErrorVariant } from '../utils/apiErrors';
 import LoadingScreen from '../components/layout/LoadingScreen';
 import { stagger } from '../motion/presets';
 
@@ -23,6 +25,7 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
   const [editingCard, setEditingCard] = useState(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [cardError, setCardError] = useState(null);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -43,29 +46,45 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
     }));
 
   const openCardEditor = (name, data) => {
-    setEditingCard({ name, ...data });
+    const last4 = Object.entries(draft.CARD_IDENTIFIERS || {}).find(([, v]) => v === name)?.[0] || '';
+    setEditingCard({ name, ...data, last4 });
     setIsAddingNew(false);
+    setCardError(null);
   };
 
   const openNewCardEditor = () => {
     const multipliers = Object.fromEntries(draft.CATEGORIES.map((c) => [c.value, 1]));
     multipliers.Base = 1;
-    setEditingCard({ name: '', currency: 'Points', multipliers });
+    setEditingCard({ name: '', currency: 'Points', multipliers, last4: '' });
     setIsAddingNew(true);
+    setCardError(null);
   };
 
   const saveCardChanges = () => {
-    if (isAddingNew && !editingCard.name) return alert('Card name is required');
-    setDraft((prev) => ({
-      ...prev,
-      CARDS: {
-        ...prev.CARDS,
-        [editingCard.name]: {
-          currency: editingCard.currency,
-          multipliers: editingCard.multipliers,
+    if (isAddingNew && !editingCard.name.trim()) {
+      setCardError('Card name is required');
+      toast.error('Card name required');
+      return;
+    }
+    setDraft((prev) => {
+      const nextIdentifiers = { ...(prev.CARD_IDENTIFIERS || {}) };
+      Object.keys(nextIdentifiers).forEach((k) => {
+        if (nextIdentifiers[k] === editingCard.name) delete nextIdentifiers[k];
+      });
+      if (editingCard.last4) nextIdentifiers[editingCard.last4] = editingCard.name;
+
+      return {
+        ...prev,
+        CARD_IDENTIFIERS: nextIdentifiers,
+        CARDS: {
+          ...prev.CARDS,
+          [editingCard.name]: {
+            currency: editingCard.currency,
+            multipliers: editingCard.multipliers,
+          },
         },
-      },
-    }));
+      };
+    });
     setEditingCard(null);
   };
 
@@ -154,6 +173,69 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
             </button>
           </div>
         </SectionCard>
+
+        <SectionCard>
+          <div className="settings-section-head">
+            <div className="settings-section-icon settings-section-icon-muted">
+              <CreditCard size={20} />
+            </div>
+            <div>
+              <h2>Billing cycles</h2>
+              <p>Custom statement periods per card (optional)</p>
+            </div>
+          </div>
+          <div className="budget-slider-grid">
+            {Object.keys(draft.CARDS).map((cardName) => {
+              const cycle = draft.BILLING_CYCLES?.[cardName] || { type: 'monthly' };
+              return (
+                <div key={cardName} className="budget-settings-row">
+                  <div className="budget-row-head">
+                    <span>{cardName}</span>
+                    <select
+                      className="form-input"
+                      style={{ width: 'auto', minWidth: '120px' }}
+                      value={cycle.type || 'monthly'}
+                      onChange={(e) =>
+                        setDraft((prev) => ({
+                          ...prev,
+                          BILLING_CYCLES: {
+                            ...(prev.BILLING_CYCLES || {}),
+                            [cardName]: {
+                              type: e.target.value,
+                              startDay: prev.BILLING_CYCLES?.[cardName]?.startDay || 1,
+                            },
+                          },
+                        }))
+                      }
+                    >
+                      <option value="monthly">Monthly</option>
+                      <option value="custom">Custom</option>
+                    </select>
+                  </div>
+                  {cycle.type === 'custom' && (
+                    <input
+                      type="number"
+                      className="form-input"
+                      min="1"
+                      max="28"
+                      placeholder="Start day"
+                      value={cycle.startDay || 1}
+                      onChange={(e) =>
+                        setDraft((prev) => ({
+                          ...prev,
+                          BILLING_CYCLES: {
+                            ...(prev.BILLING_CYCLES || {}),
+                            [cardName]: { type: 'custom', startDay: parseInt(e.target.value, 10) || 1 },
+                          },
+                        }))
+                      }
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </SectionCard>
       </div>
 
       <AnimatePresence>
@@ -170,6 +252,11 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
                 <label className="form-label">Card name</label>
                 <input className="form-input" value={editingCard.name} onChange={(e) => setEditingCard({ ...editingCard, name: e.target.value })} placeholder="AMEX Cobalt" />
               </div>
+              <div className="form-group">
+                <label className="form-label">Last 4 digits (for ingest)</label>
+                <input className="form-input" value={editingCard.last4 || ''} onChange={(e) => setEditingCard({ ...editingCard, last4: e.target.value.replace(/\D/g, '').slice(0, 4) })} placeholder="1234" maxLength={4} />
+              </div>
+              {cardError && <p className="inline-error" role="alert">{cardError}</p>}
               <div className="form-group">
                 <label className="form-label">Reward currency</label>
                 <input className="form-input" value={editingCard.currency} onChange={(e) => setEditingCard({ ...editingCard, currency: e.target.value })} placeholder="Points" />
@@ -213,22 +300,39 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
 };
 
 const Settings = () => {
-  const { config, setConfig, loading, syncError, refresh } = useData();
+  const { config, setConfig, loading, syncError, syncStatus, refresh } = useData();
+  const toast = useToast();
+
+  const handleRetry = async () => {
+    const result = await refresh();
+    if (!result?.ok) toast.error('Sync failed', { description: syncError });
+  };
 
   if (!config && loading) return <LoadingScreen label="Loading preferences" />;
   if (!config) {
     return (
       <PageError
-        variant="network"
-        title="Could not load preferences"
+        variant={getPageErrorVariant(syncStatus)}
+        title={getPageErrorTitle(syncStatus)}
         description={syncError ?? 'No configuration found for this profile.'}
-        onRetry={refresh}
+        onRetry={handleRetry}
         retrying={loading}
       />
     );
   }
 
-  return <SettingsForm key={config} initialConfig={config} commitConfig={setConfig} />;
+  return (
+    <>
+      {syncError && (
+        <SyncBanner
+          message={`${syncError}. Showing cached settings.`}
+          onRetry={handleRetry}
+          retrying={loading}
+        />
+      )}
+      <SettingsForm key={config} initialConfig={config} commitConfig={setConfig} />
+    </>
+  );
 };
 
 export default Settings;

@@ -1,6 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import { dataDir } from '../config.js';
+import { DEFAULT_USER_ID } from '../config/users.js';
+import { storageError } from '../errors.js';
 import { readJsonFile, writeJsonFile } from './fileStore.js';
 import { userPaths } from './paths.js';
 
@@ -24,7 +26,7 @@ export const getConfig = async (userId) => {
   let config = await readJsonFile(paths.configFile, paths.githubConfig);
 
   if (!config && userId === 'paula') {
-    const devanshPaths = userPaths('devansh');
+    const devanshPaths = userPaths(DEFAULT_USER_ID);
     config = await readJsonFile(devanshPaths.configFile, devanshPaths.githubConfig);
     if (config) {
       const result = await writeJsonFile(
@@ -34,7 +36,7 @@ export const getConfig = async (userId) => {
         'Seed Paula config from template'
       );
       if (!result.ok) {
-        throw new Error(result.error || 'Failed to seed Paula config');
+        throw storageError(result.error || 'Failed to seed Paula config');
       }
     }
   }

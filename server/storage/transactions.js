@@ -1,6 +1,7 @@
 import fs from 'fs';
-import { randomUUID } from 'crypto';
+import { randomUUID, createHash } from 'crypto';
 import { normalizeDate } from '../utils/date.js';
+import { notFound, storageError, validation } from '../errors.js';
 import { readJsonFile, writeJsonFile } from './fileStore.js';
 import { userPaths } from './paths.js';
 
@@ -8,7 +9,6 @@ const caches = new Map();
 
 const sortByDateDesc = (txs) => [...txs].sort((a, b) => (a.Date < b.Date ? 1 : -1));
 
-/** Add UUIDs and normalize dates, reporting whether anything changed. */
 const normalizeAll = (raw) => {
   let changed = false;
   const txs = raw.map((tx) => {
@@ -37,7 +37,7 @@ const persist = async (userId, txs, message) => {
   );
 
   if (!result.ok) {
-    throw new Error(result.error || 'Failed to persist transactions');
+    throw storageError(result.error || 'Failed to persist transactions');
   }
 
   caches.set(userId, txs);
@@ -48,8 +48,12 @@ const loadFromSource = async (userId) => {
   fs.mkdirSync(paths.userDir, { recursive: true });
 
   const raw = await readJsonFile(paths.transactionsFile, paths.githubTransactions);
-  const list = Array.isArray(raw) ? raw : [];
 
+  if (raw !== null && !Array.isArray(raw)) {
+    throw storageError('Invalid transactions file format');
+  }
+
+  const list = Array.isArray(raw) ? raw : [];
   const { txs, changed } = normalizeAll(list);
   const sorted = sortByDateDesc(txs);
   console.log(`[${userId}] Loaded ${sorted.length} transactions.`);
@@ -62,24 +66,45 @@ const loadFromSource = async (userId) => {
   return sorted;
 };
 
-export const getTransactions = async (userId) => {
-  if (caches.has(userId)) return caches.get(userId);
-  return loadFromSource(userId);
+export const getTransactions = async (userId, { includeTest = false } = {}) => {
+  const txs = caches.has(userId) ? caches.get(userId) : await loadFromSource(userId);
+  if (includeTest) return txs;
+  return txs.filter((tx) => !tx.IsTest);
+};
+
+export const buildDedupKey = (source, merchant, amount, date) => {
+  const rounded = normalizeDate(date) || String(date).slice(0, 10);
+  const payload = `${source}|${merchant}|${amount}|${rounded}`;
+  return createHash('sha256').update(payload).digest('hex').slice(0, 16);
+};
+
+export const findDuplicate = (txs, dedupKey, withinHours = 24) => {
+  const cutoff = Date.now() - withinHours * 60 * 60 * 1000;
+  return txs.find((tx) => {
+    if (tx.DedupKey !== dedupKey) return false;
+    const created = tx.CreatedAt ? new Date(tx.CreatedAt).getTime() : Date.now();
+    return created >= cutoff;
+  });
 };
 
 export const upsertTransaction = async (userId, payload) => {
   const iso = normalizeDate(payload.Date);
-  if (!iso) throw new Error('Invalid date');
+  if (!iso) throw validation('Invalid date');
 
   // eslint-disable-next-line no-unused-vars
-  const { User, user, ...rest } = payload;
-  const normalized = { ...rest, Date: iso };
+  const { User, user, Month, ...rest } = payload;
+  const normalized = { ...rest, Date: iso, CreatedAt: rest.CreatedAt || new Date().toISOString() };
 
-  const txs = await getTransactions(userId);
+  const txs = await getTransactions(userId, { includeTest: true });
+
+  if (normalized.DedupKey) {
+    const dup = findDuplicate(txs, normalized.DedupKey);
+    if (dup && !normalized.id) return dup;
+  }
 
   if (normalized.id) {
     const idx = txs.findIndex((tx) => tx.id === normalized.id);
-    if (idx === -1) throw new Error('Transaction not found');
+    if (idx === -1) throw notFound('Transaction not found');
     const updated = { ...txs[idx], ...normalized };
     const next = sortByDateDesc(txs.map((tx, i) => (i === idx ? updated : tx)));
     await persist(userId, next, `Update transaction (${userId})`);
@@ -93,9 +118,9 @@ export const upsertTransaction = async (userId, payload) => {
 };
 
 export const deleteTransactionById = async (userId, id) => {
-  const txs = await getTransactions(userId);
+  const txs = await getTransactions(userId, { includeTest: true });
   if (!txs.some((tx) => tx.id === id)) {
-    throw new Error('Transaction not found');
+    throw notFound('Transaction not found');
   }
   await persist(userId, txs.filter((tx) => tx.id !== id), `Delete transaction (${userId})`);
 };
