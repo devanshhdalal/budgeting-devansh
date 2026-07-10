@@ -38,6 +38,23 @@
       "multipliers": {
         "Base": 0
       }
+    },
+    "Platinum Card": {
+      "currency": "Points",
+      "multipliers": {
+        "Food": 1,
+        "Groceries": 1,
+        "Car": 1,
+        "Health": 1,
+        "Personal Items": 1,
+        "Utilities": 1,
+        "Subscriptions": 1,
+        "Travel": 1,
+        "Other": 1,
+        "Base": 1
+      },
+      "network": "amex",
+      "imageUrl": "https://raw.githubusercontent.com/devanshhdalal/budgeting-devansh/main/data/users/devansh/images/cards/1783719580771-722362861.png"
     }
   },
   "CARD_IDENTIFIERS": {
@@ -56,6 +73,9 @@
       "type": "monthly"
     },
     "Cash": {
+      "type": "monthly"
+    },
+    "Platinum Card": {
       "type": "monthly"
     }
   },
