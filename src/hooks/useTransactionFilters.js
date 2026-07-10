@@ -8,6 +8,12 @@ export const useTransactionFilters = (transactions) => {
   const [endDate, setEndDate] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [needsReviewOnly, setNeedsReviewOnly] = useState(false);
+
+  const needsReviewCount = useMemo(
+    () => transactions.filter((t) => !t.IsTest && t.Merchant === 'Needs review').length,
+    [transactions]
+  );
 
   const setThisMonth = useCallback(() => {
     const { start, end } = thisMonthRange();
@@ -33,8 +39,9 @@ export const useTransactionFilters = (transactions) => {
         endDate,
         selectedCategory,
         searchQuery,
+        needsReviewOnly,
       }),
-    [transactions, selectedCard, startDate, endDate, selectedCategory, searchQuery]
+    [transactions, selectedCard, startDate, endDate, selectedCategory, searchQuery, needsReviewOnly]
   );
 
   const uniqueCards = useMemo(
@@ -53,6 +60,9 @@ export const useTransactionFilters = (transactions) => {
     setSelectedCategory,
     searchQuery,
     setSearchQuery,
+    needsReviewOnly,
+    setNeedsReviewOnly,
+    needsReviewCount,
     setThisMonth,
     clearDateRange,
     isThisMonth,

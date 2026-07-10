@@ -1825,6 +1825,33 @@ optgroup {
   color: var(--text-muted);
 }
 
+.btn-danger {
+  background: var(--danger, #c94a4a);
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.confirm-dialog-message {
+  margin: 0 0 24px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.confirm-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.chip-review.active {
+  border-color: var(--danger, #e85d5d);
+  color: var(--danger, #e85d5d);
+}
+
 .success-panel {
   display: flex;
   flex-direction: column;

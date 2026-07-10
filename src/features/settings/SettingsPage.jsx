@@ -5,6 +5,7 @@ import { saveConfig, uploadCardImage } from '@/services/storage';
 import { useData } from '@/hooks/useData';
 import { useToast } from '@/hooks/useToast';
 import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
+import { useConfirm } from '@/hooks/useConfirm';
 import { inferNetworkFromName } from '@/config/cardNetworks';
 import PageHeader from '@/components/ui/PageHeader';
 import SectionCard from '@/components/ui/SectionCard';
@@ -23,6 +24,7 @@ const cloneConfig = (config) => structuredClone(config);
 
 const SettingsForm = ({ initialConfig, commitConfig, transactions, setTransactions }) => {
   const toast = useToast();
+  const { confirm, confirmDialog } = useConfirm();
   const [draft, setDraft] = useState(() => cloneConfig(initialConfig));
   const draftRef = useRef(draft);
 
@@ -233,20 +235,28 @@ const SettingsForm = ({ initialConfig, commitConfig, transactions, setTransactio
   };
 
   const deleteCard = async (name) => {
-    if (!window.confirm(`Delete ${name}?`)) return;
+    const ok = await confirm({
+      title: `Delete ${name}?`,
+      message: 'This card will be removed from your payment methods. Transactions already logged on this card are not changed.',
+      confirmLabel: 'Delete card',
+      cancelLabel: 'Cancel',
+      danger: true,
+    });
+    if (!ok) return;
     const base = draftRef.current;
     const nextCards = { ...base.CARDS };
     delete nextCards[name];
     const nextCycles = { ...(base.BILLING_CYCLES || {}) };
     delete nextCycles[name];
     const nextDraft = { ...base, CARDS: nextCards, BILLING_CYCLES: nextCycles };
-    const ok = await persistDraft(nextDraft, 'Card removed');
-    if (ok) resetCardEditor();
+    const saved = await persistDraft(nextDraft, 'Card removed');
+    if (saved) resetCardEditor();
   };
 
   if (editingCard) {
     return (
-      <CardEditorFlow
+      <>
+        <CardEditorFlow
         card={editingCard}
         isAddingNew={isAddingNew}
         saveStatus={saveStatus}
@@ -266,11 +276,14 @@ const SettingsForm = ({ initialConfig, commitConfig, transactions, setTransactio
         onDelete={() => deleteCard(editingCard.originalName || editingCard.name)}
         onFlushPersist={flushCardPersist}
         onDone={resetCardEditor}
-      />
+        />
+        {confirmDialog}
+      </>
     );
   }
 
   return (
+    <>
     <motion.div className="settings-page" variants={stagger} initial="hidden" animate="show">
       <PageHeader
         eyebrow="Preferences"
@@ -373,6 +386,8 @@ const SettingsForm = ({ initialConfig, commitConfig, transactions, setTransactio
         </SectionCard>
       </div>
     </motion.div>
+    {confirmDialog}
+    </>
   );
 };
 

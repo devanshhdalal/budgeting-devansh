@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { validation } from '../errors.js';
+import { validation, tooManyRequests } from '../errors.js';
 import { extractAmount } from '../utils/amount.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { buildDedupKey, upsertTransaction } from '../storage/transactions.js';
@@ -64,7 +64,7 @@ router.post(
     }
 
     if (!checkRateLimit(req.userId)) {
-      throw validation('Rate limit exceeded. Try again in a minute.');
+      throw tooManyRequests('Rate limit exceeded. Try again in a minute.');
     }
 
     const config = await getConfig(req.userId);

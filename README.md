@@ -56,6 +56,7 @@ If no API keys are set, the server defaults to user `devansh` with no auth (loca
 | `npm start` | Production server (`server.js`) |
 | `npm run build` | Vite production build to `dist/` |
 | `npm run lint` | ESLint |
+| `npm test` | Vitest unit tests (`shared/billingCycle.js`) |
 | `npm run preview` | Preview production build |
 
 ---

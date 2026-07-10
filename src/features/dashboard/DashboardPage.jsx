@@ -32,6 +32,7 @@ import { resolveBillingRange, resolveBillingPeriod } from '@shared/billingCycle'
 import { formatDisplayDate } from '@/utils/date';
 import { getPageErrorTitle, getPageErrorVariant } from '@/utils/apiErrors';
 import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
+import { useConfirm } from '@/hooks/useConfirm';
 import {
   formatRenewalLabel,
   getSubscriptions,
@@ -172,6 +173,15 @@ const Toolbar = ({ filters, categories }) => (
       <button type="button" onClick={filters.clearDateRange} className="chip">
         All time
       </button>
+      {filters.needsReviewCount > 0 && (
+        <button
+          type="button"
+          onClick={() => filters.setNeedsReviewOnly((v) => !v)}
+          className={`chip chip-review ${filters.needsReviewOnly ? 'active' : ''}`}
+        >
+          Needs review ({filters.needsReviewCount})
+        </button>
+      )}
     </div>
 
     <select
@@ -235,6 +245,7 @@ const Dashboard = () => {
   const filters = useTransactionFilters(transactions);
   const chartColors = useChartColors();
   const toast = useToast();
+  const { confirm, confirmDialog } = useConfirm();
 
   const [editing, setEditing] = useState(null);
   const editingRef = useRef(editing);
@@ -346,16 +357,23 @@ const Dashboard = () => {
   const handleDelete = useCallback(
     async (tx) => {
       if (!tx.id) return;
-      if (!window.confirm('Delete this transaction?')) return;
-      const { ok, error } = await deleteTransaction(tx.id);
-      if (!ok) {
+      const ok = await confirm({
+        title: 'Delete transaction?',
+        message: `Remove "${tx.Merchant || 'this transaction'}"? This cannot be undone.`,
+        confirmLabel: 'Delete',
+        cancelLabel: 'Cancel',
+        danger: true,
+      });
+      if (!ok) return;
+      const { ok: deleted, error } = await deleteTransaction(tx.id);
+      if (!deleted) {
         toast.error('Could not delete transaction', { description: error });
         return;
       }
       setTransactions((prev) => prev.filter((t) => t.id !== tx.id));
       toast.success('Transaction deleted');
     },
-    [setTransactions, toast]
+    [confirm, setTransactions, toast]
   );
 
   const budgetRange = useMemo(() => {
@@ -563,6 +581,8 @@ const Dashboard = () => {
         src={viewingReceipt}
         onClose={() => setViewingReceipt(null)}
       />
+
+      {confirmDialog}
     </motion.div>
   );
 };

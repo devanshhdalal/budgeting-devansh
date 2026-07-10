@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Plus, Trash2, Store } from 'lucide-react';
+import { useConfirm } from '@/hooks/useConfirm';
 
 const emptyOverride = () => ({ multiplier: 1, note: '' });
 
 const MerchantRewardsEditorSection = ({ overrides, cardNames, onPersistOverrides }) => {
+  const { confirm, confirmDialog } = useConfirm();
   const merchants = Object.keys(overrides || {}).sort((a, b) => a.localeCompare(b));
   const [newMerchant, setNewMerchant] = useState('');
   const [expanded, setExpanded] = useState(() => new Set(merchants.slice(0, 1)));
@@ -29,8 +31,15 @@ const MerchantRewardsEditorSection = ({ overrides, cardNames, onPersistOverrides
     setNewMerchant('');
   };
 
-  const removeMerchant = (merchant) => {
-    if (!window.confirm(`Remove all reward overrides for "${merchant}"?`)) return;
+  const removeMerchant = async (merchant) => {
+    const ok = await confirm({
+      title: `Remove ${merchant}?`,
+      message: 'All reward overrides for this merchant will be deleted.',
+      confirmLabel: 'Remove',
+      cancelLabel: 'Cancel',
+      danger: true,
+    });
+    if (!ok) return;
     const next = { ...(overrides || {}) };
     delete next[merchant];
     patchOverrides(next);
@@ -178,6 +187,7 @@ const MerchantRewardsEditorSection = ({ overrides, cardNames, onPersistOverrides
           Add merchant
         </button>
       </div>
+      {confirmDialog}
     </div>
   );
 };

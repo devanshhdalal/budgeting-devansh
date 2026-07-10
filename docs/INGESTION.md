@@ -124,7 +124,7 @@ Ingest computes `DedupKey = hash(source + merchant + amount + date)`. Duplicate 
 ## Security
 
 - Separate API keys per source (revoke one without breaking others)
-- Rate limit: 60 requests/minute per user on `/api/ingest`
+- Rate limit: 60 requests/minute per user on `/api/ingest` (HTTP `429`, code `RATE_LIMIT`)
 - Raw text redacted before storage (full card numbers stripped)
 - Set `DEBUG_INGEST=1` to log ingest attempts (not full raw text in production)
 

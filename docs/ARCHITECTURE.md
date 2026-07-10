@@ -76,7 +76,7 @@ Savvr is a **monorepo-style** project: one Node process serves both the REST API
 | Backend | Express 5, Multer (uploads) |
 | Persistence | JSON files on filesystem |
 | Optional sync | GitHub Contents API |
-| Tooling | ESLint 10, ESM (`"type": "module"`) |
+| Tooling | ESLint 10, Vitest, ESM (`"type": "module"`) |
 
 No database. No ORM. All persistence is file-based JSON.
 
@@ -167,7 +167,7 @@ savvr/                          # project root (folder may still be named "budge
     ├── features/               # route-aligned feature modules
     │   ├── dashboard/          # DashboardPage + toolbar, charts, modals
     │   ├── transactions/       # AddTransactionPage, TransactionForm, TransactionItem
-    │   ├── settings/           # SettingsPage, card editor, billing cycles
+    │   ├── settings/           # SettingsPage, card editor stepper, categories, merchant overrides
     │   └── subscriptions/      # SubscriptionsPage
     │
     ├── components/
@@ -492,14 +492,14 @@ Exports: `PORT`, `API_KEY`, GitHub env vars, `useGitHub` boolean, `dataDir`, `di
 |------|-------|------|
 | `features/dashboard/DashboardPage.jsx` | `/` | Overview: stats, filters, charts, budgets, subscriptions, transaction list |
 | `features/transactions/AddTransactionPage.jsx` | `/add` | Manual transaction stepper with auto-save |
-| `features/settings/SettingsPage.jsx` | `/settings` | Budget sliders, cards, billing cycles (auto-save) |
+| `features/settings/SettingsPage.jsx` | `/settings` | Budget sliders, categories, merchant overrides, payment cards (auto-save) |
 | `features/subscriptions/SubscriptionsPage.jsx` | `/subscriptions` | Recurring subscriptions with renewal dates |
 
-### Layout (`components/layout/`)
+### Layout (`app/` + `components/layout/`)
 
 | File | Role |
 |------|------|
-| `AppShell.jsx` | Root layout: Router, header, nav, theme toggle, lazy-loaded pages, provider nesting |
+| `app/AppShell.jsx` | Root layout: Router, header, nav, theme toggle, lazy-loaded pages, provider nesting |
 | `AmbientBackground.jsx` | Decorative gradient orbs |
 | `LoadingScreen.jsx` | Full-page spinner |
 | `ErrorBoundary.jsx` | Catches render errors; Try again / Reload |
@@ -514,16 +514,22 @@ Exports: `PORT`, `API_KEY`, GitHub env vars, `useGitHub` boolean, `dataDir`, `di
 | `StatCard.jsx` | Hero stat tile; supports `children` for AnimatedNumber |
 | `PageError.jsx` | Full-page error with retry (no config / sync failed) |
 | `Skeleton.jsx` | Shimmer placeholder |
-| `AnimatedNumber.jsx` | Count-up animation for currency |
+| `Modal.jsx` | Portal dialog with focus trap, scroll lock, Escape |
+| `ConfirmDialog.jsx` | Accessible confirm/cancel (replaces `window.confirm`) |
+| `Stepper.jsx` | Multi-step form shell (Add transaction, card editor) |
+| `SaveIndicator.jsx` | Saving / saved / error indicator |
 
-### Feature components
+### Feature components (`features/*/`)
 
 | File | Role |
 |------|------|
-| `Charts.jsx` | `SpendingPieChart`, `SpendingBarChart` (Recharts) |
-| `TransactionItem.jsx` | Single row with edit/delete/receipt actions |
-| `DateField.jsx` | Click-to-open native date picker |
-| `UserSwitcher.jsx` | Profile toggle buttons |
+| `components/charts/Charts.jsx` | `SpendingPieChart`, `SpendingBarChart` (Recharts) |
+| `features/transactions/components/TransactionItem.jsx` | Single row with edit/delete/receipt actions |
+| `components/forms/DateField.jsx` | Click-to-open native date picker |
+| `components/layout/UserSwitcher.jsx` | Profile toggle buttons |
+| `features/settings/components/CardEditorFlow.jsx` | 5-step card add/edit takeover (photo, details, billing, multipliers, review) |
+| `features/settings/components/CategoriesEditorSection.jsx` | Add/reorder/delete categories; delete reassigns txns to Other |
+| `features/settings/components/MerchantRewardsEditorSection.jsx` | Per-merchant per-card reward overrides |
 
 ### Context (`context/`)
 
@@ -543,7 +549,9 @@ Exports: `PORT`, `API_KEY`, GitHub env vars, `useGitHub` boolean, `dataDir`, `di
 | `useUser.js` | Access UserContext |
 | `useData.js` | Access DataContext |
 | `useToast.js` | Access ToastContext |
-| `useTransactionFilters.js` | Search, date range, category, card filters |
+| `useTransactionFilters.js` | Search, date range, category, card, needs-review filters |
+| `useDebouncedCallback.js` | Debounce with flush/cancel (auto-save) |
+| `useConfirm.js` | Promise-based confirm dialog |
 | `useChartColors.js` | Reads CSS `--chart-*` vars; updates on theme change |
 | `usePullToRefresh.js` | Touch gesture logic for PTR |
 
@@ -691,6 +699,7 @@ Enable when all are set: `GITHUB_TOKEN`, `GITHUB_OWNER`, `GITHUB_REPO`.
 | `UNAUTHORIZED` | 401 | Invalid API key |
 | `NOT_FOUND` | 404 | Transaction/config missing |
 | `CONFLICT` | 409 | Shrink guard blocked write |
+| `RATE_LIMIT` | 429 | Ingest rate limit exceeded (60/min per user) |
 | `STORAGE` | 503 | GitHub/disk unavailable, corrupt JSON |
 | `INTERNAL` | 500 | Unexpected server error |
 
@@ -729,6 +738,8 @@ toast.error('Failed', { description: 'Server message' });
 See [INGESTION.md](INGESTION.md) for full detail.
 
 - `POST /api/ingest` - raw notification text → parsers → `upsertTransaction`
+- Rate limit: **60 requests/minute per user** (returns `429` / `RATE_LIMIT`)
+- Unparsed notifications create `Merchant: "Needs review"` transactions; filter on dashboard toolbar
 - Parsers: `server/utils/parsers/amex.js`, `neo.js`, `scotiaEmail.js`
 - `CARD_IDENTIFIERS` in config maps last-4 → card name
 - `IsTest` transactions excluded from dashboard aggregates
@@ -756,12 +767,17 @@ Charts read colors via `useChartColors()` hook (computed from CSS vars).
 
 ## 17. Common development tasks
 
+### Set billing cycle for a card
+
+1. Settings → Payment methods → edit a card
+2. Step 3 (Billing cycle): calendar month or statement period with anchor dates
+3. `shared/billingCycle.js` projects future periods; partial anchors allowed while editing (validated when complete)
+
 ### Add a spending category
 
-1. Edit `data/users/{id}/config.json` → `CATEGORIES` array
-2. Add `BUDGET_CONFIG` entry
-3. Add multipliers to each card in `CARDS`
-4. Optional: add icon mapping in `categoryIcons.jsx` if new icon name
+1. Settings → Categories → add label + icon (or edit `config.json`)
+2. Budget slider and card multipliers are seeded automatically on add
+3. Delete reassigns affected transactions to `Other` (with confirm dialog)
 
 ### Add a third user
 
@@ -818,6 +834,7 @@ Typical flow (e.g. Render):
 | Paula config seed | Copies from Devansh once if missing |
 | Rewards `points` type | Cashback returns string like `"$1.23"`; points are integers |
 | `structuredClone` in Settings | Requires modern browser; used for config draft copy |
+| Render without GitHub env | `/health` reports `storage: local`; data lost on redeploy — set `GITHUB_*` env vars |
 
 ---
 
@@ -832,7 +849,7 @@ When picking up this project:
 5. For Shortcut issues: `DEBUG_SHORTCUT=1`, verify JSON body and Amount field
 6. For UI work: start at `AppShell.jsx` and `index.css`
 7. For API work: start at `server.js` → routes → storage
-8. Run `npm run lint` before finishing changes
+8. Run `npm run lint` and `npm test` before finishing changes
 
 ---
 

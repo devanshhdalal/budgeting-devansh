@@ -14,6 +14,9 @@ export const getErrorCopy = ({ status, code, error }) => {
   if (status === 400 || code === 'VALIDATION') {
     return error || 'Please check your input and try again.';
   }
+  if (status === 429 || code === 'RATE_LIMIT') {
+    return error || 'Too many requests. Wait a moment and try again.';
+  }
   return error || 'Something went wrong. Please try again.';
 };
 

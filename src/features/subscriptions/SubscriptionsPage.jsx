@@ -5,6 +5,7 @@ import { saveConfig } from '@/services/storage';
 import { useData } from '@/hooks/useData';
 import { useToast } from '@/hooks/useToast';
 import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
+import { useConfirm } from '@/hooks/useConfirm';
 import PageHeader from '@/components/ui/PageHeader';
 import SectionCard from '@/components/ui/SectionCard';
 import PageError from '@/components/ui/PageError';
@@ -89,6 +90,7 @@ const SubscriptionRow = ({ sub, categories, onEdit, onDelete }) => {
 const SubscriptionsPage = () => {
   const { config, setConfig, loading, syncError, syncStatus, refresh } = useData();
   const toast = useToast();
+  const { confirm, confirmDialog } = useConfirm();
   const [editing, setEditing] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
   const [form, setForm] = useState(emptyForm);
@@ -202,10 +204,17 @@ const SubscriptionsPage = () => {
   };
 
   const handleDelete = async (sub) => {
-    if (!window.confirm(`Remove ${sub.name}?`)) return;
+    const ok = await confirm({
+      title: `Remove ${sub.name}?`,
+      message: 'This subscription will be removed from your tracking list.',
+      confirmLabel: 'Remove',
+      cancelLabel: 'Cancel',
+      danger: true,
+    });
+    if (!ok) return;
     const next = getSubscriptions(config).filter((s) => s.id !== sub.id);
-    const ok = await persist(next);
-    if (ok) {
+    const saved = await persist(next);
+    if (saved) {
       toast.success('Subscription removed');
       if (editing?.id === sub.id) closeModal();
     }
@@ -347,6 +356,7 @@ const SubscriptionsPage = () => {
                 </button>
               )}
       </Modal>
+      {confirmDialog}
     </motion.div>
   );
 };

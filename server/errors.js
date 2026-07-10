@@ -23,6 +23,9 @@ export const storageError = (message, opts = {}) =>
 export const conflict = (message, opts = {}) =>
   new AppError(message, { code: 'CONFLICT', status: 409, ...opts });
 
+export const tooManyRequests = (message, opts = {}) =>
+  new AppError(message, { code: 'RATE_LIMIT', status: 429, ...opts });
+
 export const internal = (message = 'Internal server error', opts = {}) =>
   new AppError(message, { code: 'INTERNAL', status: 500, expose: false, ...opts });
 

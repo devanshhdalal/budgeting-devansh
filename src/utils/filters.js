@@ -5,10 +5,14 @@ export const matchesDateRange = (transactionDate, startDate, endDate) => {
   return true;
 };
 
-export const filterTransactions = (transactions, { selectedCard, startDate, endDate, selectedCategory, searchQuery }) => {
+export const filterTransactions = (
+  transactions,
+  { selectedCard, startDate, endDate, selectedCategory, searchQuery, needsReviewOnly = false }
+) => {
   const query = searchQuery.toLowerCase();
   return transactions.filter((t) => {
     if (t.IsTest) return false;
+    if (needsReviewOnly && t.Merchant !== 'Needs review') return false;
     if (selectedCard !== 'All' && t.Card !== selectedCard) return false;
     if (!matchesDateRange(t.Date, startDate, endDate)) return false;
     if (selectedCategory !== 'All' && t.Category !== selectedCategory) return false;

@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp, Plus, Trash2, Tag } from 'lucide-react';
 import { saveTransaction } from '@/services/storage';
-import { CategoryIcon, CATEGORY_ICON_OPTIONS } from '@/utils/categoryIcons';
+import { useToast } from '@/hooks/useToast';
+import { useConfirm } from '@/hooks/useConfirm';
+import { CategoryIcon } from '@/utils/categoryIcons';
+import { CATEGORY_ICON_OPTIONS } from '@/config/categoryIcons';
 
 const OTHER_VALUE = 'Other';
 
@@ -23,6 +26,8 @@ const CategoriesEditorSection = ({
   onPersistConfig,
   setSaveStatus,
 }) => {
+  const toast = useToast();
+  const { confirm, confirmDialog } = useConfirm();
   const [newLabel, setNewLabel] = useState('');
   const [newIcon, setNewIcon] = useState('MoreHorizontal');
   const [isDeleting, setIsDeleting] = useState(false);
@@ -46,7 +51,10 @@ const CategoriesEditorSection = ({
 
     const value = toCategoryValue(label);
     if (!value) return;
-    if (categories.some((c) => c.value === value)) return;
+    if (categories.some((c) => c.value === value)) {
+      toast.error('Category already exists', { description: `"${value}" is already in your list.` });
+      return;
+    }
 
     const nextCategories = [...categories, { value, label, icon: newIcon }];
     const nextBudget = { ...budgetConfig, [value]: 0 };
@@ -77,10 +85,17 @@ const CategoriesEditorSection = ({
     const noun = count === 1 ? 'transaction' : 'transactions';
     const message =
       count > 0
-        ? `${count} ${noun} use "${cat.label}". They will be moved to Other. Continue?`
+        ? `${count} ${noun} use "${cat.label}". They will be moved to Other.`
         : `Remove category "${cat.label}"?`;
 
-    if (!window.confirm(message)) return;
+    const ok = await confirm({
+      title: count > 0 ? 'Reassign transactions?' : 'Remove category?',
+      message,
+      confirmLabel: count > 0 ? 'Reassign and remove' : 'Remove',
+      cancelLabel: 'Cancel',
+      danger: true,
+    });
+    if (!ok) return;
 
     setIsDeleting(true);
     setSaveStatus('saving');
@@ -93,6 +108,7 @@ const CategoriesEditorSection = ({
       if (failed) {
         setSaveStatus('error');
         setIsDeleting(false);
+        toast.error('Could not reassign transactions', { description: failed.error });
         return;
       }
       setTransactions((prev) =>
@@ -112,7 +128,7 @@ const CategoriesEditorSection = ({
       })
     );
 
-    const ok = await onPersistConfig(
+    const saved = await onPersistConfig(
       {
         CATEGORIES: nextCategories,
         BUDGET_CONFIG: nextBudget,
@@ -124,7 +140,7 @@ const CategoriesEditorSection = ({
     );
 
     setIsDeleting(false);
-    if (!ok) return;
+    if (!saved) return;
   };
 
   return (
@@ -214,6 +230,7 @@ const CategoriesEditorSection = ({
           Add
         </button>
       </div>
+      {confirmDialog}
     </div>
   );
 };
