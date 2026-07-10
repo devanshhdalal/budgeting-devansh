@@ -41,9 +41,9 @@
     }
   },
   "CARD_IDENTIFIERS": {
+    "769": "Neo Mastercard",
     "1007": "AMEX Cobalt",
-    "5019": "Scene+ Visa",
-    "7697": "Neo Mastercard"
+    "5019": "Scene+ Visa"
   },
   "BILLING_CYCLES": {
     "AMEX Cobalt": {
