@@ -150,7 +150,8 @@
       "name": "Sauce Plus",
       "amount": 10.31,
       "renewalDate": "2026-07-09",
-      "card": "AMEX Cobalt"
+      "card": "AMEX Cobalt",
+      "notes": "Scau"
     }
   ]
 }
