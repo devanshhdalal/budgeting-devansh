@@ -197,7 +197,7 @@
     "Merchant": "Real Fruit",
     "Amount": 11.54,
     "Category": "Food",
-    "Card": "Cobalt",
+    "Card": "AMEX Cobalt",
     "Notes": "",
     "id": "ea865760-5e17-4bb8-b46c-6d780ce48c37",
     "ReceiptUrl": "",
@@ -205,7 +205,7 @@
     "Source": "manual",
     "IsTest": false,
     "Currency": "CAD",
-    "CreatedAt": "2026-07-10T23:07:25.131Z"
+    "CreatedAt": "2026-07-10T23:07:24.503Z"
   },
   {
     "Date": "2026-06-07",
