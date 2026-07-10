@@ -1,38 +1,5 @@
 {
   "CARDS": {
-    "AMEX Cobalt": {
-      "currency": "MR Points",
-      "multipliers": {
-        "Food": 5,
-        "Groceries": 5,
-        "Travel": 2,
-        "Car": 2,
-        "Base": 1
-      },
-      "network": "amex",
-      "imageUrl": "https://raw.githubusercontent.com/devanshhdalal/budgeting-devansh/main/data/users/devansh/images/cards/1783718541433-879689247.png"
-    },
-    "Scene+ Visa": {
-      "currency": "Scene+ Points",
-      "multipliers": {
-        "Groceries": 1,
-        "Food": 1,
-        "Base": 1
-      },
-      "network": "visa",
-      "imageUrl": "https://raw.githubusercontent.com/devanshhdalal/budgeting-devansh/main/data/users/devansh/images/cards/1783718565069-519603354.png"
-    },
-    "Neo Mastercard": {
-      "currency": "Cashback",
-      "multipliers": {
-        "Car": 0.01,
-        "Food": 0,
-        "Groceries": 0,
-        "Base": 0
-      },
-      "network": "mastercard",
-      "imageUrl": "https://raw.githubusercontent.com/devanshhdalal/budgeting-devansh/main/data/users/devansh/images/cards/1783718580329-885134402.png"
-    },
     "Cash": {
       "currency": "Cash",
       "multipliers": {
@@ -55,13 +22,46 @@
       },
       "network": "amex",
       "imageUrl": "https://raw.githubusercontent.com/devanshhdalal/budgeting-devansh/main/data/users/devansh/images/cards/1783719580771-722362861.png"
+    },
+    "Neo": {
+      "currency": "Cashback",
+      "multipliers": {
+        "Car": 0.01,
+        "Food": 0,
+        "Groceries": 0,
+        "Base": 0
+      },
+      "network": "mastercard",
+      "imageUrl": "https://raw.githubusercontent.com/devanshhdalal/budgeting-devansh/main/data/users/devansh/images/cards/1783718580329-885134402.png"
+    },
+    "Scene+": {
+      "currency": "Scene+ Points",
+      "multipliers": {
+        "Groceries": 1,
+        "Food": 1,
+        "Base": 1
+      },
+      "network": "visa",
+      "imageUrl": "https://raw.githubusercontent.com/devanshhdalal/budgeting-devansh/main/data/users/devansh/images/cards/1783718565069-519603354.png"
+    },
+    "Cobalt": {
+      "currency": "MR Points",
+      "multipliers": {
+        "Food": 5,
+        "Groceries": 5,
+        "Travel": 2,
+        "Car": 2,
+        "Base": 1
+      },
+      "network": "amex",
+      "imageUrl": "https://raw.githubusercontent.com/devanshhdalal/budgeting-devansh/main/data/users/devansh/images/cards/1783718541433-879689247.png"
     }
   },
   "CARD_IDENTIFIERS": {
     "1005": "Platinum Card",
-    "1007": "AMEX Cobalt",
-    "5019": "Scene+ Visa",
-    "7697": "Neo Mastercard"
+    "1007": "Cobalt",
+    "5019": "Scene+",
+    "7697": "Neo"
   },
   "BILLING_CYCLES": {
     "AMEX Cobalt": {
@@ -77,6 +77,15 @@
       "type": "monthly"
     },
     "Platinum Card": {
+      "type": "monthly"
+    },
+    "Neo": {
+      "type": "monthly"
+    },
+    "Scene+": {
+      "type": "monthly"
+    },
+    "Cobalt": {
       "type": "monthly"
     }
   },
