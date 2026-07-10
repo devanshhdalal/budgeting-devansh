@@ -22,11 +22,20 @@ export const getConfig = async (userId) => {
   seedConfigFromLegacy(userId, paths);
 
   let config = await readJsonFile(paths.configFile, paths.githubConfig);
+
   if (!config && userId === 'paula') {
     const devanshPaths = userPaths('devansh');
     config = await readJsonFile(devanshPaths.configFile, devanshPaths.githubConfig);
     if (config) {
-      await writeJsonFile(paths.configFile, paths.githubConfig, config, 'Seed Paula config from template');
+      const result = await writeJsonFile(
+        paths.configFile,
+        paths.githubConfig,
+        config,
+        'Seed Paula config from template'
+      );
+      if (!result.ok) {
+        throw new Error(result.error || 'Failed to seed Paula config');
+      }
     }
   }
 
@@ -36,6 +45,17 @@ export const getConfig = async (userId) => {
 
 export const saveConfig = async (userId, newConfig) => {
   const paths = userPaths(userId);
+  const result = await writeJsonFile(
+    paths.configFile,
+    paths.githubConfig,
+    newConfig,
+    `Update config (${userId})`
+  );
+
+  if (!result.ok) {
+    return result;
+  }
+
   caches.set(userId, newConfig);
-  return writeJsonFile(paths.configFile, paths.githubConfig, newConfig, `Update config (${userId})`);
+  return result;
 };

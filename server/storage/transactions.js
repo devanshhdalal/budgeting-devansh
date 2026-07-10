@@ -27,18 +27,25 @@ const normalizeAll = (raw) => {
   return { txs, changed };
 };
 
-const persist = (userId, txs, message) => {
+const persist = async (userId, txs, message) => {
   const paths = userPaths(userId);
+  const result = await writeJsonFile(
+    paths.transactionsFile,
+    paths.githubTransactions,
+    txs,
+    message
+  );
+
+  if (!result.ok) {
+    throw new Error(result.error || 'Failed to persist transactions');
+  }
+
   caches.set(userId, txs);
-  return writeJsonFile(paths.transactionsFile, paths.githubTransactions, txs, message);
 };
 
 const loadFromSource = async (userId) => {
   const paths = userPaths(userId);
   fs.mkdirSync(paths.userDir, { recursive: true });
-  if (!fs.existsSync(paths.transactionsFile)) {
-    fs.writeFileSync(paths.transactionsFile, '[]');
-  }
 
   const raw = await readJsonFile(paths.transactionsFile, paths.githubTransactions);
   const list = Array.isArray(raw) ? raw : [];
@@ -75,13 +82,13 @@ export const upsertTransaction = async (userId, payload) => {
     if (idx === -1) throw new Error('Transaction not found');
     const updated = { ...txs[idx], ...normalized };
     const next = sortByDateDesc(txs.map((tx, i) => (i === idx ? updated : tx)));
-    await persist(userId, next, 'Update transaction');
+    await persist(userId, next, `Update transaction (${userId})`);
     return updated;
   }
 
   const created = { ...normalized, id: randomUUID() };
   const next = sortByDateDesc([created, ...txs]);
-  await persist(userId, next, 'Add transaction');
+  await persist(userId, next, `Add transaction (${userId})`);
   return created;
 };
 
@@ -90,5 +97,5 @@ export const deleteTransactionById = async (userId, id) => {
   if (!txs.some((tx) => tx.id === id)) {
     throw new Error('Transaction not found');
   }
-  await persist(userId, txs.filter((tx) => tx.id !== id), 'Delete transaction');
+  await persist(userId, txs.filter((tx) => tx.id !== id), `Delete transaction (${userId})`);
 };
