@@ -30,7 +30,8 @@
         "Groceries": 0,
         "Base": 0
       },
-      "network": "mastercard"
+      "network": "mastercard",
+      "imageUrl": "https://raw.githubusercontent.com/devanshhdalal/budgeting-devansh/main/data/users/devansh/images/cards/1783718580329-885134402.png"
     },
     "Cash": {
       "currency": "Cash",
@@ -40,6 +41,7 @@
     }
   },
   "CARD_IDENTIFIERS": {
+    "76": "Neo Mastercard",
     "1007": "AMEX Cobalt",
     "5019": "Scene+ Visa"
   },
