@@ -1,5 +1,7 @@
-import { Upload, Image as ImageIcon } from 'lucide-react';
+import { Upload, Image as ImageIcon, CreditCard } from 'lucide-react';
 import DateField from './DateField';
+import { getCardNetwork } from '../config/cardNetworks';
+import { NetworkBadge } from './settings/PaymentCardTile';
 
 const TransactionForm = ({
   formData,
@@ -68,7 +70,7 @@ const TransactionForm = ({
       )}
 
       {showStep2 && (
-        <div className="form-grid-2">
+        <>
           <div className="form-group">
             <label className="form-label">Category</label>
             <select
@@ -85,14 +87,45 @@ const TransactionForm = ({
           </div>
           <div className="form-group">
             <label className="form-label">Card</label>
-            <select name="Card" className="form-input" value={formData.Card} onChange={onChange}>
-              <option value="">Select card</option>
-              {cardOptions.map((card) => (
-                <option key={card} value={card}>{card}</option>
-              ))}
-            </select>
+            <div className="card-picker-grid" role="listbox" aria-label="Payment card">
+              <button
+                type="button"
+                role="option"
+                aria-selected={!formData.Card}
+                className={`card-picker-item ${!formData.Card ? 'selected' : ''}`}
+                onClick={() => onChange({ target: { name: 'Card', value: '' } })}
+              >
+                <div className="card-picker-thumb card-picker-thumb-empty">
+                  <CreditCard size={20} />
+                </div>
+                <span className="card-picker-label">None</span>
+              </button>
+              {cardOptions.map((card) => {
+                const data = config.CARDS[card];
+                const network = getCardNetwork(data, card);
+                const selected = formData.Card === card;
+                return (
+                  <button
+                    type="button"
+                    key={card}
+                    role="option"
+                    aria-selected={selected}
+                    className={`card-picker-item ${selected ? 'selected' : ''} ${network ? `network-${network}` : ''}`}
+                    onClick={() => onChange({ target: { name: 'Card', value: card } })}
+                  >
+                    {data?.imageUrl ? (
+                      <img src={data.imageUrl} alt="" className="card-picker-thumb" />
+                    ) : (
+                      <div className={`card-picker-thumb card-picker-thumb-placeholder network-${network}`} />
+                    )}
+                    <span className="card-picker-label">{card}</span>
+                    {network && <NetworkBadge network={network} className="card-picker-network" />}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        </>
       )}
 
       {showStep3 && (

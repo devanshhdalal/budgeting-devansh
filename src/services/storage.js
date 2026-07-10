@@ -85,6 +85,28 @@ export const deleteTransaction = async (id) => {
   return { ok: result.ok, error: result.error, status: result.status, code: result.code };
 };
 
+export const uploadCardImage = async (file) => {
+  const formData = new FormData();
+  formData.append('cardImage', file);
+  formData.append('type', 'card');
+
+  const result = await request('/api/upload', { method: 'POST', body: formData });
+  if (!result.ok) {
+    return { ok: false, imageUrl: null, error: result.error, status: result.status, code: result.code };
+  }
+  const imageUrl = result.data?.imageUrl ?? result.data?.url;
+  if (!imageUrl) {
+    return {
+      ok: false,
+      imageUrl: null,
+      error: 'Invalid upload response',
+      status: result.status,
+      code: 'VALIDATION',
+    };
+  }
+  return { ok: true, imageUrl, error: null, status: result.status, code: null };
+};
+
 export const uploadReceipt = async (file, date) => {
   const formData = new FormData();
   formData.append('receipt', file);

@@ -1792,14 +1792,53 @@ optgroup {
 }
 
 .payment-card {
-  padding: 18px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   background: var(--bg-elevated);
   border: 1px solid var(--border);
   cursor: pointer;
   position: relative;
   overflow: hidden;
   transition: border-color 0.2s, transform 0.2s;
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+}
+
+.payment-card-photo {
+  width: 100%;
+  height: 88px;
+  object-fit: cover;
+  display: block;
+}
+
+.payment-card-photo-placeholder {
+  width: 100%;
+  height: 88px;
+  background: linear-gradient(135deg, var(--border-strong), var(--border));
+}
+
+.payment-card.network-amex .payment-card-photo-placeholder {
+  background: linear-gradient(135deg, #006fcf, #004a8f);
+}
+
+.payment-card.network-mastercard .payment-card-photo-placeholder {
+  background: linear-gradient(135deg, #eb001b, #f79e1b);
+}
+
+.payment-card.network-visa .payment-card-photo-placeholder {
+  background: linear-gradient(135deg, #1a1f71, #2e4a9e);
+}
+
+.payment-card-body {
+  padding: 12px 14px 14px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.payment-card-top {
+  margin-bottom: 2px;
 }
 
 .payment-card:hover {
@@ -1808,12 +1847,244 @@ optgroup {
 }
 
 .payment-card-accent {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: linear-gradient(180deg, var(--accent), var(--accent-2));
+  display: none;
+}
+
+/* Card networks */
+.network-badge {
+  display: inline-block;
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  background: var(--border);
+  color: var(--text-muted);
+}
+
+.network-badge.network-amex {
+  background: rgba(0, 111, 207, 0.15);
+  color: #006fcf;
+}
+
+.network-badge.network-mastercard {
+  background: rgba(235, 0, 27, 0.12);
+  color: #c41e14;
+}
+
+.network-badge.network-visa {
+  background: rgba(26, 31, 113, 0.12);
+  color: #1a1f71;
+}
+
+[data-theme='dark'] .network-badge.network-amex {
+  color: #4da3ff;
+}
+
+[data-theme='dark'] .network-badge.network-mastercard {
+  color: #ff6b6b;
+}
+
+[data-theme='dark'] .network-badge.network-visa {
+  color: #8b9cff;
+}
+
+.network-picker {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+@media (max-width: 520px) {
+  .network-picker {
+    grid-template-columns: 1fr;
+  }
+}
+
+.network-picker-btn {
+  padding: 12px 10px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border);
+  background: var(--bg-elevated);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  color: var(--text);
+}
+
+.network-picker-btn.selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.network-picker-btn.network-amex.selected {
+  border-color: #006fcf;
+  background: rgba(0, 111, 207, 0.1);
+}
+
+.network-picker-btn.network-mastercard.selected {
+  border-color: #eb001b;
+  background: rgba(235, 0, 27, 0.08);
+}
+
+.network-picker-btn.network-visa.selected {
+  border-color: #1a1f71;
+  background: rgba(26, 31, 113, 0.08);
+}
+
+.form-label-required {
+  color: var(--accent);
+}
+
+.card-image-upload {
+  margin-bottom: 20px;
+}
+
+.card-image-hint {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: -4px 0 12px;
+}
+
+.card-image-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 140px;
+  border: 2px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.card-image-dropzone:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--text);
+}
+
+.card-image-preview-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card-image-preview {
+  width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.card-image-change-btn,
+.card-image-clear-btn {
+  border: none;
+  background: transparent;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+}
+
+.card-image-change-btn {
+  color: var(--accent);
+}
+
+.card-image-clear-btn {
+  color: var(--text-muted);
+}
+
+.card-image-alt-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.card-image-alt-link:hover {
+  color: var(--accent);
+}
+
+.card-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+  gap: 10px;
+}
+
+.card-picker-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 8px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border);
+  background: var(--bg-elevated);
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  text-align: center;
+}
+
+.card-picker-item.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.card-picker-thumb {
+  width: 100%;
+  height: 52px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}
+
+.card-picker-thumb-empty,
+.card-picker-thumb-placeholder {
+  width: 100%;
+  height: 52px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--border);
+  color: var(--text-faint);
+}
+
+.card-picker-thumb-placeholder.network-amex {
+  background: linear-gradient(135deg, #006fcf, #004a8f);
+}
+
+.card-picker-thumb-placeholder.network-mastercard {
+  background: linear-gradient(135deg, #eb001b, #f79e1b);
+}
+
+.card-picker-thumb-placeholder.network-visa {
+  background: linear-gradient(135deg, #1a1f71, #2e4a9e);
+}
+
+.card-picker-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text);
+}
+
+.card-picker-network {
+  transform: scale(0.9);
+}
+
+.modal-content-wide {
+  max-width: 520px;
 }
 
 .add-card-btn {

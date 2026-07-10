@@ -1,31 +1,32 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Save, Plus, Trash2, CreditCard, DollarSign, X } from 'lucide-react';
-import { saveConfig } from '../services/storage';
+import { saveConfig, uploadCardImage } from '../services/storage';
 import { useData } from '../hooks/useData';
 import { useToast } from '../hooks/useToast';
+import { inferNetworkFromName } from '../config/cardNetworks';
 import PageHeader from '../components/ui/PageHeader';
 import SectionCard from '../components/ui/SectionCard';
 import PageError from '../components/ui/PageError';
 import SyncBanner from '../components/ui/SyncBanner';
+import CardImageUpload from '../components/settings/CardImageUpload';
+import PaymentCardTile, { NetworkPicker } from '../components/settings/PaymentCardTile';
 import { getPageErrorTitle, getPageErrorVariant } from '../utils/apiErrors';
 import LoadingScreen from '../components/layout/LoadingScreen';
 import { stagger } from '../motion/presets';
 
 const cloneConfig = (config) => structuredClone(config);
 
-/**
- * Settings keeps its own working copy so sliders feel snappy, then commits to the
- * shared data context and the server on Save. This avoids other pages seeing
- * un-saved budget changes flicker through.
- */
 const SettingsForm = ({ initialConfig, commitConfig }) => {
   const toast = useToast();
   const [draft, setDraft] = useState(() => cloneConfig(initialConfig));
   const [editingCard, setEditingCard] = useState(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingCard, setIsUploadingCard] = useState(false);
   const [cardError, setCardError] = useState(null);
+  const [pendingImageFile, setPendingImageFile] = useState(null);
+  const [pendingPreviewUrl, setPendingPreviewUrl] = useState(null);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -45,47 +46,107 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
       BUDGET_CONFIG: { ...prev.BUDGET_CONFIG, [category]: parseFloat(value) || 0 },
     }));
 
+  const resetCardEditor = () => {
+    setEditingCard(null);
+    setPendingImageFile(null);
+    setPendingPreviewUrl(null);
+    setCardError(null);
+  };
+
   const openCardEditor = (name, data) => {
     const last4 = Object.entries(draft.CARD_IDENTIFIERS || {}).find(([, v]) => v === name)?.[0] || '';
-    setEditingCard({ name, ...data, last4 });
+    setEditingCard({
+      name,
+      ...data,
+      network: data.network || inferNetworkFromName(name),
+      last4,
+    });
     setIsAddingNew(false);
+    setPendingImageFile(null);
+    setPendingPreviewUrl(null);
     setCardError(null);
   };
 
   const openNewCardEditor = () => {
     const multipliers = Object.fromEntries(draft.CATEGORIES.map((c) => [c.value, 1]));
     multipliers.Base = 1;
-    setEditingCard({ name: '', currency: 'Points', multipliers, last4: '' });
+    setEditingCard({
+      name: '',
+      currency: 'Points',
+      multipliers,
+      network: '',
+      imageUrl: '',
+      last4: '',
+    });
     setIsAddingNew(true);
+    setPendingImageFile(null);
+    setPendingPreviewUrl(null);
     setCardError(null);
   };
 
-  const saveCardChanges = () => {
-    if (isAddingNew && !editingCard.name.trim()) {
+  const saveCardChanges = async () => {
+    const name = editingCard.name.trim();
+    if (!name) {
       setCardError('Card name is required');
       toast.error('Card name required');
       return;
     }
+    const isCash = name.toLowerCase() === 'cash';
+    if (!isCash && !editingCard.network) {
+      setCardError('Select a payment network (AMEX, Mastercard, or Visa)');
+      toast.error('Payment network required');
+      return;
+    }
+    if (isAddingNew && !isCash && !editingCard.imageUrl && !pendingImageFile) {
+      setCardError('Add a photo of the card');
+      toast.error('Card photo required');
+      return;
+    }
+
+    let imageUrl = editingCard.imageUrl || '';
+    if (pendingImageFile) {
+      setIsUploadingCard(true);
+      const upload = await uploadCardImage(pendingImageFile);
+      setIsUploadingCard(false);
+      if (!upload.ok) {
+        setCardError(upload.error || 'Image upload failed');
+        toast.error('Image upload failed', { description: upload.error });
+        return;
+      }
+      imageUrl = upload.imageUrl;
+    }
+
     setDraft((prev) => {
       const nextIdentifiers = { ...(prev.CARD_IDENTIFIERS || {}) };
       Object.keys(nextIdentifiers).forEach((k) => {
         if (nextIdentifiers[k] === editingCard.name) delete nextIdentifiers[k];
       });
-      if (editingCard.last4) nextIdentifiers[editingCard.last4] = editingCard.name;
+      if (editingCard.last4) nextIdentifiers[editingCard.last4] = name;
+
+      const nextCards = { ...prev.CARDS };
+      if (!isAddingNew && editingCard.name !== name) {
+        delete nextCards[editingCard.name];
+      }
+
+      nextCards[name] = {
+        currency: editingCard.currency,
+        multipliers: editingCard.multipliers,
+        ...(editingCard.network && { network: editingCard.network }),
+        ...(imageUrl && { imageUrl }),
+      };
 
       return {
         ...prev,
         CARD_IDENTIFIERS: nextIdentifiers,
-        CARDS: {
-          ...prev.CARDS,
-          [editingCard.name]: {
-            currency: editingCard.currency,
-            multipliers: editingCard.multipliers,
-          },
+        CARDS: nextCards,
+        BILLING_CYCLES: {
+          ...(prev.BILLING_CYCLES || {}),
+          [name]: prev.BILLING_CYCLES?.[editingCard.name] || prev.BILLING_CYCLES?.[name] || { type: 'monthly' },
         },
       };
     });
-    setEditingCard(null);
+    resetCardEditor();
+    toast.success(isAddingNew ? 'Card added' : 'Card updated');
   };
 
   const deleteCard = (name) => {
@@ -93,9 +154,11 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
     setDraft((prev) => {
       const nextCards = { ...prev.CARDS };
       delete nextCards[name];
-      return { ...prev, CARDS: nextCards };
+      const nextCycles = { ...(prev.BILLING_CYCLES || {}) };
+      delete nextCycles[name];
+      return { ...prev, CARDS: nextCards, BILLING_CYCLES: nextCycles };
     });
-    setEditingCard(null);
+    resetCardEditor();
   };
 
   return (
@@ -151,25 +214,16 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
             </div>
             <div>
               <h2>Payment methods</h2>
-              <p>Cards and reward multipliers</p>
+              <p>Add cards with a photo and payment network</p>
             </div>
           </div>
           <div className="card-grid">
             {Object.entries(draft.CARDS).map(([name, data]) => (
-              <div key={name} className="payment-card" onClick={() => openCardEditor(name, data)} role="button" tabIndex={0}>
-                <div className="payment-card-accent" />
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div>
-                    <div className="payment-card-name">{name}</div>
-                    <div className="payment-card-currency">{data.currency}</div>
-                  </div>
-                  <span className="badge-active">Active</span>
-                </div>
-              </div>
+              <PaymentCardTile key={name} name={name} data={data} onClick={() => openCardEditor(name, data)} />
             ))}
             <button type="button" className="add-card-btn" onClick={openNewCardEditor}>
               <Plus size={20} />
-              Add account
+              Add card
             </button>
           </div>
         </SectionCard>
@@ -241,25 +295,90 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
       <AnimatePresence>
         {editingCard && (
           <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <motion.div className="modal-content" initial={{ scale: 0.96, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.96, opacity: 0 }}>
-              <button type="button" className="modal-close" onClick={() => setEditingCard(null)} aria-label="Close">
+            <motion.div
+              className="modal-content modal-content-wide"
+              initial={{ scale: 0.96, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.96, opacity: 0 }}
+            >
+              <button type="button" className="modal-close" onClick={resetCardEditor} aria-label="Close">
                 <X size={22} />
               </button>
               <h2 className="page-title" style={{ fontSize: '1.25rem', marginBottom: '20px' }}>
                 {isAddingNew ? 'Add card' : 'Edit card'}
               </h2>
+
+              {editingCard.name?.trim().toLowerCase() !== 'cash' && (
+                <>
+                  <CardImageUpload
+                    imageUrl={editingCard.imageUrl}
+                    previewUrl={pendingPreviewUrl}
+                    required={isAddingNew}
+                    onFileSelect={(file, url) => {
+                      setPendingImageFile(file);
+                      setPendingPreviewUrl(url);
+                      setCardError(null);
+                    }}
+                    onClear={() => {
+                      setPendingImageFile(null);
+                      setPendingPreviewUrl(null);
+                      setEditingCard({ ...editingCard, imageUrl: '' });
+                    }}
+                  />
+
+                  <NetworkPicker
+                    value={editingCard.network}
+                    onChange={(network) => {
+                      setEditingCard({ ...editingCard, network });
+                      setCardError(null);
+                    }}
+                  />
+                </>
+              )}
+
+              {editingCard.name?.trim().toLowerCase() === 'cash' && (
+                <p className="card-image-hint" style={{ marginBottom: 16 }}>
+                  Cash does not require a card photo or payment network.
+                </p>
+              )}
+
               <div className="form-group">
                 <label className="form-label">Card name</label>
-                <input className="form-input" value={editingCard.name} onChange={(e) => setEditingCard({ ...editingCard, name: e.target.value })} placeholder="AMEX Cobalt" />
+                <input
+                  className="form-input"
+                  value={editingCard.name}
+                  onChange={(e) => setEditingCard({ ...editingCard, name: e.target.value })}
+                  placeholder="AMEX Cobalt"
+                />
               </div>
               <div className="form-group">
                 <label className="form-label">Last 4 digits (for ingest)</label>
-                <input className="form-input" value={editingCard.last4 || ''} onChange={(e) => setEditingCard({ ...editingCard, last4: e.target.value.replace(/\D/g, '').slice(0, 4) })} placeholder="1234" maxLength={4} />
+                <input
+                  className="form-input"
+                  value={editingCard.last4 || ''}
+                  onChange={(e) =>
+                    setEditingCard({
+                      ...editingCard,
+                      last4: e.target.value.replace(/\D/g, '').slice(0, 4),
+                    })
+                  }
+                  placeholder="1234"
+                  maxLength={4}
+                />
               </div>
-              {cardError && <p className="inline-error" role="alert">{cardError}</p>}
+              {cardError && (
+                <p className="inline-error" role="alert" style={{ marginBottom: 12 }}>
+                  {cardError}
+                </p>
+              )}
               <div className="form-group">
                 <label className="form-label">Reward currency</label>
-                <input className="form-input" value={editingCard.currency} onChange={(e) => setEditingCard({ ...editingCard, currency: e.target.value })} placeholder="Points" />
+                <input
+                  className="form-input"
+                  value={editingCard.currency}
+                  onChange={(e) => setEditingCard({ ...editingCard, currency: e.target.value })}
+                  placeholder="Points"
+                />
               </div>
               <p className="form-label" style={{ marginTop: '16px' }}>Multipliers</p>
               <div className="form-grid-2" style={{ maxHeight: '280px', overflowY: 'auto' }}>
@@ -287,8 +406,14 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
                     <Trash2 size={18} /> Delete
                   </button>
                 )}
-                <button type="button" className="btn btn-primary" style={{ flex: 2 }} onClick={saveCardChanges}>
-                  <Save size={18} /> {isAddingNew ? 'Add' : 'Update'}
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  style={{ flex: 2 }}
+                  onClick={saveCardChanges}
+                  disabled={isUploadingCard}
+                >
+                  <Save size={18} /> {isUploadingCard ? 'Uploading...' : isAddingNew ? 'Add card' : 'Update card'}
                 </button>
               </div>
             </motion.div>
