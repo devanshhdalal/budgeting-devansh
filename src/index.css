@@ -1679,6 +1679,75 @@ optgroup {
   padding: 4px 0;
 }
 
+.billing-cycle-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.billing-cycle-card {
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+}
+
+.billing-cycle-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.billing-cycle-name {
+  font-weight: 600;
+}
+
+.billing-cycle-type {
+  width: auto;
+  min-width: 160px;
+}
+
+.billing-cycle-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.billing-cycle-preview,
+.billing-cycle-hint {
+  grid-column: 1 / -1;
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.save-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.save-indicator-saved {
+  color: var(--accent);
+}
+
+.save-indicator-error {
+  color: var(--danger, #e85d5d);
+}
+
+.save-indicator-spin {
+  animation: save-spin 0.8s linear infinite;
+}
+
+@keyframes save-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 .card-grid {
   display: grid;

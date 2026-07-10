@@ -1,3 +1,5 @@
+import { validateBillingCycle } from '../../shared/billingCycle.js';
+
 const REQUIRED_CONFIG_KEYS = ['CARDS', 'CATEGORIES', 'BUDGET_CONFIG'];
 
 export const validateConfigShape = (body) => {
@@ -16,6 +18,12 @@ export const validateConfigShape = (body) => {
   }
   if ('SUBSCRIPTIONS' in body && !Array.isArray(body.SUBSCRIPTIONS)) {
     return 'SUBSCRIPTIONS must be an array';
+  }
+  if (body.BILLING_CYCLES && typeof body.BILLING_CYCLES === 'object' && !Array.isArray(body.BILLING_CYCLES)) {
+    for (const [cardName, cycle] of Object.entries(body.BILLING_CYCLES)) {
+      const cycleError = validateBillingCycle(cycle);
+      if (cycleError) return `${cardName}: ${cycleError}`;
+    }
   }
   return null;
 };

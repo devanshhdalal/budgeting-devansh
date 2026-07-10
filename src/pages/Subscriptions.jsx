@@ -1,13 +1,15 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Pencil, Trash2, X, Calendar, RefreshCw } from 'lucide-react';
 import { saveConfig } from '../services/storage';
 import { useData } from '../hooks/useData';
 import { useToast } from '../hooks/useToast';
+import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
 import PageHeader from '../components/ui/PageHeader';
 import SectionCard from '../components/ui/SectionCard';
 import PageError from '../components/ui/PageError';
 import SyncBanner from '../components/ui/SyncBanner';
+import SaveIndicator from '../components/ui/SaveIndicator';
 import DateField from '../components/DateField';
 import LoadingScreen from '../components/layout/LoadingScreen';
 import { CategoryIcon } from '../utils/categoryIcons';
@@ -32,6 +34,21 @@ const emptyForm = () => ({
   card: '',
   notes: '',
 });
+
+const buildSubscriptionEntry = (form, { isNew }) => {
+  const name = form.name.trim();
+  const amount = parseFloat(form.amount);
+  if (!name || !Number.isFinite(amount) || amount <= 0 || !form.renewalDate) return null;
+
+  return {
+    id: form.id || (isNew ? newSubscriptionId() : ''),
+    name,
+    amount,
+    renewalDate: form.renewalDate,
+    ...(form.card && { card: form.card }),
+    ...(form.notes?.trim() && { notes: form.notes.trim() }),
+  };
+};
 
 const SubscriptionRow = ({ sub, categories, onEdit, onDelete }) => {
   const urgency = renewalUrgency(sub.renewalDate);
@@ -74,35 +91,89 @@ const SubscriptionsPage = () => {
   const [editing, setEditing] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
   const [form, setForm] = useState(emptyForm);
-  const [formError, setFormError] = useState(null);
-  const [isSaving, setIsSaving] = useState(false);
+  const formRef = useRef(form);
+  const [saveStatus, setSaveStatus] = useState('idle');
+  const savedTimerRef = useRef(null);
+  const configRef = useRef(config);
+
+  useEffect(() => {
+    formRef.current = form;
+  }, [form]);
+
+  useEffect(() => {
+    configRef.current = config;
+  }, [config]);
 
   const subscriptions = useMemo(() => sortByRenewal(getSubscriptions(config)), [config]);
   const monthlyTotal = useMemo(() => subscriptionMonthlyTotal(subscriptions), [subscriptions]);
   const cardOptions = useMemo(() => Object.keys(config?.CARDS ?? {}), [config]);
 
+  const markSaved = useCallback((ok) => {
+    setSaveStatus(ok ? 'saved' : 'error');
+    if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
+    if (ok) savedTimerRef.current = setTimeout(() => setSaveStatus('idle'), 2000);
+  }, []);
+
+  useEffect(
+    () => () => {
+      if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
+    },
+    []
+  );
+
   const persist = useCallback(
     async (nextSubs) => {
-      if (!config) return false;
-      setIsSaving(true);
-      const nextConfig = { ...config, SUBSCRIPTIONS: nextSubs };
+      const cfg = configRef.current;
+      if (!cfg) return false;
+      setSaveStatus('saving');
+      const nextConfig = { ...cfg, SUBSCRIPTIONS: nextSubs };
       const { ok, error } = await saveConfig(nextConfig);
-      setIsSaving(false);
       if (!ok) {
+        markSaved(false);
         toast.error('Save failed', { description: error });
         return false;
       }
       setConfig(nextConfig);
+      markSaved(true);
       return true;
     },
-    [config, setConfig, toast]
+    [markSaved, setConfig, toast]
   );
+
+  const autoSaveForm = useCallback(async () => {
+    const cfg = configRef.current;
+    if (!cfg) return;
+
+    const entry = buildSubscriptionEntry(formRef.current, { isNew: isAdding && !formRef.current.id });
+    if (!entry) return;
+
+    const current = getSubscriptions(cfg);
+    const exists = current.some((s) => s.id === entry.id);
+    const next = exists
+      ? current.map((s) => (s.id === entry.id ? entry : s))
+      : [...current, entry];
+
+    const ok = await persist(next);
+    if (ok && isAdding) {
+      setIsAdding(false);
+      setForm((prev) => ({ ...prev, id: entry.id }));
+      setEditing(entry);
+    }
+  }, [isAdding, persist]);
+
+  const { debounced: debouncedAutoSave } = useDebouncedCallback(autoSaveForm, 500);
+
+  const showModal = isAdding || editing;
+
+  useEffect(() => {
+    if (!showModal) return;
+    debouncedAutoSave();
+  }, [form, showModal, debouncedAutoSave]);
 
   const openAdd = () => {
     setForm(emptyForm());
     setIsAdding(true);
     setEditing(null);
-    setFormError(null);
   };
 
   const openEdit = (sub) => {
@@ -116,57 +187,17 @@ const SubscriptionsPage = () => {
     });
     setIsAdding(false);
     setEditing(sub);
-    setFormError(null);
   };
 
   const closeModal = () => {
     setEditing(null);
     setIsAdding(false);
     setForm(emptyForm());
-    setFormError(null);
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-    setFormError(null);
-  };
-
-  const handleSave = async () => {
-    const name = form.name.trim();
-    const amount = parseFloat(form.amount);
-    if (!name) {
-      setFormError('Subscription name is required');
-      return;
-    }
-    if (!Number.isFinite(amount) || amount <= 0) {
-      setFormError('Enter a valid monthly amount');
-      return;
-    }
-    if (!form.renewalDate) {
-      setFormError('Renewal date is required');
-      return;
-    }
-
-    const entry = {
-      id: isAdding ? newSubscriptionId() : form.id,
-      name,
-      amount,
-      renewalDate: form.renewalDate,
-      ...(form.card && { card: form.card }),
-      ...(form.notes?.trim() && { notes: form.notes.trim() }),
-    };
-
-    const current = getSubscriptions(config);
-    const next = isAdding
-      ? [...current, entry]
-      : current.map((s) => (s.id === entry.id ? entry : s));
-
-    const ok = await persist(next);
-    if (ok) {
-      toast.success(isAdding ? 'Subscription added' : 'Subscription updated');
-      closeModal();
-    }
   };
 
   const handleDelete = async (sub) => {
@@ -197,16 +228,14 @@ const SubscriptionsPage = () => {
     );
   }
 
-  const showModal = isAdding || editing;
-
   return (
     <motion.div className="subscriptions-page" variants={stagger} initial="hidden" animate="show">
       <PageHeader
         eyebrow="Recurring"
         title="Subscriptions"
-        subtitle="Track monthly services and upcoming renewal dates."
+        subtitle="Changes save automatically as you edit."
         action={
-          <button type="button" className="btn btn-primary" onClick={openAdd} disabled={isSaving}>
+          <button type="button" className="btn btn-primary" onClick={openAdd} disabled={saveStatus === 'saving'}>
             <Plus size={18} />
             <span className="hide-mobile">Add subscription</span>
           </button>
@@ -258,9 +287,12 @@ const SubscriptionsPage = () => {
               <button type="button" className="modal-close" onClick={closeModal} aria-label="Close">
                 <X size={22} />
               </button>
-              <h2 className="page-title" style={{ fontSize: '1.25rem', marginBottom: '20px' }}>
-                {isAdding ? 'Add subscription' : 'Edit subscription'}
-              </h2>
+              <div className="modal-title-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 20 }}>
+                <h2 className="page-title" style={{ fontSize: '1.25rem', margin: 0 }}>
+                  {isAdding ? 'Add subscription' : 'Edit subscription'}
+                </h2>
+                <SaveIndicator status={saveStatus} />
+              </div>
 
               <div className="form-group">
                 <label className="form-label">Name</label>
@@ -316,22 +348,16 @@ const SubscriptionsPage = () => {
                 />
               </div>
 
-              {formError && (
-                <p className="inline-error" role="alert" style={{ marginBottom: 12 }}>
-                  {formError}
-                </p>
-              )}
-
-              <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
-                {!isAdding && (
-                  <button type="button" className="btn btn-ghost" style={{ flex: 1 }} onClick={() => handleDelete(editing)}>
-                    <Trash2 size={18} /> Delete
-                  </button>
-                )}
-                <button type="button" className="btn btn-primary" style={{ flex: 2 }} onClick={handleSave} disabled={isSaving}>
-                  {isSaving ? 'Saving…' : isAdding ? 'Add subscription' : 'Save changes'}
+              {!isAdding && editing && (
+                <button
+                  type="button"
+                  className="btn btn-ghost"
+                  style={{ width: '100%', marginTop: 8 }}
+                  onClick={() => handleDelete(editing)}
+                >
+                  <Trash2 size={18} /> Delete subscription
                 </button>
-              </div>
+              )}
             </motion.div>
           </motion.div>
         )}

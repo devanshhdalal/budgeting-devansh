@@ -10,6 +10,7 @@ import transactionsRouter from './server/routes/transactions.js';
 import configRouter from './server/routes/config.js';
 import uploadRouter from './server/routes/upload.js';
 import ingestRouter from './server/routes/ingest.js';
+import billingRouter from './server/routes/billing.js';
 
 const app = express();
 
@@ -46,6 +47,7 @@ app.use('/api/config', configRouter);
 app.use('/api/transactions', transactionsRouter);
 app.use('/api/upload', uploadRouter);
 app.use('/api/ingest', ingestRouter);
+app.use('/api/billing', billingRouter);
 
 app.use(express.static(distDir));
 

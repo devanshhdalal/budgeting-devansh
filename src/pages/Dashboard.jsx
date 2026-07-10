@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search } from 'lucide-react';
@@ -30,6 +30,7 @@ import AnimatedNumber from '../components/ui/AnimatedNumber';
 import PageError from '../components/ui/PageError';
 import { resolveBillingRange } from '../utils/billingCycle';
 import { getPageErrorTitle, getPageErrorVariant } from '../utils/apiErrors';
+import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
 import {
   formatRenewalLabel,
   getSubscriptions,
@@ -234,66 +235,111 @@ const Dashboard = () => {
   const toast = useToast();
 
   const [editing, setEditing] = useState(null);
+  const editingRef = useRef(editing);
   const [editFormData, setEditFormData] = useState(null);
-  const [receiptFile, setReceiptFile] = useState(null);
-  const [isUploading, setIsUploading] = useState(false);
+  const editFormRef = useRef(editFormData);
+  const [saveStatus, setSaveStatus] = useState('idle');
+  const savedTimerRef = useRef(null);
   const [viewingReceipt, setViewingReceipt] = useState(null);
+
+  useEffect(() => {
+    editingRef.current = editing;
+  }, [editing]);
+
+  useEffect(() => {
+    editFormRef.current = editFormData;
+  }, [editFormData]);
+
+  const markSaved = useCallback((ok) => {
+    setSaveStatus(ok ? 'saved' : 'error');
+    if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
+    if (ok) savedTimerRef.current = setTimeout(() => setSaveStatus('idle'), 2000);
+  }, []);
+
+  useEffect(
+    () => () => {
+      if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
+    },
+    []
+  );
 
   const openEditModal = useCallback((tx) => {
     setEditing(tx);
     setEditFormData(EMPTY_EDIT_FORM(tx));
-    setReceiptFile(null);
+    setSaveStatus('idle');
   }, []);
 
   const closeEditModal = useCallback(() => {
     setEditing(null);
     setEditFormData(null);
-    setReceiptFile(null);
+    setSaveStatus('idle');
   }, []);
 
-  const handleEditChange = useCallback((e) => {
-    const { name, value } = e.target;
-    setEditFormData((prev) => ({ ...prev, [name]: value }));
-  }, []);
-
-  const handleFileChange = useCallback((e) => {
-    const file = e.target.files?.[0];
-    if (file) setReceiptFile(file);
-  }, []);
-
-  const handleEditSave = async (e, originalTx) => {
-    e.preventDefault();
-    setIsUploading(true);
-
-    let receiptUrl = editFormData.ReceiptUrl;
-    if (receiptFile) {
-      const upload = await uploadReceipt(receiptFile, editFormData.Date);
-      if (upload.ok) {
-        receiptUrl = upload.receiptUrl;
-      } else {
-        toast.error('Receipt upload failed', {
-          description: `${upload.error}. Saving without receipt.`,
-        });
-      }
-    }
+  const persistEdit = useCallback(async () => {
+    const originalTx = editingRef.current;
+    const form = editFormRef.current;
+    if (!originalTx?.id || !form) return false;
 
     const updated = {
       ...originalTx,
-      ...editFormData,
-      Amount: parseFloat(editFormData.Amount) || 0,
-      ReceiptUrl: receiptUrl,
+      ...form,
+      Amount: parseFloat(form.Amount) || 0,
     };
 
+    setSaveStatus('saving');
     const { ok, error } = await saveTransaction(updated);
-    setIsUploading(false);
     if (!ok) {
+      markSaved(false);
       toast.error('Could not save changes', { description: error });
-      return;
+      return false;
     }
+
     setTransactions((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
-    toast.success('Transaction updated');
-    closeEditModal();
-  };
+    setEditing(updated);
+    markSaved(true);
+    return true;
+  }, [markSaved, setTransactions, toast]);
+
+  const { debounced: debouncedPersistEdit } = useDebouncedCallback(persistEdit, 500);
+
+  const handleEditChange = useCallback(
+    (e) => {
+      const { name, value } = e.target;
+      setEditFormData((prev) => {
+        const next = { ...prev, [name]: value };
+        editFormRef.current = next;
+        return next;
+      });
+      debouncedPersistEdit();
+    },
+    [debouncedPersistEdit]
+  );
+
+  const handleFileChange = useCallback(
+    async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      const form = editFormRef.current;
+      if (!form) return;
+
+      setSaveStatus('saving');
+      const upload = await uploadReceipt(file, form.Date);
+      if (!upload.ok) {
+        markSaved(false);
+        toast.error('Receipt upload failed', { description: upload.error });
+        return;
+      }
+
+      setEditFormData((prev) => {
+        const next = { ...prev, ReceiptUrl: upload.receiptUrl };
+        editFormRef.current = next;
+        return next;
+      });
+      await persistEdit();
+    },
+    [markSaved, persistEdit, toast]
+  );
 
   const handleDelete = useCallback(
     async (tx) => {
@@ -482,13 +528,11 @@ const Dashboard = () => {
         {editing && editFormData && (
           <EditTransactionModal
             formData={editFormData}
-            file={receiptFile}
-            isUploading={isUploading}
             appConfig={appConfig}
             onChange={handleEditChange}
             onFile={handleFileChange}
-            onSave={(e) => handleEditSave(e, editing)}
             onClose={closeEditModal}
+            saveStatus={saveStatus}
           />
         )}
       </AnimatePresence>
