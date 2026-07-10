@@ -38,9 +38,27 @@
       "multipliers": {
         "Base": 0
       }
+    },
+    "Platinum Card": {
+      "currency": "MR Points",
+      "multipliers": {
+        "Food": 2,
+        "Groceries": 1,
+        "Car": 1,
+        "Health": 1,
+        "Personal Items": 1,
+        "Utilities": 1,
+        "Subscriptions": 1,
+        "Travel": 2,
+        "Other": 1,
+        "Base": 1
+      },
+      "network": "amex",
+      "imageUrl": "https://raw.githubusercontent.com/devanshhdalal/budgeting-devansh/main/data/users/devansh/images/cards/1783719580771-722362861.png"
     }
   },
   "CARD_IDENTIFIERS": {
+    "1005": "Platinum Card",
     "1007": "AMEX Cobalt",
     "5019": "Scene+ Visa",
     "7697": "Neo Mastercard"
@@ -56,6 +74,9 @@
       "type": "monthly"
     },
     "Cash": {
+      "type": "monthly"
+    },
+    "Platinum Card": {
       "type": "monthly"
     }
   },
@@ -150,7 +171,7 @@
       "name": "Sauce Plus",
       "amount": 10.31,
       "renewalDate": "2026-08-08",
-      "card": "AMEX Cobalt",
+      "card": "Platinum Card",
       "notes": "Sauce Plus Subscription."
     }
   ]
