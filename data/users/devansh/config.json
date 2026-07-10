@@ -9,7 +9,8 @@
         "Car": 2,
         "Base": 1
       },
-      "network": "amex"
+      "network": "amex",
+      "imageUrl": "https://raw.githubusercontent.com/devanshhdalal/budgeting-devansh/main/data/users/devansh/images/cards/1783718541433-879689247.png"
     },
     "Scene+ Visa": {
       "currency": "Scene+ Points",
@@ -37,7 +38,9 @@
       }
     }
   },
-  "CARD_IDENTIFIERS": {},
+  "CARD_IDENTIFIERS": {
+    "100": "AMEX Cobalt"
+  },
   "BILLING_CYCLES": {
     "AMEX Cobalt": {
       "type": "monthly"
