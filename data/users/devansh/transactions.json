@@ -88,7 +88,7 @@
   {
     "Date": "2026-06-08",
     "Month": null,
-    "Merchant": "Bounce Bag Stor",
+    "Merchant": "Bounce Bag Storage",
     "Amount": 4.75,
     "Category": "Other",
     "Card": "AMEX Cobalt",
@@ -99,7 +99,7 @@
     "Source": "manual",
     "IsTest": false,
     "Currency": "CAD",
-    "CreatedAt": "2026-07-10T23:03:31.058Z"
+    "CreatedAt": "2026-07-10T23:03:31.918Z"
   },
   {
     "Date": "2026-06-08",
