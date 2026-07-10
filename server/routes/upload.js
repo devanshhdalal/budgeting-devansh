@@ -21,8 +21,8 @@ router.post('/', upload.single('receipt'), async (req, res) => {
 
   if (useGitHub) {
     const base64Img = req.file.buffer.toString('base64');
-    const success = await putGitHubFile(relPath, base64Img, `Upload receipt ${filename}`);
-    if (success) {
+    const putResult = await putGitHubFile(relPath, base64Img, `Upload receipt ${filename}`);
+    if (putResult.ok) {
       const rawUrl = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${relPath}`;
       return res.json({ success: true, receiptUrl: rawUrl });
     }

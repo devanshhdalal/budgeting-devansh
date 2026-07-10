@@ -49,8 +49,13 @@ const normalizePayload = (body) => {
 };
 
 router.get('/', async (req, res) => {
-  const txs = await getTransactions(req.userId);
-  res.json(txs);
+  try {
+    const txs = await getTransactions(req.userId);
+    res.json(txs);
+  } catch (e) {
+    console.error(`[${req.userId}] Failed to load transactions`, e);
+    res.status(503).json({ error: e.message || 'Storage unavailable' });
+  }
 });
 
 router.post('/', async (req, res) => {
@@ -67,7 +72,8 @@ router.post('/', async (req, res) => {
     const transaction = await upsertTransaction(req.userId, normalized.payload);
     res.json({ success: true, transaction });
   } catch (e) {
-    res.status(404).json({ error: e.message });
+    const status = e.message === 'Transaction not found' ? 404 : 503;
+    res.status(status).json({ error: e.message });
   }
 });
 
@@ -76,7 +82,8 @@ router.delete('/:id', async (req, res) => {
     await deleteTransactionById(req.userId, req.params.id);
     res.json({ success: true });
   } catch (e) {
-    res.status(404).json({ error: e.message });
+    const status = e.message === 'Transaction not found' ? 404 : 503;
+    res.status(status).json({ error: e.message });
   }
 });
 

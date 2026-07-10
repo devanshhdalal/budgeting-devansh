@@ -286,9 +286,36 @@ For `userId = 'devansh'`:
 
 ### Read/write (`server/storage/fileStore.js`)
 
-- **Always writes local disk** (source of truth for reliability)
-- If `GITHUB_TOKEN` + owner + repo set: also read/write via GitHub API
-- On GitHub read failure: falls back to local file
+When `useGitHub` is **true** (GitHub is authoritative):
+
+| Operation | Behavior |
+|-----------|----------|
+| Read success | Parse GitHub JSON, mirror to local as read-through cache |
+| Read 404 | Fall back to local file only (new user or missing remote) |
+| Read transient error | **Throw** - API returns 503, no silent empty fallback |
+| Write | GitHub PUT must succeed first, then local file written |
+| Shrink guard | Refuses write if array would shrink by more than 2 records (e.g. 500 → 1) |
+
+When `useGitHub` is **false**: local filesystem is source of truth. No pre-seeding `[]` on load; files created on first successful write.
+
+**JSON serialization contract** (`server/github.js` → `serializeJson`):
+
+- `JSON.stringify(data, null, 2)` + trailing `\n`
+- Same bytes written to local disk and GitHub
+- LF line endings enforced via `.gitattributes`
+
+**Base64** (`decodeGitHubContent` / `encodeGitHubContent`):
+
+- GitHub Contents API embeds newlines in base64 strings - strip before decode
+- UTF-8 JSON encoded for PUT; binary images use `buffer.toString('base64')` directly
+
+**In-memory cache** is updated only **after** a successful durable write (`transactions.js`, `config.js`).
+
+### GitHub API (`server/github.js`)
+
+- `fetchGitHubFile` returns `{ ok, data }`, `{ notFound: true }`, or `{ notFound: false, status, error }`
+- `putGitHubFile` returns `{ ok }` or `{ ok: false, status, error }` with GitHub API message parsed
+- Paths URL-encoded per segment via `encodeGitHubPath`
 
 ### Transactions (`server/storage/transactions.js`)
 

@@ -9,15 +9,20 @@ router.get('/users', (_req, res) => {
 });
 
 router.get('/', async (req, res) => {
-  const config = await getConfig(req.userId);
-  if (config) res.json(config);
-  else res.status(404).json({ error: 'Config not found' });
+  try {
+    const config = await getConfig(req.userId);
+    if (config) res.json(config);
+    else res.status(404).json({ error: 'Config not found' });
+  } catch (e) {
+    console.error(`[${req.userId}] Failed to load config`, e);
+    res.status(503).json({ error: e.message || 'Storage unavailable' });
+  }
 });
 
 router.post('/', async (req, res) => {
-  const success = await saveConfig(req.userId, req.body);
-  if (success) res.json({ success: true });
-  else res.status(500).json({ error: 'Failed to save config' });
+  const result = await saveConfig(req.userId, req.body);
+  if (result.ok) res.json({ success: true });
+  else res.status(503).json({ error: result.error || 'Failed to save config' });
 });
 
 export default router;
