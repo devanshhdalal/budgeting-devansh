@@ -181,14 +181,20 @@ export const validateBillingCycle = (cycle) => {
 
   if (cycle.type === 'statement') {
     const { statementStart, statementEnd, dueDate } = cycle.anchor || {};
-    if (!statementStart || !statementEnd || !dueDate) {
-      return 'Statement cycles need statement start, end, and due dates';
+    const hasAny = statementStart || statementEnd || dueDate;
+    const hasAll = statementStart && statementEnd && dueDate;
+
+    if (hasAny && !hasAll) {
+      return null;
     }
-    if (daysBetween(statementStart, statementEnd) < 0) {
-      return 'Statement end must be on or after statement start';
-    }
-    if (daysBetween(statementEnd, dueDate) < 0) {
-      return 'Payment due date must be on or after statement end';
+
+    if (hasAll) {
+      if (daysBetween(statementStart, statementEnd) < 0) {
+        return 'Statement end must be on or after statement start';
+      }
+      if (daysBetween(statementEnd, dueDate) < 0) {
+        return 'Payment due date must be on or after statement end';
+      }
     }
   }
 

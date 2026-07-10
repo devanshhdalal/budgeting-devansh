@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Trash2, CreditCard, DollarSign } from 'lucide-react';
+import { Plus, CreditCard, DollarSign, Tag, Store } from 'lucide-react';
 import { saveConfig, uploadCardImage } from '@/services/storage';
 import { useData } from '@/hooks/useData';
 import { useToast } from '@/hooks/useToast';
@@ -11,19 +11,17 @@ import SectionCard from '@/components/ui/SectionCard';
 import PageError from '@/components/ui/PageError';
 import SyncBanner from '@/components/ui/SyncBanner';
 import SaveIndicator from '@/components/ui/SaveIndicator';
-import Modal from '@/components/ui/Modal';
-import CardImageUpload from '@/features/settings/components/CardImageUpload';
-import PaymentCardTile, { NetworkPicker } from '@/features/settings/components/PaymentCardTile';
-import DateField from '@/components/forms/DateField';
-import { resolveBillingPeriod } from '@shared/billingCycle';
-import { formatDisplayDate } from '@/utils/date';
+import PaymentCardTile from '@/features/settings/components/PaymentCardTile';
+import CardEditorFlow from '@/features/settings/components/CardEditorFlow';
+import CategoriesEditorSection from '@/features/settings/components/CategoriesEditorSection';
+import MerchantRewardsEditorSection from '@/features/settings/components/MerchantRewardsEditorSection';
 import { getPageErrorTitle, getPageErrorVariant } from '@/utils/apiErrors';
 import LoadingScreen from '@/components/layout/LoadingScreen';
 import { stagger } from '@/motion/presets';
 
 const cloneConfig = (config) => structuredClone(config);
 
-const SettingsForm = ({ initialConfig, commitConfig }) => {
+const SettingsForm = ({ initialConfig, commitConfig, transactions, setTransactions }) => {
   const toast = useToast();
   const [draft, setDraft] = useState(() => cloneConfig(initialConfig));
   const draftRef = useRef(draft);
@@ -71,6 +69,7 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
         return false;
       }
       setDraft(nextDraft);
+      draftRef.current = nextDraft;
       commitConfig(nextDraft);
       markSaved(true);
       if (successMessage) toast.success(successMessage);
@@ -90,8 +89,23 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
       BUDGET_CONFIG: { ...draftRef.current.BUDGET_CONFIG, [category]: parseFloat(value) || 0 },
     };
     setDraft(nextDraft);
+    draftRef.current = nextDraft;
     debouncedPersist(nextDraft);
   };
+
+  const patchConfig = useCallback(
+    async (partial, successMessage) => {
+      const nextDraft = { ...draftRef.current, ...partial };
+      setDraft(nextDraft);
+      draftRef.current = nextDraft;
+      if (successMessage !== undefined) {
+        return persistDraft(nextDraft, successMessage || null);
+      }
+      debouncedPersist(nextDraft);
+      return true;
+    },
+    [debouncedPersist, persistDraft]
+  );
 
   const resetCardEditor = () => {
     setEditingCard(null);
@@ -126,14 +140,17 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
       ...(card.imageUrl && { imageUrl: card.imageUrl }),
     };
 
+    const nextCycles = { ...(baseDraft.BILLING_CYCLES || {}) };
+    if (!addingNew && card.originalName && card.originalName !== name) {
+      delete nextCycles[card.originalName];
+    }
+    nextCycles[name] = card.billingCycle || nextCycles[name] || { type: 'monthly' };
+
     return {
       ...baseDraft,
       CARD_IDENTIFIERS: nextIdentifiers,
       CARDS: nextCards,
-      BILLING_CYCLES: {
-        ...(baseDraft.BILLING_CYCLES || {}),
-        [name]: baseDraft.BILLING_CYCLES?.[card.originalName] || baseDraft.BILLING_CYCLES?.[name] || { type: 'monthly' },
-      },
+      BILLING_CYCLES: nextCycles,
     };
   }, []);
 
@@ -183,13 +200,14 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
   };
 
   const openCardEditor = (name, data) => {
-    const last4 = Object.entries(draft.CARD_IDENTIFIERS || {}).find(([, v]) => v === name)?.[0] || '';
+    const last4 = Object.entries(draftRef.current.CARD_IDENTIFIERS || {}).find(([, v]) => v === name)?.[0] || '';
     setEditingCard({
       name,
       originalName: name,
       ...data,
       network: data.network || inferNetworkFromName(name),
       last4,
+      billingCycle: draftRef.current.BILLING_CYCLES?.[name] || { type: 'monthly' },
     });
     setIsAddingNew(false);
     setPendingPreviewUrl(null);
@@ -197,7 +215,7 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
   };
 
   const openNewCardEditor = () => {
-    const multipliers = Object.fromEntries(draft.CATEGORIES.map((c) => [c.value, 1]));
+    const multipliers = Object.fromEntries(draftRef.current.CATEGORIES.map((c) => [c.value, 1]));
     multipliers.Base = 1;
     setEditingCard({
       name: '',
@@ -207,6 +225,7 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
       network: '',
       imageUrl: '',
       last4: '',
+      billingCycle: { type: 'monthly' },
     });
     setIsAddingNew(true);
     setPendingPreviewUrl(null);
@@ -225,35 +244,31 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
     if (ok) resetCardEditor();
   };
 
-  const updateBillingCycle = async (cardName, nextCycle, successMessage = null) => {
-    const nextDraft = {
-      ...draftRef.current,
-      BILLING_CYCLES: {
-        ...(draftRef.current.BILLING_CYCLES || {}),
-        [cardName]: nextCycle,
-      },
-    };
-    await persistDraft(nextDraft, successMessage);
-  };
-
-  const setBillingType = (cardName, type) => {
-    if (type === 'monthly') {
-      updateBillingCycle(cardName, { type: 'monthly' });
-      return;
-    }
-    const existing = draft.BILLING_CYCLES?.[cardName];
-    const anchor = existing?.anchor
-      ? { ...existing.anchor }
-      : { statementStart: '', statementEnd: '', dueDate: '' };
-    updateBillingCycle(cardName, { type: 'statement', anchor }, null);
-  };
-
-  const updateStatementAnchor = (cardName, field, value) => {
-    const existing = draft.BILLING_CYCLES?.[cardName] || { type: 'statement', anchor: {} };
-    const anchor = { ...(existing.anchor || {}), [field]: value };
-    const complete = anchor.statementStart && anchor.statementEnd && anchor.dueDate;
-    updateBillingCycle(cardName, { type: 'statement', anchor }, complete ? null : null);
-  };
+  if (editingCard) {
+    return (
+      <CardEditorFlow
+        card={editingCard}
+        isAddingNew={isAddingNew}
+        saveStatus={saveStatus}
+        isUploadingCard={isUploadingCard}
+        cardError={cardError}
+        pendingPreviewUrl={pendingPreviewUrl}
+        onBack={resetCardEditor}
+        onPatch={(patch) => {
+          patchEditingCard(patch);
+          setCardError(null);
+        }}
+        onImageSelect={handleCardImageSelect}
+        onImageClear={() => {
+          setPendingPreviewUrl(null);
+          patchEditingCard({ imageUrl: '' });
+        }}
+        onDelete={() => deleteCard(editingCard.originalName || editingCard.name)}
+        onFlushPersist={flushCardPersist}
+        onDone={resetCardEditor}
+      />
+    );
+  }
 
   return (
     <motion.div className="settings-page" variants={stagger} initial="hidden" animate="show">
@@ -299,11 +314,51 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
         <SectionCard>
           <div className="settings-section-head">
             <div className="settings-section-icon settings-section-icon-muted">
+              <Tag size={20} />
+            </div>
+            <div>
+              <h2>Categories</h2>
+              <p>Add, reorder, or remove spending categories</p>
+            </div>
+          </div>
+          <CategoriesEditorSection
+            categories={draft.CATEGORIES}
+            budgetConfig={draft.BUDGET_CONFIG}
+            cards={draft.CARDS}
+            transactions={transactions}
+            setTransactions={setTransactions}
+            onPersistConfig={patchConfig}
+            setSaveStatus={setSaveStatus}
+          />
+        </SectionCard>
+
+        <SectionCard>
+          <div className="settings-section-head">
+            <div className="settings-section-icon settings-section-icon-muted">
+              <Store size={20} />
+            </div>
+            <div>
+              <h2>Merchant rewards</h2>
+              <p>Per-merchant multiplier overrides by card</p>
+            </div>
+          </div>
+          <MerchantRewardsEditorSection
+            overrides={draft.MERCHANT_REWARDS_OVERRIDES || {}}
+            cardNames={Object.keys(draft.CARDS)}
+            onPersistOverrides={(overrides) =>
+              patchConfig({ MERCHANT_REWARDS_OVERRIDES: overrides })
+            }
+          />
+        </SectionCard>
+
+        <SectionCard>
+          <div className="settings-section-head">
+            <div className="settings-section-icon settings-section-icon-muted">
               <CreditCard size={20} />
             </div>
             <div>
               <h2>Payment methods</h2>
-              <p>Add cards with a photo and payment network</p>
+              <p>Add cards with a photo, billing cycle, and payment network</p>
             </div>
           </div>
           <div className="card-grid">
@@ -316,198 +371,13 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
             </button>
           </div>
         </SectionCard>
-
-        <SectionCard>
-          <div className="settings-section-head">
-            <div className="settings-section-icon settings-section-icon-muted">
-              <CreditCard size={20} />
-            </div>
-            <div>
-              <h2>Billing cycles</h2>
-              <p>Set one statement period per card — future dates are calculated automatically</p>
-            </div>
-          </div>
-          <div className="billing-cycle-grid">
-            {Object.keys(draft.CARDS).map((cardName) => {
-              const cycle = draft.BILLING_CYCLES?.[cardName] || { type: 'monthly' };
-              const isStatement = cycle.type === 'statement';
-              const anchor = cycle.anchor || {};
-              const preview = isStatement && anchor.statementStart && anchor.statementEnd && anchor.dueDate
-                ? resolveBillingPeriod(cardName, new Date(), { [cardName]: cycle })
-                : null;
-
-              return (
-                <div key={cardName} className="billing-cycle-card">
-                  <div className="billing-cycle-head">
-                    <span className="billing-cycle-name">{cardName}</span>
-                    <select
-                      className="form-input billing-cycle-type"
-                      value={isStatement ? 'statement' : 'monthly'}
-                      onChange={(e) => setBillingType(cardName, e.target.value)}
-                      disabled={saveStatus === 'saving'}
-                    >
-                      <option value="monthly">Calendar month</option>
-                      <option value="statement">Statement period</option>
-                    </select>
-                  </div>
-
-                  {isStatement ? (
-                    <div className="billing-cycle-fields">
-                      <DateField
-                        label="Statement opens"
-                        name={`${cardName}-start`}
-                        value={anchor.statementStart || ''}
-                        onChange={(e) => updateStatementAnchor(cardName, 'statementStart', e.target.value)}
-                        required={false}
-                      />
-                      <DateField
-                        label="Statement closes"
-                        name={`${cardName}-end`}
-                        value={anchor.statementEnd || ''}
-                        onChange={(e) => updateStatementAnchor(cardName, 'statementEnd', e.target.value)}
-                        required={false}
-                      />
-                      <DateField
-                        label="Payment due"
-                        name={`${cardName}-due`}
-                        value={anchor.dueDate || ''}
-                        onChange={(e) => updateStatementAnchor(cardName, 'dueDate', e.target.value)}
-                        required={false}
-                      />
-                      {preview && (
-                        <p className="billing-cycle-preview">
-                          Current period: {formatDisplayDate(preview.start)} – {formatDisplayDate(preview.end)}
-                          {preview.due && (
-                            <>
-                              {' '}
-                              · Due {formatDisplayDate(preview.due)}
-                            </>
-                          )}
-                        </p>
-                      )}
-                    </div>
-                  ) : (
-                    <p className="billing-cycle-hint">Uses the 1st through last day of each calendar month.</p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </SectionCard>
       </div>
-
-      {editingCard && (
-      <Modal
-        open
-        onClose={resetCardEditor}
-        wide
-        title={isAddingNew ? 'Add card' : 'Edit card'}
-        titleExtra={<SaveIndicator status={isUploadingCard ? 'saving' : saveStatus} />}
-      >
-              {editingCard.name?.trim().toLowerCase() !== 'cash' && (
-                <>
-                  <CardImageUpload
-                    imageUrl={editingCard.imageUrl}
-                    previewUrl={pendingPreviewUrl}
-                    network={editingCard.network}
-                    required={isAddingNew}
-                    onFileSelect={handleCardImageSelect}
-                    onClear={() => {
-                      setPendingPreviewUrl(null);
-                      patchEditingCard({ imageUrl: '' });
-                    }}
-                  />
-
-                  <NetworkPicker
-                    value={editingCard.network}
-                    onChange={(network) => {
-                      patchEditingCard({ network });
-                      setCardError(null);
-                    }}
-                  />
-                </>
-              )}
-
-              {editingCard.name?.trim().toLowerCase() === 'cash' && (
-                <p className="card-image-hint" style={{ marginBottom: 16 }}>
-                  Cash does not require a card photo or payment network.
-                </p>
-              )}
-
-              <div className="form-group">
-                <label className="form-label">Card name</label>
-                <input
-                  className="form-input"
-                  value={editingCard.name}
-                  onChange={(e) => patchEditingCard({ name: e.target.value })}
-                  placeholder="AMEX Cobalt"
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Last 4 digits (for ingest)</label>
-                <input
-                  className="form-input"
-                  value={editingCard.last4 || ''}
-                  onChange={(e) =>
-                    patchEditingCard({
-                      last4: e.target.value.replace(/\D/g, '').slice(0, 4),
-                    })
-                  }
-                  placeholder="1234"
-                  maxLength={4}
-                />
-              </div>
-              {cardError && (
-                <p className="inline-error" role="alert" style={{ marginBottom: 12 }}>
-                  {cardError}
-                </p>
-              )}
-              <div className="form-group">
-                <label className="form-label">Reward currency</label>
-                <input
-                  className="form-input"
-                  value={editingCard.currency}
-                  onChange={(e) => patchEditingCard({ currency: e.target.value })}
-                  placeholder="Points"
-                />
-              </div>
-              <p className="form-label" style={{ marginTop: '16px' }}>Multipliers</p>
-              <div className="form-grid-2" style={{ maxHeight: '280px', overflowY: 'auto' }}>
-                {Object.keys(editingCard.multipliers).map((key) => (
-                  <div key={key} className="form-group" style={{ marginBottom: '8px' }}>
-                    <label className="form-label">{key}</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      className="form-input"
-                      value={editingCard.multipliers[key]}
-                      onChange={(e) =>
-                        patchEditingCard({
-                          multipliers: {
-                            ...editingCard.multipliers,
-                            [key]: parseFloat(e.target.value) || 0,
-                          },
-                        })
-                      }
-                    />
-                  </div>
-                ))}
-              </div>
-              {!isAddingNew && (
-                <div style={{ marginTop: 24 }}>
-                  <button type="button" className="btn btn-ghost" style={{ width: '100%' }} onClick={() => deleteCard(editingCard.originalName || editingCard.name)}>
-                    <Trash2 size={18} /> Delete card
-                  </button>
-                </div>
-              )}
-      </Modal>
-      )}
     </motion.div>
   );
 };
 
 const Settings = () => {
-  const { config, setConfig, loading, syncError, syncStatus, refresh } = useData();
+  const { config, setConfig, transactions, setTransactions, loading, syncError, syncStatus, refresh } = useData();
   const toast = useToast();
 
   const handleRetry = async () => {
@@ -537,7 +407,13 @@ const Settings = () => {
           retrying={loading}
         />
       )}
-      <SettingsForm key={config} initialConfig={config} commitConfig={setConfig} />
+      <SettingsForm
+        key={config}
+        initialConfig={config}
+        commitConfig={setConfig}
+        transactions={transactions}
+        setTransactions={setTransactions}
+      />
     </>
   );
 };

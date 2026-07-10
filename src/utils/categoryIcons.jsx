@@ -20,6 +20,8 @@ const ICON_MAP = {
   ShoppingCart,
 };
 
+export const CATEGORY_ICON_OPTIONS = Object.keys(ICON_MAP);
+
 export const CategoryIcon = ({ category, categories }) => {
   const cat = categories?.find((c) => c.value.toLowerCase() === category?.toLowerCase());
   const iconName = cat?.icon || 'MoreHorizontal';

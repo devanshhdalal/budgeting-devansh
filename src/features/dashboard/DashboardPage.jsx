@@ -28,7 +28,8 @@ import { stagger, fadeUp } from '@/motion/presets';
 import LoadingScreen from '@/components/layout/LoadingScreen';
 import AnimatedNumber from '@/components/ui/AnimatedNumber';
 import PageError from '@/components/ui/PageError';
-import { resolveBillingRange } from '@shared/billingCycle';
+import { resolveBillingRange, resolveBillingPeriod } from '@shared/billingCycle';
+import { formatDisplayDate } from '@/utils/date';
 import { getPageErrorTitle, getPageErrorVariant } from '@/utils/apiErrors';
 import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
 import {
@@ -364,6 +365,18 @@ const Dashboard = () => {
     return { start: filters.startDate, end: filters.endDate };
   }, [filters.selectedCard, filters.startDate, filters.endDate, appConfig]);
 
+  const billingContext = useMemo(() => {
+    if (filters.selectedCard === 'All' || !appConfig?.BILLING_CYCLES?.[filters.selectedCard]) {
+      return null;
+    }
+    const cycle = appConfig.BILLING_CYCLES[filters.selectedCard];
+    const period = resolveBillingPeriod(filters.selectedCard, new Date(), appConfig.BILLING_CYCLES);
+    return {
+      period,
+      isStatement: cycle.type === 'statement',
+    };
+  }, [filters.selectedCard, appConfig]);
+
   const categoryBudgets = useCategoryBudgets(
     transactions,
     appConfig,
@@ -463,6 +476,16 @@ const Dashboard = () => {
           </button>
         ))}
       </motion.div>
+
+      {billingContext && (
+        <motion.p className="billing-context-banner" variants={fadeUp}>
+          {billingContext.isStatement ? 'Statement' : 'Billing period'}:{' '}
+          {formatDisplayDate(billingContext.period.start)} – {formatDisplayDate(billingContext.period.end)}
+          {billingContext.period.due && (
+            <> · Due {formatDisplayDate(billingContext.period.due)}</>
+          )}
+        </motion.p>
+      )}
 
       <div className="dashboard-grid">
         <SectionCard title="Budget tracking" className="col-span-full">

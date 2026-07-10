@@ -1479,6 +1479,246 @@ optgroup {
   margin: 0 auto;
 }
 
+.settings-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+}
+
+.card-delete-btn {
+  width: 100%;
+  margin-top: 24px;
+  color: var(--danger, #e85d5d);
+}
+
+.card-multipliers-grid {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.billing-cycle-fields-step {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.review-row-card-visual .review-value {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.billing-context-banner {
+  margin: 0 0 20px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  background: var(--accent-soft);
+  border: 1px solid var(--border);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.btn-icon:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.btn-icon:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-icon-danger:hover:not(:disabled) {
+  border-color: var(--danger, #e85d5d);
+  color: var(--danger, #e85d5d);
+}
+
+.categories-editor-list {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.categories-editor-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.categories-editor-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  color: var(--accent);
+}
+
+.categories-editor-label {
+  min-width: 0;
+}
+
+.categories-editor-icon-select {
+  width: 130px;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+}
+
+.categories-editor-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.categories-editor-add {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 10px;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.categories-editor-add-icon {
+  color: var(--text-muted);
+}
+
+.merchant-rewards-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.merchant-rewards-empty {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.merchant-rewards-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.merchant-rewards-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  background: var(--bg-elevated);
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+}
+
+.merchant-rewards-name {
+  flex: 1;
+}
+
+.merchant-rewards-count {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.merchant-rewards-body {
+  padding: 12px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.merchant-rewards-row {
+  display: grid;
+  grid-template-columns: minmax(100px, 1fr) 80px 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.merchant-rewards-card-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.merchant-rewards-multiplier {
+  padding: 10px 12px;
+}
+
+.merchant-rewards-note {
+  padding: 10px 12px;
+  font-size: 0.9rem;
+}
+
+.merchant-rewards-delete {
+  align-self: flex-start;
+  margin-top: 4px;
+  font-size: 0.85rem;
+}
+
+.merchant-rewards-add,
+.merchant-rewards-add-card {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.merchant-rewards-add {
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.merchant-rewards-add .form-input {
+  flex: 1;
+}
+
+@media (max-width: 640px) {
+  .categories-editor-row {
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  .categories-editor-icon-select,
+  .categories-editor-actions {
+    grid-column: 2;
+  }
+
+  .categories-editor-add {
+    grid-template-columns: 1fr;
+  }
+
+  .merchant-rewards-row {
+    grid-template-columns: 1fr;
+  }
+}
+
 .form-card {
   padding: 32px;
 }
