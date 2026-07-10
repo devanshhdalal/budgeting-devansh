@@ -40,7 +40,7 @@
       }
     },
     "Platinum Card": {
-      "currency": "Points",
+      "currency": "MR Points",
       "multipliers": {
         "Food": 1,
         "Groceries": 1,
