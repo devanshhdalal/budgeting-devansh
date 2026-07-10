@@ -1398,7 +1398,7 @@
     "Amount": 3,
     "Category": "Travel",
     "Card": "AMEX Cobalt",
-    "Notes": null,
+    "Notes": "Got Air for Cherry",
     "id": "7fc97cdd-c38f-48c3-b3b4-548901343869"
   },
   {
@@ -1408,7 +1408,7 @@
     "Amount": 2.5,
     "Category": "Travel",
     "Card": "AMEX Cobalt",
-    "Notes": null,
+    "Notes": "Got Air for Cherry",
     "id": "98136147-25a9-4f7a-b459-b4f4826193fa"
   },
   {
@@ -1968,7 +1968,7 @@
     "Amount": 78,
     "Category": "Travel",
     "Card": "Scene+ Visa",
-    "Notes": null,
+    "Notes": "Metrobus pass",
     "id": "b0cce301-e6ce-41e1-af34-3bd089ae4dea"
   },
   {
@@ -1978,7 +1978,7 @@
     "Amount": 14.94,
     "Category": "Personal Items",
     "Card": "Scene+ Visa",
-    "Notes": null,
+    "Notes": "got weed lol",
     "id": "b9bd520e-4142-4e98-b9a0-f3d19391b892"
   }
 ]
