@@ -217,7 +217,7 @@
     "Merchant": "Compass Card",
     "Amount": 10,
     "Category": "Car",
-    "Card": "Cobalt",
+    "Card": "AMEX Cobalt",
     "Notes": "",
     "id": "2b8df483-90d5-44f9-934a-e4d944b0ecce",
     "ReceiptUrl": "",
@@ -225,7 +225,7 @@
     "Source": "manual",
     "IsTest": false,
     "Currency": "CAD",
-    "CreatedAt": "2026-07-10T23:07:45.222Z"
+    "CreatedAt": "2026-07-10T23:07:44.300Z"
   },
   {
     "Date": "2026-06-07",
