@@ -396,14 +396,15 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
         </SectionCard>
       </div>
 
+      {editingCard && (
       <Modal
-        open={Boolean(editingCard)}
+        open
         onClose={resetCardEditor}
         wide
         title={isAddingNew ? 'Add card' : 'Edit card'}
         titleExtra={<SaveIndicator status={isUploadingCard ? 'saving' : saveStatus} />}
       >
-              {editingCard?.name?.trim().toLowerCase() !== 'cash' && (
+              {editingCard.name?.trim().toLowerCase() !== 'cash' && (
                 <>
                   <CardImageUpload
                     imageUrl={editingCard.imageUrl}
@@ -427,7 +428,7 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
                 </>
               )}
 
-              {editingCard?.name?.trim().toLowerCase() === 'cash' && (
+              {editingCard.name?.trim().toLowerCase() === 'cash' && (
                 <p className="card-image-hint" style={{ marginBottom: 16 }}>
                   Cash does not require a card photo or payment network.
                 </p>
@@ -500,6 +501,7 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
                 </div>
               )}
       </Modal>
+      )}
     </motion.div>
   );
 };
