@@ -28,16 +28,22 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
   const [pendingImageFile, setPendingImageFile] = useState(null);
   const [pendingPreviewUrl, setPendingPreviewUrl] = useState(null);
 
-  const handleSave = async () => {
+  const persistDraft = async (nextDraft, successMessage) => {
     setIsSaving(true);
-    const { ok, error } = await saveConfig(draft);
+    const { ok, error } = await saveConfig(nextDraft);
     setIsSaving(false);
-    if (ok) {
-      commitConfig(draft);
-      toast.success('Settings saved');
-    } else {
+    if (!ok) {
       toast.error('Save failed', { description: error });
+      return false;
     }
+    setDraft(nextDraft);
+    commitConfig(nextDraft);
+    if (successMessage) toast.success(successMessage);
+    return true;
+  };
+
+  const handleSave = async () => {
+    await persistDraft(draft, 'Budgets saved');
   };
 
   const updateBudget = (category, value) =>
@@ -116,49 +122,47 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
       imageUrl = upload.imageUrl;
     }
 
-    setDraft((prev) => {
-      const nextIdentifiers = { ...(prev.CARD_IDENTIFIERS || {}) };
-      Object.keys(nextIdentifiers).forEach((k) => {
-        if (nextIdentifiers[k] === editingCard.name) delete nextIdentifiers[k];
-      });
-      if (editingCard.last4) nextIdentifiers[editingCard.last4] = name;
-
-      const nextCards = { ...prev.CARDS };
-      if (!isAddingNew && editingCard.name !== name) {
-        delete nextCards[editingCard.name];
-      }
-
-      nextCards[name] = {
-        currency: editingCard.currency,
-        multipliers: editingCard.multipliers,
-        ...(editingCard.network && { network: editingCard.network }),
-        ...(imageUrl && { imageUrl }),
-      };
-
-      return {
-        ...prev,
-        CARD_IDENTIFIERS: nextIdentifiers,
-        CARDS: nextCards,
-        BILLING_CYCLES: {
-          ...(prev.BILLING_CYCLES || {}),
-          [name]: prev.BILLING_CYCLES?.[editingCard.name] || prev.BILLING_CYCLES?.[name] || { type: 'monthly' },
-        },
-      };
+    const nextIdentifiers = { ...(draft.CARD_IDENTIFIERS || {}) };
+    Object.keys(nextIdentifiers).forEach((k) => {
+      if (nextIdentifiers[k] === editingCard.name) delete nextIdentifiers[k];
     });
-    resetCardEditor();
-    toast.success(isAddingNew ? 'Card added' : 'Card updated');
+    if (editingCard.last4) nextIdentifiers[editingCard.last4] = name;
+
+    const nextCards = { ...draft.CARDS };
+    if (!isAddingNew && editingCard.name !== name) {
+      delete nextCards[editingCard.name];
+    }
+
+    nextCards[name] = {
+      currency: editingCard.currency,
+      multipliers: editingCard.multipliers,
+      ...(editingCard.network && { network: editingCard.network }),
+      ...(imageUrl && { imageUrl }),
+    };
+
+    const nextDraft = {
+      ...draft,
+      CARD_IDENTIFIERS: nextIdentifiers,
+      CARDS: nextCards,
+      BILLING_CYCLES: {
+        ...(draft.BILLING_CYCLES || {}),
+        [name]: draft.BILLING_CYCLES?.[editingCard.name] || draft.BILLING_CYCLES?.[name] || { type: 'monthly' },
+      },
+    };
+
+    const ok = await persistDraft(nextDraft, isAddingNew ? 'Card added' : 'Card updated');
+    if (ok) resetCardEditor();
   };
 
-  const deleteCard = (name) => {
+  const deleteCard = async (name) => {
     if (!window.confirm(`Delete ${name}?`)) return;
-    setDraft((prev) => {
-      const nextCards = { ...prev.CARDS };
-      delete nextCards[name];
-      const nextCycles = { ...(prev.BILLING_CYCLES || {}) };
-      delete nextCycles[name];
-      return { ...prev, CARDS: nextCards, BILLING_CYCLES: nextCycles };
-    });
-    resetCardEditor();
+    const nextCards = { ...draft.CARDS };
+    delete nextCards[name];
+    const nextCycles = { ...(draft.BILLING_CYCLES || {}) };
+    delete nextCycles[name];
+    const nextDraft = { ...draft, CARDS: nextCards, BILLING_CYCLES: nextCycles };
+    const ok = await persistDraft(nextDraft, 'Card removed');
+    if (ok) resetCardEditor();
   };
 
   return (
@@ -166,11 +170,11 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
       <PageHeader
         eyebrow="Preferences"
         title="Settings"
-        subtitle="Budget limits, cards, and reward multipliers for this profile."
+        subtitle="Cards save automatically. Use Save for budget limits."
         action={
           <button type="button" className="btn btn-primary" onClick={handleSave} disabled={isSaving}>
             <Save size={18} />
-            <span className="hide-mobile">{isSaving ? 'Saving...' : 'Save'}</span>
+            <span className="hide-mobile">{isSaving ? 'Saving...' : 'Save budgets'}</span>
           </button>
         }
       />
