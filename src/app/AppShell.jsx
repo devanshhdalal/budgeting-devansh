@@ -2,21 +2,22 @@ import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sun, Moon } from 'lucide-react';
-import AmbientBackground from './AmbientBackground';
-import LoadingScreen from './LoadingScreen';
-import ErrorBoundary from './ErrorBoundary';
-import PullToRefresh from './PullToRefresh';
-import UserSwitcher from './UserSwitcher';
-import StaggeredMenu from './StaggeredMenu';
-import { UserProvider } from '../../context/UserProvider';
-import { DataProvider } from '../../context/DataProvider';
-import { ToastProvider } from '../../context/ToastProvider';
-import { pageEnter } from '../../motion/presets';
+import AmbientBackground from '@/components/layout/AmbientBackground';
+import LoadingScreen from '@/components/layout/LoadingScreen';
+import ErrorBoundary from '@/components/layout/ErrorBoundary';
+import PullToRefresh from '@/components/layout/PullToRefresh';
+import UserSwitcher from '@/components/layout/UserSwitcher';
+import StaggeredMenu from '@/components/layout/StaggeredMenu';
+import { ShortcutsProvider } from '@/accessibility/ShortcutsProvider';
+import { UserProvider } from '@/context/UserProvider';
+import { DataProvider } from '@/context/DataProvider';
+import { ToastProvider } from '@/context/ToastProvider';
+import { pageEnter } from '@/motion/presets';
 
-const Dashboard = lazy(() => import('../../pages/Dashboard'));
-const Subscriptions = lazy(() => import('../../pages/Subscriptions'));
-const AddTransaction = lazy(() => import('../../pages/AddTransaction'));
-const SettingsPage = lazy(() => import('../../pages/Settings'));
+const Dashboard = lazy(() => import('@/features/dashboard/DashboardPage'));
+const Subscriptions = lazy(() => import('@/features/subscriptions/SubscriptionsPage'));
+const AddTransaction = lazy(() => import('@/features/transactions/AddTransactionPage'));
+const SettingsPage = lazy(() => import('@/features/settings/SettingsPage'));
 
 const THEME_KEY = 'app-theme';
 
@@ -79,45 +80,50 @@ const AppShell = () => {
         <UserProvider>
           <DataProvider>
             <Router>
-              <div className="app-root">
-                <AmbientBackground theme={theme} />
-                <PullToRefresh />
-                <StaggeredMenu
-                  isFixed
-                  position="right"
-                  items={MENU_ITEMS}
-                  displaySocials={false}
-                  displayItemNumbering
-                  logoUrl="/favicon.svg"
-                  colors={menuColors}
-                  accentColor={accentColor}
-                  menuButtonColor={menuButtonColor}
-                  openMenuButtonColor={menuButtonColor}
-                  changeMenuColorOnOpen={false}
-                  footer={
-                    <>
-                      <UserSwitcher />
-                      <ThemeToggle theme={theme} onToggle={toggleTheme} />
-                    </>
-                  }
-                />
-                <div className="app-container">
-                  <main className="app-main">
-                    <ErrorBoundary>
-                      <Suspense fallback={<LoadingScreen />}>
-                        <PageTransition>
-                          <Routes>
-                            <Route path="/" element={<Dashboard />} />
-                            <Route path="/subscriptions" element={<Subscriptions />} />
-                            <Route path="/add" element={<AddTransaction />} />
-                            <Route path="/settings" element={<SettingsPage />} />
-                          </Routes>
-                        </PageTransition>
-                      </Suspense>
-                    </ErrorBoundary>
-                  </main>
+              <ShortcutsProvider menuItems={MENU_ITEMS}>
+                <div className="app-root">
+                  <a href="#main-content" className="skip-link">
+                    Skip to main content
+                  </a>
+                  <AmbientBackground theme={theme} />
+                  <PullToRefresh />
+                  <StaggeredMenu
+                    isFixed
+                    position="right"
+                    items={MENU_ITEMS}
+                    displaySocials={false}
+                    displayItemNumbering
+                    logoUrl="/favicon.svg"
+                    colors={menuColors}
+                    accentColor={accentColor}
+                    menuButtonColor={menuButtonColor}
+                    openMenuButtonColor={menuButtonColor}
+                    changeMenuColorOnOpen={false}
+                    footer={
+                      <>
+                        <UserSwitcher />
+                        <ThemeToggle theme={theme} onToggle={toggleTheme} />
+                      </>
+                    }
+                  />
+                  <div className="app-container">
+                    <main id="main-content" className="app-main" tabIndex={-1}>
+                      <ErrorBoundary>
+                        <Suspense fallback={<LoadingScreen />}>
+                          <PageTransition>
+                            <Routes>
+                              <Route path="/" element={<Dashboard />} />
+                              <Route path="/subscriptions" element={<Subscriptions />} />
+                              <Route path="/add" element={<AddTransaction />} />
+                              <Route path="/settings" element={<SettingsPage />} />
+                            </Routes>
+                          </PageTransition>
+                        </Suspense>
+                      </ErrorBoundary>
+                    </main>
+                  </div>
                 </div>
-              </div>
+              </ShortcutsProvider>
             </Router>
           </DataProvider>
         </UserProvider>

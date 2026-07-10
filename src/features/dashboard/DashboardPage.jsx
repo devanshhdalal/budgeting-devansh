@@ -2,42 +2,42 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search } from 'lucide-react';
-import { saveTransaction, deleteTransaction, uploadReceipt } from '../services/storage';
-import { SpendingPieChart, SpendingBarChart } from '../components/Charts';
-import { useChartColors } from '../hooks/useChartColors';
-import { getCategoryColor } from '../utils/chartTheme';
-import TransactionItem from '../components/TransactionItem';
-import { CategoryIcon } from '../utils/categoryIcons';
-import PageHeader from '../components/ui/PageHeader';
-import StatCard from '../components/ui/StatCard';
-import SectionCard from '../components/ui/SectionCard';
-import SyncBanner from '../components/ui/SyncBanner';
-import DateRangePicker from '../components/dashboard/DateRangePicker';
-import EditTransactionModal from '../components/dashboard/EditTransactionModal';
-import ReceiptLightbox from '../components/dashboard/ReceiptLightbox';
-import { BudgetSkeleton, ChartSkeleton, TransactionListSkeleton } from '../components/dashboard/DashboardSkeletons';
-import { todayIsoDate } from '../utils/date';
-import { formatCurrency } from '../utils/format';
-import { matchesDateRange } from '../utils/filters';
-import { buildPieData, buildBarData, buildInsights } from '../utils/chartData';
-import { useData } from '../hooks/useData';
-import { useToast } from '../hooks/useToast';
-import { useTransactionFilters } from '../hooks/useTransactionFilters';
-import { MAX_VISIBLE_TRANSACTIONS } from '../constants';
-import { stagger, fadeUp } from '../motion/presets';
-import LoadingScreen from '../components/layout/LoadingScreen';
-import AnimatedNumber from '../components/ui/AnimatedNumber';
-import PageError from '../components/ui/PageError';
-import { resolveBillingRange } from '../utils/billingCycle';
-import { getPageErrorTitle, getPageErrorVariant } from '../utils/apiErrors';
-import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
+import { saveTransaction, deleteTransaction, uploadReceipt } from '@/services/storage';
+import { SpendingPieChart, SpendingBarChart } from '@/components/charts/Charts';
+import { useChartColors } from '@/hooks/useChartColors';
+import { getCategoryColor } from '@/utils/chartTheme';
+import TransactionItem from '@/features/transactions/components/TransactionItem';
+import { CategoryIcon } from '@/utils/categoryIcons';
+import PageHeader from '@/components/ui/PageHeader';
+import StatCard from '@/components/ui/StatCard';
+import SectionCard from '@/components/ui/SectionCard';
+import SyncBanner from '@/components/ui/SyncBanner';
+import DateRangePicker from '@/features/dashboard/components/DateRangePicker';
+import EditTransactionModal from '@/features/dashboard/components/EditTransactionModal';
+import ReceiptLightbox from '@/features/dashboard/components/ReceiptLightbox';
+import { BudgetSkeleton, ChartSkeleton, TransactionListSkeleton } from '@/features/dashboard/components/DashboardSkeletons';
+import { todayIsoDate } from '@/utils/date';
+import { formatCurrency } from '@/utils/format';
+import { matchesDateRange } from '@/utils/filters';
+import { buildPieData, buildBarData, buildInsights } from '@/utils/chartData';
+import { useData } from '@/hooks/useData';
+import { useToast } from '@/hooks/useToast';
+import { useTransactionFilters } from '@/hooks/useTransactionFilters';
+import { MAX_VISIBLE_TRANSACTIONS } from '@/constants';
+import { stagger, fadeUp } from '@/motion/presets';
+import LoadingScreen from '@/components/layout/LoadingScreen';
+import AnimatedNumber from '@/components/ui/AnimatedNumber';
+import PageError from '@/components/ui/PageError';
+import { resolveBillingRange } from '@shared/billingCycle';
+import { getPageErrorTitle, getPageErrorVariant } from '@/utils/apiErrors';
+import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
 import {
   formatRenewalLabel,
   getSubscriptions,
   renewalUrgency,
   sortByRenewal,
   subscriptionMonthlyTotal,
-} from '../utils/subscriptions';
+} from '@/utils/subscriptions';
 
 const EMPTY_EDIT_FORM = (tx) => ({
   id: tx.id,
@@ -145,6 +145,7 @@ const Toolbar = ({ filters, categories }) => (
       <Search size={18} />
       <input
         type="search"
+        id="dashboard-search"
         className="search-input"
         placeholder="Search merchants, categories, notes..."
         value={filters.searchQuery}
