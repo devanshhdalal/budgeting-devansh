@@ -93,7 +93,12 @@
       }
     },
     "Scene+": {
-      "type": "monthly"
+      "type": "statement",
+      "anchor": {
+        "statementStart": "",
+        "statementEnd": "",
+        "dueDate": ""
+      }
     },
     "Cobalt": {
       "type": "statement",
