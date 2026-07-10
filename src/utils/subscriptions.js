@@ -6,8 +6,48 @@ const parseIsoDate = (iso) => {
   return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
 };
 
-export const getSubscriptions = (config) =>
-  Array.isArray(config?.SUBSCRIPTIONS) ? config.SUBSCRIPTIONS : [];
+const addMonths = (iso, months) => {
+  const d = parseIsoDate(iso);
+  if (!d) return iso;
+  d.setMonth(d.getMonth() + months);
+  return d.toISOString().slice(0, 10);
+};
+
+const normName = (name) => String(name || '').trim().toLowerCase();
+
+export const getSubscriptions = (config, transactions = []) => {
+  const manual = Array.isArray(config?.SUBSCRIPTIONS) ? config.SUBSCRIPTIONS : [];
+  const derived = deriveSubscriptionsFromTransactions(transactions);
+  const manualNames = new Set(manual.map((s) => normName(s.name)));
+  return [
+    ...manual,
+    ...derived.filter((d) => !manualNames.has(normName(d.name))),
+  ];
+};
+
+/** Build subscription entries from transactions categorized as Subscriptions. */
+export const deriveSubscriptionsFromTransactions = (transactions = []) => {
+  const latestByMerchant = new Map();
+
+  for (const txn of transactions) {
+    if (txn.Category !== 'Subscriptions' || !txn.Merchant) continue;
+    const key = normName(txn.Merchant);
+    const existing = latestByMerchant.get(key);
+    if (!existing || String(txn.Date) > String(existing.Date)) {
+      latestByMerchant.set(key, txn);
+    }
+  }
+
+  return [...latestByMerchant.values()].map((txn) => ({
+    id: `txn-sub-${normName(txn.Merchant).replace(/[^a-z0-9]+/g, '-')}`,
+    name: txn.Merchant,
+    amount: Number(txn.Amount) || 0,
+    renewalDate: addMonths(txn.Date, 1),
+    ...(txn.Card && { card: txn.Card }),
+    source: 'transaction',
+    transactionId: txn.id,
+  }));
+};
 
 export const daysUntilRenewal = (renewalDate) => {
   const renew = parseIsoDate(renewalDate);

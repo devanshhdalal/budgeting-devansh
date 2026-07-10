@@ -54,6 +54,8 @@ const buildSubscriptionEntry = (form, { isNew }) => {
 
 const SubscriptionRow = ({ sub, categories, onEdit, onDelete }) => {
   const urgency = renewalUrgency(sub.renewalDate);
+  const fromTransaction = sub.source === 'transaction';
+
   return (
     <motion.div className="sub-row sub-row-managed" layout variants={fadeUp}>
       <div className="sub-row-left">
@@ -68,6 +70,7 @@ const SubscriptionRow = ({ sub, categories, onEdit, onDelete }) => {
             <span className={`sub-renewal-badge sub-renewal-${urgency}`}>
               {formatRenewalLabel(sub.renewalDate)}
             </span>
+            {fromTransaction && <span className="sub-source-badge">From transaction</span>}
           </div>
           {sub.card && <div className="sub-tag">{sub.card}</div>}
         </div>
@@ -78,9 +81,11 @@ const SubscriptionRow = ({ sub, categories, onEdit, onDelete }) => {
           <button type="button" className="action-btn" onClick={() => onEdit(sub)} aria-label={`Edit ${sub.name}`}>
             <Pencil size={16} />
           </button>
-          <button type="button" className="action-btn action-btn-danger" onClick={() => onDelete(sub)} aria-label={`Delete ${sub.name}`}>
-            <Trash2 size={16} />
-          </button>
+          {!fromTransaction && (
+            <button type="button" className="action-btn action-btn-danger" onClick={() => onDelete(sub)} aria-label={`Delete ${sub.name}`}>
+              <Trash2 size={16} />
+            </button>
+          )}
         </div>
       </div>
     </motion.div>
@@ -88,7 +93,7 @@ const SubscriptionRow = ({ sub, categories, onEdit, onDelete }) => {
 };
 
 const SubscriptionsPage = () => {
-  const { config, setConfig, loading, syncError, syncStatus, refresh } = useData();
+  const { config, transactions, setConfig, loading, syncError, syncStatus, refresh } = useData();
   const toast = useToast();
   const { confirm, confirmDialog } = useConfirm();
   const [editing, setEditing] = useState(null);
@@ -107,7 +112,10 @@ const SubscriptionsPage = () => {
     configRef.current = config;
   }, [config]);
 
-  const subscriptions = useMemo(() => sortByRenewal(getSubscriptions(config)), [config]);
+  const subscriptions = useMemo(
+    () => sortByRenewal(getSubscriptions(config, transactions)),
+    [config, transactions]
+  );
   const monthlyTotal = useMemo(() => subscriptionMonthlyTotal(subscriptions), [subscriptions]);
   const cardOptions = useMemo(() => Object.keys(config?.CARDS ?? {}), [config]);
 
@@ -181,15 +189,15 @@ const SubscriptionsPage = () => {
 
   const openEdit = (sub) => {
     setForm({
-      id: sub.id,
+      id: sub.source === 'transaction' ? '' : sub.id,
       name: sub.name,
       amount: String(sub.amount ?? ''),
       renewalDate: sub.renewalDate || todayIsoDate(),
       card: sub.card || '',
       notes: sub.notes || '',
     });
-    setIsAdding(false);
-    setEditing(sub);
+    setIsAdding(sub.source === 'transaction');
+    setEditing(sub.source === 'transaction' ? null : sub);
   };
 
   const closeModal = () => {

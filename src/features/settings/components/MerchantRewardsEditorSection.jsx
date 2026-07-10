@@ -89,7 +89,7 @@ const MerchantRewardsEditorSection = ({ overrides, cardNames, onPersistOverrides
         const cardOverrides = Object.entries(overrides[merchant] || {});
 
         return (
-          <div key={merchant} className="merchant-rewards-card">
+          <div key={merchant} className="merchant-rewards-block">
             <button
               type="button"
               className="merchant-rewards-head"

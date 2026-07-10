@@ -98,7 +98,7 @@ const SubscriptionsCard = ({ subscriptions, categories }) => {
       title="Subscriptions"
       className="col-span-4"
       action={
-        <Link to="/subscriptions" className="section-card-link">
+        <Link to="/subscriptions" className="page-section-link">
           Manage · {formatCurrency(monthlyBurnRate)}/mo
         </Link>
       }
@@ -411,7 +411,10 @@ const Dashboard = () => {
     budgetRange.start,
     budgetRange.end
   );
-  const subscriptions = useMemo(() => getSubscriptions(appConfig), [appConfig]);
+  const subscriptions = useMemo(
+    () => sortByRenewal(getSubscriptions(appConfig, transactions)),
+    [appConfig, transactions]
+  );
 
   const pieData = useMemo(() => buildPieData(filters.filteredTransactions), [filters.filteredTransactions]);
   const barData = useMemo(() => buildBarData(filters.filteredTransactions), [filters.filteredTransactions]);
@@ -475,17 +478,17 @@ const Dashboard = () => {
       <Toolbar filters={filters} categories={appConfig.CATEGORIES} />
 
       <div className="insight-grid">
-        <motion.div className="insight-card" variants={fadeUp}>
+        <motion.div className="insight-block" variants={fadeUp}>
           <span className="insight-title">Top merchant</span>
           <span className="insight-value">{topMerchant ? topMerchant[0] : 'None'}</span>
           <span className="insight-desc">{topMerchant ? `${formatCurrency(topMerchant[1])} spent` : 'No data'}</span>
         </motion.div>
-        <motion.div className="insight-card" variants={fadeUp}>
+        <motion.div className="insight-block" variants={fadeUp}>
           <span className="insight-title">Rewards earned</span>
           <span className="insight-value" style={{ fontSize: '1rem' }}>{rewardsLabel}</span>
           <span className="insight-desc">Active multipliers applied</span>
         </motion.div>
-        <motion.div className="insight-card" variants={fadeUp}>
+        <motion.div className="insight-block" variants={fadeUp}>
           <span className="insight-title">Monthly focus</span>
           <span className="insight-value">{topCategory}</span>
           <span className="insight-desc">Highest spend category</span>

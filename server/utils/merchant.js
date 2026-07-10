@@ -41,7 +41,7 @@ const RULES = [
   [/temu/i, 'Temu', 'Personal Items'],
   [/afterpay/i, 'Afterpay', 'Other'],
   [/klarna/i, 'Klarna', 'Personal Items'],
-  [/apple\s+bill/i, 'Apple Bill', 'Utilities'],
+  [/apple\s+bill|apple\.com\/bill/i, 'Apple Bill', 'Utilities'],
   [/scotia\s+credit\s+card/i, 'Scotia CC Protection', 'Utilities'],
   [/sauceplus/i, 'SaucePlus', 'Subscriptions'],
   [/tidal/i, 'Tidal', 'Subscriptions'],
