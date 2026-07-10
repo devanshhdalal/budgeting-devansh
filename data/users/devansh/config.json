@@ -2,14 +2,14 @@
   "CARDS": {
     "AMEX Cobalt": {
       "currency": "MR Points",
-      "network": "amex",
       "multipliers": {
         "Food": 5,
         "Groceries": 5,
         "Travel": 2,
         "Car": 2,
         "Base": 1
-      }
+      },
+      "network": "amex"
     },
     "Scene+ Visa": {
       "currency": "Scene+ Points",
@@ -39,34 +39,93 @@
   },
   "CARD_IDENTIFIERS": {},
   "BILLING_CYCLES": {
-    "AMEX Cobalt": { "type": "monthly" },
-    "Scene+ Visa": { "type": "monthly" },
-    "Neo Mastercard": { "type": "monthly" },
-    "Cash": { "type": "monthly" }
+    "AMEX Cobalt": {
+      "type": "monthly"
+    },
+    "Scene+ Visa": {
+      "type": "monthly"
+    },
+    "Neo Mastercard": {
+      "type": "monthly"
+    },
+    "Cash": {
+      "type": "monthly"
+    }
   },
   "MERCHANT_REWARDS_OVERRIDES": {
     "Rec Room": {
-      "AMEX Cobalt": { "multiplier": 1, "note": "Entertainment override (not 5x)" },
-      "Scene+ Visa": { "multiplier": 2, "note": "2x Scene Points at Cineplex partners" }
+      "AMEX Cobalt": {
+        "multiplier": 1,
+        "note": "Entertainment override (not 5x)"
+      },
+      "Scene+ Visa": {
+        "multiplier": 2,
+        "note": "2x Scene Points at Cineplex partners"
+      }
     },
     "Cineplex Rec Room": {
-      "AMEX Cobalt": { "multiplier": 1, "note": "Entertainment override (not 5x)" },
-      "Scene+ Visa": { "multiplier": 2, "note": "2x Scene Points at Cineplex partners" }
+      "AMEX Cobalt": {
+        "multiplier": 1,
+        "note": "Entertainment override (not 5x)"
+      },
+      "Scene+ Visa": {
+        "multiplier": 2,
+        "note": "2x Scene Points at Cineplex partners"
+      }
     },
     "Sobeys": {
-      "Scene+ Visa": { "multiplier": 2, "note": "2x Scene Points at Sobeys" }
+      "Scene+ Visa": {
+        "multiplier": 2,
+        "note": "2x Scene Points at Sobeys"
+      }
     }
   },
   "CATEGORIES": [
-    { "value": "Food", "label": "Food & Dining", "icon": "Coffee" },
-    { "value": "Groceries", "label": "Groceries", "icon": "ShoppingCart" },
-    { "value": "Car", "label": "Transportation & Car", "icon": "Car" },
-    { "value": "Health", "label": "Health & Wellness", "icon": "HeartPulse" },
-    { "value": "Personal Items", "label": "Personal Items", "icon": "ShoppingBag" },
-    { "value": "Utilities", "label": "Utilities & Bills", "icon": "Home" },
-    { "value": "Subscriptions", "label": "Subscriptions", "icon": "Home" },
-    { "value": "Travel", "label": "Travel", "icon": "Plane" },
-    { "value": "Other", "label": "Other", "icon": "MoreHorizontal" }
+    {
+      "value": "Food",
+      "label": "Food & Dining",
+      "icon": "Coffee"
+    },
+    {
+      "value": "Groceries",
+      "label": "Groceries",
+      "icon": "ShoppingCart"
+    },
+    {
+      "value": "Car",
+      "label": "Transportation & Car",
+      "icon": "Car"
+    },
+    {
+      "value": "Health",
+      "label": "Health & Wellness",
+      "icon": "HeartPulse"
+    },
+    {
+      "value": "Personal Items",
+      "label": "Personal Items",
+      "icon": "ShoppingBag"
+    },
+    {
+      "value": "Utilities",
+      "label": "Utilities & Bills",
+      "icon": "Home"
+    },
+    {
+      "value": "Subscriptions",
+      "label": "Subscriptions",
+      "icon": "Home"
+    },
+    {
+      "value": "Travel",
+      "label": "Travel",
+      "icon": "Plane"
+    },
+    {
+      "value": "Other",
+      "label": "Other",
+      "icon": "MoreHorizontal"
+    }
   ],
   "BUDGET_CONFIG": {
     "Food": 150,
