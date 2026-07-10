@@ -22,17 +22,6 @@
       "network": "visa",
       "imageUrl": "https://raw.githubusercontent.com/devanshhdalal/budgeting-devansh/main/data/users/devansh/images/cards/1783718565069-519603354.png"
     },
-    "Neo Mastercard": {
-      "currency": "Cashback",
-      "multipliers": {
-        "Car": 0.01,
-        "Food": 0,
-        "Groceries": 0,
-        "Base": 0
-      },
-      "network": "mastercard",
-      "imageUrl": "https://raw.githubusercontent.com/devanshhdalal/budgeting-devansh/main/data/users/devansh/images/cards/1783718580329-885134402.png"
-    },
     "Cash": {
       "currency": "Cash",
       "multipliers": {
@@ -55,13 +44,24 @@
       },
       "network": "amex",
       "imageUrl": "https://raw.githubusercontent.com/devanshhdalal/budgeting-devansh/main/data/users/devansh/images/cards/1783719580771-722362861.png"
+    },
+    "Neo": {
+      "currency": "Cashback",
+      "multipliers": {
+        "Car": 0.01,
+        "Food": 0,
+        "Groceries": 0,
+        "Base": 0
+      },
+      "network": "mastercard",
+      "imageUrl": "https://raw.githubusercontent.com/devanshhdalal/budgeting-devansh/main/data/users/devansh/images/cards/1783718580329-885134402.png"
     }
   },
   "CARD_IDENTIFIERS": {
     "1005": "Platinum Card",
     "1007": "AMEX Cobalt",
     "5019": "Scene+ Visa",
-    "7697": "Neo Mastercard"
+    "7697": "Neo"
   },
   "BILLING_CYCLES": {
     "AMEX Cobalt": {
@@ -77,6 +77,9 @@
       "type": "monthly"
     },
     "Platinum Card": {
+      "type": "monthly"
+    },
+    "Neo": {
       "type": "monthly"
     }
   },
