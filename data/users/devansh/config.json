@@ -91,7 +91,12 @@
       "type": "monthly"
     },
     "Cobalt": {
-      "type": "monthly"
+      "type": "statement",
+      "anchor": {
+        "statementStart": "",
+        "statementEnd": "",
+        "dueDate": ""
+      }
     }
   },
   "MERCHANT_REWARDS_OVERRIDES": {
