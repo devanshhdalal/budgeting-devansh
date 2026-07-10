@@ -14,12 +14,12 @@
     },
     "Scene+ Visa": {
       "currency": "Scene+ Points",
-      "network": "visa",
       "multipliers": {
         "Groceries": 1,
         "Food": 1,
         "Base": 1
-      }
+      },
+      "network": "visa"
     },
     "Neo Mastercard": {
       "currency": "Cashback",
