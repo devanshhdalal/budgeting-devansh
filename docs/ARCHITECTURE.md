@@ -146,6 +146,9 @@ savvr/                          # project root (folder may still be named "budge
 │   ├── config.json             # legacy (migrated to devansh)
 │   └── transactions.json       # legacy (migrated to devansh)
 │
+├── shared/                     # isomorphic domain logic (no React deps)
+│   └── billingCycle.js         # statement period calculation
+│
 ├── dist/                       # production build output (gitignored)
 │
 └── src/                        # React frontend
@@ -153,21 +156,28 @@ savvr/                          # project root (folder may still be named "budge
     ├── App.jsx                 # re-exports AppShell
     ├── index.css               # global design system + component styles
     │
-    ├── pages/                  # route-level views
-    │   ├── Dashboard.jsx       # main overview (largest file)
-    │   ├── AddTransaction.jsx  # manual entry form
-    │   └── Settings.jsx        # budgets, cards, multipliers
+    ├── app/
+    │   └── AppShell.jsx        # Router, providers, nav shell
+    │
+    ├── accessibility/          # keyboard shortcuts, focus trap, scroll lock
+    │   ├── ShortcutsProvider.jsx
+    │   ├── KeyboardShortcutsModal.jsx
+    │   └── shortcuts.js
+    │
+    ├── features/               # route-aligned feature modules
+    │   ├── dashboard/          # DashboardPage + toolbar, charts, modals
+    │   ├── transactions/       # AddTransactionPage, TransactionForm, TransactionItem
+    │   ├── settings/           # SettingsPage, card editor, billing cycles
+    │   └── subscriptions/      # SubscriptionsPage
     │
     ├── components/
-    │   ├── layout/             # shell, nav, loading, errors, PTR
-    │   ├── ui/                 # reusable presentational pieces
-    │   ├── Charts.jsx          # pie + bar charts (Recharts)
-    │   ├── TransactionItem.jsx # single transaction row
-    │   ├── DateField.jsx       # styled date input
-    │   └── UserSwitcher.jsx    # Devansh / Paula toggle
+    │   ├── layout/             # StaggeredMenu, PullToRefresh, LoadingScreen
+    │   ├── ui/                 # Modal, PageHeader, Stepper, SaveIndicator
+    │   ├── charts/             # Recharts pie + bar
+    │   └── forms/              # DateField
     │
     ├── context/                # React context providers
-    ├── hooks/                  # custom hooks
+    ├── hooks/                  # generic hooks (useData, useDebouncedCallback)
     ├── services/               # API client + session
     ├── utils/                  # pure helpers (dates, filters, charts)
     ├── config/                 # frontend-only config (users, rewards)
@@ -215,13 +225,25 @@ Wallet notification → Shortcut runs
   → Same normalizePayload + upsert path as website
 ```
 
-### 5.4 Settings save
+### Settings save
 
 ```
-Settings form edits local draft state (structuredClone of config)
-  → Save button: POST /api/config with full config object
-  → Server writes config.json
+Settings edits auto-save (debounced) per field change
+  → POST /api/config with full config object
+  → Server writes config.json (GitHub-first when configured)
   → Client commitConfig() updates DataProvider + localStorage
+```
+
+### Modals and keyboard
+
+```
+Dialogs use components/ui/Modal.jsx (React portal to document.body)
+  → Escapes transformed page ancestors (fixes off-screen modals)
+  → Focus trap, body scroll lock, Escape to close
+
+Global shortcuts (accessibility/ShortcutsProvider):
+  ? — shortcuts help   Mod+1..4 — navigate   / — focus dashboard search
+  Mod+M — toggle menu   Esc — close overlay
 ```
 
 ### 5.5 Receipt upload
@@ -468,9 +490,10 @@ Exports: `PORT`, `API_KEY`, GitHub env vars, `useGitHub` boolean, `dataDir`, `di
 
 | File | Route | Role |
 |------|-------|------|
-| `pages/Dashboard.jsx` | `/` | Overview: stats, filters, charts, budgets, subscriptions, transaction list, edit modal, receipt lightbox. Contains several internal sub-components (Toolbar, BudgetTrackingCardBody, etc.) |
-| `pages/AddTransaction.jsx` | `/add` | Manual transaction form with success animation |
-| `pages/Settings.jsx` | `/settings` | Budget sliders, card editor modal; `SettingsForm` keeps draft until Save |
+| `features/dashboard/DashboardPage.jsx` | `/` | Overview: stats, filters, charts, budgets, subscriptions, transaction list |
+| `features/transactions/AddTransactionPage.jsx` | `/add` | Manual transaction stepper with auto-save |
+| `features/settings/SettingsPage.jsx` | `/settings` | Budget sliders, cards, billing cycles (auto-save) |
+| `features/subscriptions/SubscriptionsPage.jsx` | `/subscriptions` | Recurring subscriptions with renewal dates |
 
 ### Layout (`components/layout/`)
 
