@@ -24,13 +24,13 @@
     },
     "Neo Mastercard": {
       "currency": "Cashback",
-      "network": "mastercard",
       "multipliers": {
         "Car": 0.01,
         "Food": 0,
         "Groceries": 0,
         "Base": 0
-      }
+      },
+      "network": "mastercard"
     },
     "Cash": {
       "currency": "Cash",
