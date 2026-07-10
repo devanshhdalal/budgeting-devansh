@@ -87,9 +87,9 @@
     "Neo": {
       "type": "statement",
       "anchor": {
-        "statementStart": "",
+        "statementStart": "2026-06-04",
         "statementEnd": "",
-        "dueDate": ""
+        "dueDate": "2026-07-24"
       }
     },
     "Scene+": {
