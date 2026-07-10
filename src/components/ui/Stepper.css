@@ -1,0 +1,226 @@
+.stepper-outer {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+}
+
+.stepper-shell {
+  width: 100%;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.step-indicator-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  padding: 1.5rem 1.5rem 0.5rem;
+}
+
+.step-content-default {
+  position: relative;
+  overflow: hidden;
+}
+
+.step-default {
+  padding: 0.5rem 1.5rem 0;
+}
+
+.step-default .form-group:last-child {
+  margin-bottom: 0;
+}
+
+.stepper-footer {
+  padding: 0 1.5rem 1.5rem;
+}
+
+.footer-nav {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 12px;
+}
+
+.footer-nav.spread {
+  justify-content: space-between;
+}
+
+.footer-nav.end {
+  justify-content: flex-end;
+}
+
+.stepper-back-btn {
+  transition: color 0.25s var(--ease-out);
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-full);
+  padding: 12px 18px;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.stepper-back-btn:hover:not(:disabled) {
+  color: var(--text);
+}
+
+.stepper-back-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.stepper-next-btn {
+  transition: transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 70%, var(--accent-2)));
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 12px 22px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px var(--accent-glow);
+}
+
+.stepper-next-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px var(--accent-glow);
+}
+
+.stepper-next-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.step-indicator {
+  position: relative;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+.step-indicator:disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.step-indicator:focus-visible .step-indicator-inner {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.step-indicator-inner {
+  display: flex;
+  height: 2rem;
+  width: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+}
+
+.active-dot {
+  height: 0.65rem;
+  width: 0.65rem;
+  border-radius: var(--radius-full);
+  background-color: #fff;
+}
+
+.step-number {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.step-connector {
+  position: relative;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  height: 2px;
+  flex: 1;
+  overflow: hidden;
+  border-radius: 2px;
+  background-color: var(--border-strong);
+}
+
+.step-connector-inner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+}
+
+.check-icon {
+  height: 1rem;
+  width: 1rem;
+  color: #fff;
+}
+
+.step-heading {
+  margin-bottom: 1.25rem;
+}
+
+.step-heading h2 {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.35rem;
+}
+
+.step-heading p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.review-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.review-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.review-row:last-child {
+  border-bottom: none;
+}
+
+.review-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+}
+
+.review-value {
+  font-weight: 600;
+  text-align: right;
+  color: var(--text);
+}
+
+.review-amount {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--accent);
+}
+
+.review-amount.refund {
+  color: var(--success);
+}

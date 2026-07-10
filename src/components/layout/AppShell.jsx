@@ -1,12 +1,13 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, NavLink, useLocation } from 'react-router-dom';
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LayoutDashboard, Plus, Settings, Sun, Moon } from 'lucide-react';
+import { Sun, Moon } from 'lucide-react';
 import AmbientBackground from './AmbientBackground';
 import LoadingScreen from './LoadingScreen';
 import ErrorBoundary from './ErrorBoundary';
 import PullToRefresh from './PullToRefresh';
 import UserSwitcher from './UserSwitcher';
+import StaggeredMenu from './StaggeredMenu';
 import { UserProvider } from '../../context/UserProvider';
 import { DataProvider } from '../../context/DataProvider';
 import { ToastProvider } from '../../context/ToastProvider';
@@ -18,6 +19,12 @@ const SettingsPage = lazy(() => import('../../pages/Settings'));
 
 const THEME_KEY = 'app-theme';
 
+const MENU_ITEMS = [
+  { label: 'Overview', ariaLabel: 'Go to overview', link: '/' },
+  { label: 'Add', ariaLabel: 'Add a transaction', link: '/add' },
+  { label: 'Settings', ariaLabel: 'Open settings', link: '/settings' },
+];
+
 const PageTransition = ({ children }) => {
   const location = useLocation();
   return (
@@ -28,37 +35,6 @@ const PageTransition = ({ children }) => {
     </AnimatePresence>
   );
 };
-
-const NavItem = ({ to, icon: Icon, label, end }) => (
-  <NavLink to={to} end={end} className={({ isActive }) => `nav-pill ${isActive ? 'active' : ''}`}>
-    <Icon size={18} strokeWidth={2} />
-    <span>{label}</span>
-  </NavLink>
-);
-
-const MainNav = () => (
-  <nav className="main-nav" aria-label="Main">
-    <NavItem to="/" end icon={LayoutDashboard} label="Overview" />
-    <NavItem to="/add" icon={Plus} label="Add" />
-    <NavItem to="/settings" icon={Settings} label="Settings" />
-  </nav>
-);
-
-const MobileNav = () => (
-  <nav className="mobile-nav" aria-label="Mobile">
-    <NavLink to="/" end className={({ isActive }) => `mobile-nav-item ${isActive ? 'active' : ''}`}>
-      <LayoutDashboard size={22} />
-      <span>Home</span>
-    </NavLink>
-    <NavLink to="/add" className={({ isActive }) => `mobile-nav-item mobile-nav-add ${isActive ? 'active' : ''}`}>
-      <Plus size={24} />
-    </NavLink>
-    <NavLink to="/settings" className={({ isActive }) => `mobile-nav-item ${isActive ? 'active' : ''}`}>
-      <Settings size={22} />
-      <span>Settings</span>
-    </NavLink>
-  </nav>
-);
 
 const ThemeToggle = ({ theme, onToggle }) => (
   <button type="button" className="icon-btn" onClick={onToggle} aria-label="Toggle theme">
@@ -77,31 +53,6 @@ const ThemeToggle = ({ theme, onToggle }) => (
   </button>
 );
 
-const Header = ({ theme, onThemeToggle }) => (
-  <header className="app-header">
-    <div className="brand">
-      <motion.div
-        className="brand-mark"
-        whileHover={{ scale: 1.05, rotate: -4 }}
-        transition={{ type: 'spring', stiffness: 400, damping: 18 }}
-      >
-        <span className="brand-mark-inner" aria-hidden />
-      </motion.div>
-      <div className="brand-text">
-        <span className="brand-name">Savvr</span>
-        <span className="brand-tagline">Personal finance</span>
-      </div>
-    </div>
-    <div className="header-tools">
-      <UserSwitcher />
-      <div className="header-nav-desktop">
-        <MainNav />
-      </div>
-      <ThemeToggle theme={theme} onToggle={onThemeToggle} />
-    </div>
-  </header>
-);
-
 const AppShell = () => {
   const [theme, setTheme] = useState(() => localStorage.getItem(THEME_KEY) || 'dark');
 
@@ -112,6 +63,14 @@ const AppShell = () => {
 
   const toggleTheme = () => setTheme((t) => (t === 'light' ? 'dark' : 'light'));
 
+  const menuColors = useMemo(
+    () => (theme === 'dark' ? ['#e8a090', '#a78bfa'] : ['#c45c4a', '#8b6fd4']),
+    [theme]
+  );
+
+  const accentColor = theme === 'dark' ? '#e8a090' : '#c45c4a';
+  const menuButtonColor = theme === 'dark' ? '#f4f4f6' : '#1a1a1f';
+
   return (
     <ErrorBoundary>
       <ToastProvider>
@@ -119,10 +78,28 @@ const AppShell = () => {
           <DataProvider>
             <Router>
               <div className="app-root">
-                <AmbientBackground />
+                <AmbientBackground theme={theme} />
                 <PullToRefresh />
+                <StaggeredMenu
+                  isFixed
+                  position="right"
+                  items={MENU_ITEMS}
+                  displaySocials={false}
+                  displayItemNumbering
+                  logoUrl="/favicon.svg"
+                  colors={menuColors}
+                  accentColor={accentColor}
+                  menuButtonColor={menuButtonColor}
+                  openMenuButtonColor={menuButtonColor}
+                  changeMenuColorOnOpen={false}
+                  footer={
+                    <>
+                      <UserSwitcher />
+                      <ThemeToggle theme={theme} onToggle={toggleTheme} />
+                    </>
+                  }
+                />
                 <div className="app-container">
-                  <Header theme={theme} onThemeToggle={toggleTheme} />
                   <main className="app-main">
                     <ErrorBoundary>
                       <Suspense fallback={<LoadingScreen />}>
@@ -137,7 +114,6 @@ const AppShell = () => {
                     </ErrorBoundary>
                   </main>
                 </div>
-                <MobileNav />
               </div>
             </Router>
           </DataProvider>

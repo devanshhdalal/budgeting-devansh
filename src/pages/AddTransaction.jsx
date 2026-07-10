@@ -1,12 +1,13 @@
 import { useCallback, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, ArrowRight } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
 import { saveTransaction, uploadReceipt } from '../services/storage';
 import { todayIsoDate } from '../utils/date';
 import { getErrorCopy, getPageErrorTitle, getPageErrorVariant } from '../utils/apiErrors';
 import { useData } from '../hooks/useData';
 import { useToast } from '../hooks/useToast';
 import TransactionForm from '../components/TransactionForm';
+import Stepper, { Step } from '../components/ui/Stepper';
 import PageHeader from '../components/ui/PageHeader';
 import PageError from '../components/ui/PageError';
 import SyncBanner from '../components/ui/SyncBanner';
@@ -25,11 +26,71 @@ const emptyForm = (defaultCategory = 'Other') => ({
   Source: 'manual',
 });
 
+const formatCurrency = (value) => {
+  const n = parseFloat(value);
+  if (!Number.isFinite(n)) return '—';
+  return new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' }).format(Math.abs(n));
+};
+
+const TransactionReview = ({ formData, config, isRefund, foreignAmount, foreignCurrency, receiptFile }) => {
+  const categoryLabel =
+    config.CATEGORIES.find((c) => c.value === formData.Category)?.label ?? formData.Category;
+
+  return (
+    <div className="review-grid">
+      <div className="review-row">
+        <span className="review-label">Merchant</span>
+        <span className="review-value">{formData.Merchant || '—'}</span>
+      </div>
+      <div className="review-row">
+        <span className="review-label">Amount</span>
+        <span className={`review-value review-amount${isRefund ? ' refund' : ''}`}>
+          {isRefund ? '+' : ''}{formatCurrency(formData.Amount)}
+          {isRefund && <span style={{ fontSize: '0.75rem', marginLeft: 6 }}>refund</span>}
+        </span>
+      </div>
+      <div className="review-row">
+        <span className="review-label">Date</span>
+        <span className="review-value">{formData.Date}</span>
+      </div>
+      <div className="review-row">
+        <span className="review-label">Category</span>
+        <span className="review-value">{categoryLabel}</span>
+      </div>
+      <div className="review-row">
+        <span className="review-label">Card</span>
+        <span className="review-value">{formData.Card || 'None'}</span>
+      </div>
+      {foreignAmount && (
+        <div className="review-row">
+          <span className="review-label">Foreign</span>
+          <span className="review-value">
+            {foreignAmount} {foreignCurrency || '—'}
+          </span>
+        </div>
+      )}
+      {formData.Notes && (
+        <div className="review-row">
+          <span className="review-label">Notes</span>
+          <span className="review-value">{formData.Notes}</span>
+        </div>
+      )}
+      {receiptFile && (
+        <div className="review-row">
+          <span className="review-label">Receipt</span>
+          <span className="review-value">{receiptFile.name}</span>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const AddTransaction = () => {
   const { config, loading, syncError, syncStatus, refresh, setTransactions } = useData();
   const toast = useToast();
   const defaultCategory = config?.CATEGORIES?.[0]?.value ?? 'Other';
 
+  const [formKey, setFormKey] = useState(0);
   const [formData, setFormData] = useState(() => emptyForm(defaultCategory));
   const [receiptFile, setReceiptFile] = useState(null);
   const [isRefund, setIsRefund] = useState(false);
@@ -38,16 +99,19 @@ const AddTransaction = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [submitError, setSubmitError] = useState(null);
+  const [stepError, setStepError] = useState(null);
 
   const handleChange = useCallback((e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setStepError(null);
   }, []);
 
   const handleForeignChange = useCallback((e) => {
     const { name, value } = e.target;
     if (name === 'ForeignAmount') setForeignAmount(value);
     if (name === 'ForeignCurrency') setForeignCurrency(value);
+    setStepError(null);
   }, []);
 
   const handleFileChange = useCallback((e) => {
@@ -61,6 +125,9 @@ const AddTransaction = () => {
     setIsRefund(false);
     setForeignAmount('');
     setForeignCurrency('');
+    setSubmitError(null);
+    setStepError(null);
+    setFormKey((k) => k + 1);
   }, [defaultCategory]);
 
   const handleRetry = async () => {
@@ -68,8 +135,38 @@ const AddTransaction = () => {
     if (!result?.ok) toast.error('Sync failed', { description: syncError });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const validateStep = useCallback(
+    (step) => {
+      if (step === 1) {
+        if (!formData.Merchant.trim()) {
+          setStepError('Enter a merchant name.');
+          return false;
+        }
+        const amount = parseFloat(formData.Amount);
+        if (!Number.isFinite(amount) || amount === 0) {
+          setStepError('Enter an amount greater than $0.');
+          return false;
+        }
+        if (!formData.Date) {
+          setStepError('Pick a date.');
+          return false;
+        }
+      }
+
+      if (step === 3 && foreignAmount && !foreignCurrency.trim()) {
+        setStepError('Add a currency code for the foreign amount.');
+        return false;
+      }
+
+      setStepError(null);
+      return true;
+    },
+    [formData, foreignAmount, foreignCurrency]
+  );
+
+  const handleSubmit = async () => {
+    if (!validateStep(1)) return false;
+
     setIsSubmitting(true);
     setSubmitError(null);
 
@@ -86,14 +183,6 @@ const AddTransaction = () => {
     }
 
     const amount = parseFloat(formData.Amount);
-    if (!Number.isFinite(amount) || amount === 0) {
-      setIsSubmitting(false);
-      const msg = 'Enter an amount greater than $0.';
-      setSubmitError(msg);
-      toast.error('Invalid amount', { description: msg });
-      return;
-    }
-
     const signedAmount = isRefund ? -Math.abs(amount) : Math.abs(amount);
 
     const payload = {
@@ -115,7 +204,7 @@ const AddTransaction = () => {
       const msg = getErrorCopy({ status, code, error });
       setSubmitError(msg);
       toast.error('Save failed', { description: msg });
-      return;
+      return false;
     }
 
     const saved = data?.transaction ?? payload;
@@ -130,6 +219,7 @@ const AddTransaction = () => {
       setIsSuccess(false);
       resetForm();
     }, SUCCESS_RESET_MS);
+    return true;
   };
 
   if (!config && loading) return <LoadingScreen label="Preparing form" />;
@@ -161,47 +251,108 @@ const AddTransaction = () => {
         />
       )}
 
-      <motion.div className="card form-card glass-panel" variants={fadeUp}>
+      <motion.div variants={fadeUp}>
         <AnimatePresence mode="wait">
           {isSuccess ? (
-            <motion.div key="ok" className="success-panel" {...scaleIn}>
+            <motion.div key="ok" className="card form-card glass-panel success-panel" {...scaleIn}>
               <CheckCircle size={56} className="success-icon" strokeWidth={1.5} />
               <h2 className="page-title" style={{ fontSize: '1.5rem' }}>Saved</h2>
               <p className="page-subtitle">Your transaction is in the ledger.</p>
             </motion.div>
           ) : (
-            <motion.form key="form" onSubmit={handleSubmit} {...scaleIn}>
+            <motion.div key="stepper" {...scaleIn}>
               <AnimatePresence>
-                {submitError && (
+                {(submitError || stepError) && (
                   <motion.div
                     className="inline-error"
+                    style={{ marginBottom: 16 }}
                     initial={{ opacity: 0, y: -6 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
                     role="alert"
                   >
-                    {submitError}
+                    {submitError || stepError}
                   </motion.div>
                 )}
               </AnimatePresence>
-              <TransactionForm
-                formData={formData}
-                onChange={handleChange}
-                onFileChange={handleFileChange}
-                receiptFile={receiptFile}
-                config={config}
-                showRefund
-                showForeign
-                isRefund={isRefund}
-                onRefundToggle={setIsRefund}
-                foreignAmount={foreignAmount}
-                foreignCurrency={foreignCurrency}
-                onForeignChange={handleForeignChange}
-              />
-              <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={isSubmitting}>
-                {isSubmitting ? 'Saving...' : <>Save transaction <ArrowRight size={18} /></>}
-              </button>
-            </motion.form>
+
+              <Stepper
+                key={formKey}
+                initialStep={1}
+                onBeforeNext={validateStep}
+                onFinalStepCompleted={handleSubmit}
+                backButtonText="Back"
+                nextButtonText="Continue"
+                completeButtonText={isSubmitting ? 'Saving…' : 'Save transaction'}
+                nextButtonProps={{ disabled: isSubmitting }}
+                backButtonProps={{ disabled: isSubmitting }}
+              >
+                <Step>
+                  <div className="step-heading">
+                    <h2>What did you spend?</h2>
+                    <p>Merchant, amount, and date for this purchase.</p>
+                  </div>
+                  <TransactionForm
+                    step={1}
+                    formData={formData}
+                    onChange={handleChange}
+                    config={config}
+                    showRefund
+                    isRefund={isRefund}
+                    onRefundToggle={setIsRefund}
+                    showReceipt={false}
+                  />
+                </Step>
+
+                <Step>
+                  <div className="step-heading">
+                    <h2>How should we categorize it?</h2>
+                    <p>Pick a category and payment method.</p>
+                  </div>
+                  <TransactionForm
+                    step={2}
+                    formData={formData}
+                    onChange={handleChange}
+                    config={config}
+                    showReceipt={false}
+                  />
+                </Step>
+
+                <Step>
+                  <div className="step-heading">
+                    <h2>Anything else?</h2>
+                    <p>Foreign currency, notes, and receipt are optional.</p>
+                  </div>
+                  <TransactionForm
+                    step={3}
+                    formData={formData}
+                    onChange={handleChange}
+                    onFileChange={handleFileChange}
+                    receiptFile={receiptFile}
+                    config={config}
+                    showForeign
+                    foreignAmount={foreignAmount}
+                    foreignCurrency={foreignCurrency}
+                    onForeignChange={handleForeignChange}
+                  />
+                </Step>
+
+                <Step>
+                  <div className="step-heading">
+                    <h2>Review & save</h2>
+                    <p>Confirm the details before adding to your ledger.</p>
+                  </div>
+                  <TransactionReview
+                    formData={formData}
+                    config={config}
+                    isRefund={isRefund}
+                    foreignAmount={foreignAmount}
+                    foreignCurrency={foreignCurrency}
+                    receiptFile={receiptFile}
+                  />
+                </Step>
+              </Stepper>
+            </motion.div>
           )}
         </AnimatePresence>
       </motion.div>

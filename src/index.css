@@ -41,8 +41,7 @@
   --chart-5: #d4922a;
   --chart-6: #64748b;
 
-  --header-h: 72px;
-  --mobile-nav-h: 76px;
+  --menu-header-h: 80px;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -127,6 +126,21 @@ textarea {
   overflow: hidden;
 }
 
+.ambient-particles {
+  opacity: 0.55;
+}
+
+[data-theme='light'] .ambient-particles {
+  opacity: 0.4;
+}
+
+.ambient-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 90% 70% at 50% 40%, transparent 30%, var(--bg) 100%);
+  opacity: 0.85;
+}
+
 .ambient-orb {
   position: absolute;
   border-radius: 50%;
@@ -176,14 +190,8 @@ textarea {
   z-index: 1;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 20px 24px calc(var(--mobile-nav-h) + 24px);
+  padding: calc(var(--menu-header-h) + 8px) 24px 48px;
   min-height: 100dvh;
-}
-
-@media (min-width: 900px) {
-  .app-container {
-    padding-bottom: 48px;
-  }
 }
 
 .app-header {
@@ -1195,7 +1203,7 @@ textarea {
 /* Toast viewport */
 .toast-viewport {
   position: fixed;
-  bottom: calc(var(--mobile-nav-h) + 16px);
+  bottom: 24px;
   right: 16px;
   left: 16px;
   z-index: 1000;
@@ -1358,7 +1366,7 @@ textarea {
 /* Pull to refresh */
 .ptr-indicator {
   position: fixed;
-  top: calc(var(--header-h) + 8px);
+  top: calc(var(--menu-header-h) + 8px);
   left: 0;
   right: 0;
   z-index: 40;
