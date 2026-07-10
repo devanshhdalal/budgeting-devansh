@@ -28,6 +28,8 @@ import { stagger, fadeUp } from '@/motion/presets';
 import LoadingScreen from '@/components/layout/LoadingScreen';
 import AnimatedNumber from '@/components/ui/AnimatedNumber';
 import PageError from '@/components/ui/PageError';
+import EmptyState from '@/components/ui/EmptyState';
+import { ILLUSTRATIONS } from '@/config/illustrations';
 import { resolveBillingRange, resolveBillingPeriod, resolvePreviousBillingPeriod } from '@shared/billingCycle';
 import { formatDisplayDate } from '@/utils/date';
 import { getPageErrorTitle, getPageErrorVariant } from '@/utils/apiErrors';
@@ -564,11 +566,35 @@ const Dashboard = () => {
           {isInitialSync ? (
             <TransactionListSkeleton />
           ) : filters.filteredTransactions.length === 0 ? (
-            <p className="empty-state">
-              {transactions.length === 0
-                ? 'No transactions yet. Add one to get started.'
-                : 'No transactions match these filters.'}
-            </p>
+            <EmptyState
+              image={ILLUSTRATIONS.emptyTransactions}
+              imageAlt=""
+              title={
+                transactions.length === 0
+                  ? 'No transactions yet'
+                  : 'No transactions match these filters'
+              }
+            >
+              {transactions.length === 0 ? (
+                <Link to="/add" className="inline-link">
+                  Add your first transaction
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-ghost"
+                  onClick={() => {
+                    filters.setSearchQuery('');
+                    filters.setSelectedCategory('All');
+                    filters.setSelectedCard('All');
+                    filters.setNeedsReviewOnly(false);
+                    filters.clearDateRange();
+                  }}
+                >
+                  Clear filters
+                </button>
+              )}
+            </EmptyState>
           ) : (
             <div className="transaction-list">
               {filters.filteredTransactions.slice(0, MAX_VISIBLE_TRANSACTIONS).map((t, i) => (
