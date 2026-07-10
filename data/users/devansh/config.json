@@ -226,13 +226,6 @@
       "renewalDate": "2026-08-10",
       "card": "Platinum Card",
       "notes": "Included with the Platinum Card"
-    },
-    {
-      "id": "sub-5ef681db-b60a-4302-82ff-2b01db1c6e33",
-      "name": "SaucePlus",
-      "amount": 9.89,
-      "renewalDate": "2026-06-01",
-      "card": "Scene+ Visa"
     }
   ]
 }
