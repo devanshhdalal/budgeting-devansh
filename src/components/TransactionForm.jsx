@@ -1,5 +1,6 @@
 import { Upload, Image as ImageIcon, CreditCard } from 'lucide-react';
 import DateField from './DateField';
+import CardImage from './ui/CardImage';
 import { getCardNetwork } from '../config/cardNetworks';
 import { NetworkBadge } from './settings/PaymentCardTile';
 
@@ -95,8 +96,10 @@ const TransactionForm = ({
                 className={`card-picker-item ${!formData.Card ? 'selected' : ''}`}
                 onClick={() => onChange({ target: { name: 'Card', value: '' } })}
               >
-                <div className="card-picker-thumb card-picker-thumb-empty">
-                  <CreditCard size={20} />
+                <div className="card-picker-visual">
+                  <div className="card-media card-media-sm card-media-placeholder card-picker-thumb-empty">
+                    <CreditCard size={20} />
+                  </div>
                 </div>
                 <span className="card-picker-label">None</span>
               </button>
@@ -110,14 +113,12 @@ const TransactionForm = ({
                     key={card}
                     role="option"
                     aria-selected={selected}
-                    className={`card-picker-item ${selected ? 'selected' : ''} ${network ? `network-${network}` : ''}`}
+                    className={`card-picker-item ${selected ? 'selected' : ''}`}
                     onClick={() => onChange({ target: { name: 'Card', value: card } })}
                   >
-                    {data?.imageUrl ? (
-                      <img src={data.imageUrl} alt="" className="card-picker-thumb" />
-                    ) : (
-                      <div className={`card-picker-thumb card-picker-thumb-placeholder network-${network}`} />
-                    )}
+                    <div className="card-picker-visual">
+                      <CardImage src={data?.imageUrl} network={network} alt={card} size="sm" />
+                    </div>
                     <span className="card-picker-label">{card}</span>
                     {network && <NetworkBadge network={network} className="card-picker-network" />}
                   </button>

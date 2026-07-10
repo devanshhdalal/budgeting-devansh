@@ -1,6 +1,4 @@
 import fs from 'fs';
-import path from 'path';
-import { dataDir } from '../config.js';
 import { DEFAULT_USER_ID } from '../config/users.js';
 import { storageError } from '../errors.js';
 import { readJsonFile, writeJsonFile } from './fileStore.js';
@@ -8,20 +6,11 @@ import { userPaths } from './paths.js';
 
 const caches = new Map();
 
-const seedConfigFromLegacy = (userId, paths) => {
-  const legacy = path.join(dataDir, 'config.json');
-  if (fs.existsSync(legacy) && !fs.existsSync(paths.configFile)) {
-    fs.mkdirSync(paths.userDir, { recursive: true });
-    fs.copyFileSync(legacy, paths.configFile);
-  }
-};
-
 export const getConfig = async (userId) => {
   if (caches.has(userId)) return caches.get(userId);
 
   const paths = userPaths(userId);
   fs.mkdirSync(paths.userDir, { recursive: true });
-  seedConfigFromLegacy(userId, paths);
 
   let config = await readJsonFile(paths.configFile, paths.githubConfig);
 

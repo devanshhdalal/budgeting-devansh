@@ -28,6 +28,11 @@ const writeLocalFile = (localPath, content) => {
   fs.writeFileSync(localPath, content, 'utf8');
 };
 
+const writeLocalBuffer = (localPath, buffer) => {
+  fs.mkdirSync(path.dirname(localPath), { recursive: true });
+  fs.writeFileSync(localPath, buffer);
+};
+
 const parseGitHubJson = (fileData) => {
   if (!fileData?.content) return null;
   try {
@@ -60,6 +65,59 @@ const assertNotDestructiveShrink = (existingContent, newData, githubPath) => {
   }
 };
 
+const putGitHubWithRetry = async (githubPath, contentBase64, message, sha) => {
+  let putResult = await putGitHubFile(githubPath, contentBase64, message, sha);
+  if (!putResult.ok && putResult.status === 409) {
+    const current = await fetchGitHubFile(githubPath);
+    if (current.ok) {
+      putResult = await putGitHubFile(
+        githubPath,
+        contentBase64,
+        message,
+        current.data.sha
+      );
+    }
+  }
+  return putResult;
+};
+
+const pushJsonToGitHub = async (githubPath, data, message) => {
+  const content = serializeJson(data);
+  const current = await fetchGitHubFile(githubPath);
+
+  if (!current.ok && !current.notFound) {
+    return { ok: false, error: `GitHub unavailable: ${current.error}` };
+  }
+
+  const sha = current.ok ? current.data.sha : null;
+
+  if (current.ok) {
+    try {
+      assertNotDestructiveShrink(current.data.content, data, githubPath);
+    } catch (e) {
+      return { ok: false, error: e.message, code: e.code };
+    }
+  }
+
+  const putResult = await putGitHubWithRetry(
+    githubPath,
+    encodeGitHubContent(content),
+    message,
+    sha
+  );
+
+  if (!putResult.ok) {
+    return { ok: false, error: `GitHub write failed: ${putResult.error}` };
+  }
+
+  console.log(`[storage] GitHub saved ${githubPath}`);
+  return { ok: true, content };
+};
+
+/**
+ * Read JSON — GitHub is authoritative when configured.
+ * If GitHub is missing a file but local cache exists, recover by pushing local → GitHub.
+ */
 export const readJsonFile = async (localPath, githubPath) => {
   if (!useGitHub) {
     return readLocalJson(localPath);
@@ -76,42 +134,30 @@ export const readJsonFile = async (localPath, githubPath) => {
   }
 
   if (result.notFound) {
-    return readLocalJson(localPath);
+    const local = readLocalJson(localPath);
+    if (local !== null) {
+      console.warn(`[storage] Recovering missing GitHub file from local cache: ${githubPath}`);
+      const recovered = await writeJsonFile(localPath, githubPath, local, `Recover ${githubPath} from local`);
+      if (!recovered.ok) {
+        throw storageError(`Failed to recover ${githubPath} to GitHub: ${recovered.error}`);
+      }
+    }
+    return local;
   }
 
   throw storageError(`GitHub read failed for ${githubPath}: ${result.error}`);
 };
 
+/** Write JSON — GitHub first, then local cache. */
 export const writeJsonFile = async (localPath, githubPath, data, message) => {
-  const content = serializeJson(data);
+  let content = serializeJson(data);
 
   if (useGitHub) {
-    const current = await fetchGitHubFile(githubPath);
-
-    if (!current.ok && !current.notFound) {
-      return { ok: false, error: `GitHub unavailable: ${current.error}` };
+    const githubResult = await pushJsonToGitHub(githubPath, data, message);
+    if (!githubResult.ok) {
+      return githubResult;
     }
-
-    const sha = current.ok ? current.data.sha : null;
-
-    if (current.ok) {
-      try {
-        assertNotDestructiveShrink(current.data.content, data, githubPath);
-      } catch (e) {
-        return { ok: false, error: e.message, code: e.code };
-      }
-    }
-
-    const putResult = await putGitHubFile(
-      githubPath,
-      encodeGitHubContent(content),
-      message,
-      sha
-    );
-
-    if (!putResult.ok) {
-      return { ok: false, error: `GitHub write failed: ${putResult.error}` };
-    }
+    content = githubResult.content;
   }
 
   try {
@@ -119,10 +165,40 @@ export const writeJsonFile = async (localPath, githubPath, data, message) => {
     return { ok: true };
   } catch (e) {
     if (useGitHub) {
-      console.warn(`GitHub saved but local cache failed for ${localPath}:`, e.message);
+      console.warn(`[storage] GitHub saved but local cache failed for ${localPath}:`, e.message);
       return { ok: true, warning: 'local_cache_failed' };
     }
     console.error(`Failed to save ${localPath}`, e);
+    return { ok: false, error: `Local write failed: ${e.message}` };
+  }
+};
+
+/** Write binary assets (receipts, card images) — GitHub first, then local cache. */
+export const writeBinaryFile = async (localPath, githubPath, buffer, message) => {
+  const contentBase64 = buffer.toString('base64');
+
+  if (useGitHub) {
+    const current = await fetchGitHubFile(githubPath);
+    if (!current.ok && !current.notFound) {
+      return { ok: false, error: `GitHub unavailable: ${current.error}` };
+    }
+
+    const sha = current.ok ? current.data.sha : null;
+    const putResult = await putGitHubWithRetry(githubPath, contentBase64, message, sha);
+    if (!putResult.ok) {
+      return { ok: false, error: `GitHub write failed: ${putResult.error}` };
+    }
+    console.log(`[storage] GitHub saved ${githubPath}`);
+  }
+
+  try {
+    writeLocalBuffer(localPath, buffer);
+    return { ok: true };
+  } catch (e) {
+    if (useGitHub) {
+      console.warn(`[storage] GitHub saved but local cache failed for ${localPath}:`, e.message);
+      return { ok: true, warning: 'local_cache_failed' };
+    }
     return { ok: false, error: `Local write failed: ${e.message}` };
   }
 };

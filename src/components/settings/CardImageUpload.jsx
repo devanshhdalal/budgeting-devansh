@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Camera, Image as ImageIcon } from 'lucide-react';
+import CardImage from '../ui/CardImage';
+import { CARD_IMAGE_HEIGHT, CARD_IMAGE_WIDTH } from '../../config/cardImage';
 
-const CardImageUpload = ({ imageUrl, previewUrl, onFileSelect, onClear, required = false }) => {
+const CardImageUpload = ({ imageUrl, previewUrl, onFileSelect, onClear, required = false, network = '' }) => {
   const cameraInputRef = useRef(null);
   const libraryInputRef = useRef(null);
   const [localPreview, setLocalPreview] = useState(null);
@@ -34,21 +36,25 @@ const CardImageUpload = ({ imageUrl, previewUrl, onFileSelect, onClear, required
       <label className="form-label">
         Card photo {required && <span className="form-label-required">*</span>}
       </label>
-      <p className="card-image-hint">Take a photo or upload an image of the physical card for display.</p>
+      <p className="card-image-hint">
+        Upload a photo of the physical card. Recommended size: {CARD_IMAGE_WIDTH}×{CARD_IMAGE_HEIGHT} px.
+      </p>
       {displayUrl ? (
         <div className="card-image-preview-wrap">
-          <img src={displayUrl} alt="Card preview" className="card-image-preview" />
-          <button type="button" className="card-image-change-btn" onClick={() => libraryInputRef.current?.click()}>
-            Change photo
-          </button>
-          <button type="button" className="card-image-clear-btn" onClick={handleClear}>
-            Remove
-          </button>
+          <CardImage src={displayUrl} network={network} alt="Card preview" size="md" />
+          <div className="card-image-preview-actions">
+            <button type="button" className="card-image-change-btn" onClick={() => libraryInputRef.current?.click()}>
+              Change photo
+            </button>
+            <button type="button" className="card-image-clear-btn" onClick={handleClear}>
+              Remove
+            </button>
+          </div>
         </div>
       ) : (
         <button type="button" className="card-image-dropzone" onClick={() => cameraInputRef.current?.click()}>
           <Camera size={22} />
-          <span>Take photo or upload</span>
+          <span>{CARD_IMAGE_WIDTH}×{CARD_IMAGE_HEIGHT}</span>
         </button>
       )}
       <input

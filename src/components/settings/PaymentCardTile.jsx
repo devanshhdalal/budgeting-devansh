@@ -1,3 +1,4 @@
+import CardImage from '../ui/CardImage';
 import { CARD_NETWORKS, getCardNetwork, getNetworkLabel } from '../../config/cardNetworks';
 
 const NETWORK_CLASS = {
@@ -27,11 +28,9 @@ const PaymentCardTile = ({ name, data, onClick }) => {
       role="button"
       tabIndex={0}
     >
-      {data.imageUrl ? (
-        <img src={data.imageUrl} alt="" className="payment-card-photo" />
-      ) : (
-        <div className="payment-card-photo-placeholder" aria-hidden />
-      )}
+      <div className="payment-card-visual">
+        <CardImage src={data.imageUrl} network={network} alt={name} size="md" />
+      </div>
       <div className="payment-card-body">
         <div className="payment-card-top">
           <NetworkBadge network={network} />

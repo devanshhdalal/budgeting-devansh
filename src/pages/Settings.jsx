@@ -313,6 +313,7 @@ const SettingsForm = ({ initialConfig, commitConfig }) => {
                   <CardImageUpload
                     imageUrl={editingCard.imageUrl}
                     previewUrl={pendingPreviewUrl}
+                    network={editingCard.network}
                     required={isAddingNew}
                     onFileSelect={(file, url) => {
                       setPendingImageFile(file);

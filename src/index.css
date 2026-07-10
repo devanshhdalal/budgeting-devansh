@@ -44,6 +44,9 @@
   --chart-6: #64748b;
 
   --menu-header-h: 80px;
+  --card-img-w: 200px;
+  --card-img-h: 126px;
+  --card-img-ratio: 200 / 126;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -206,192 +209,6 @@ optgroup {
   margin: 0 auto;
   padding: calc(var(--menu-header-h) + 8px) 24px 48px;
   min-height: 100dvh;
-}
-
-.app-header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin: 0 -24px 32px;
-  padding: 14px 24px;
-  background: linear-gradient(180deg, var(--bg) 60%, transparent);
-  backdrop-filter: blur(8px);
-}
-
-@media (min-width: 900px) {
-  .app-header {
-    background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 88%, transparent) 70%, transparent);
-  }
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.brand-mark {
-  position: relative;
-  width: 42px;
-  height: 42px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  box-shadow: 0 8px 24px var(--accent-glow), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  overflow: hidden;
-  cursor: pointer;
-}
-
-.brand-mark::before {
-  content: '';
-  position: absolute;
-  inset: -50%;
-  background: conic-gradient(from 120deg, transparent, rgba(255, 255, 255, 0.4), transparent 40%);
-  animation: brand-shimmer 6s linear infinite;
-}
-
-.brand-mark-inner {
-  position: absolute;
-  inset: 8px;
-  border-radius: 9px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent 60%);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-@keyframes brand-shimmer {
-  to { transform: rotate(360deg); }
-}
-
-.brand-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.brand-name {
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
-}
-
-.brand-tagline {
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--text-faint);
-}
-
-.header-tools {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.header-nav-desktop {
-  display: none;
-}
-
-@media (min-width: 900px) {
-  .header-nav-desktop {
-    display: block;
-  }
-  .mobile-nav {
-    display: none !important;
-  }
-}
-
-/* Nav */
-.main-nav {
-  display: flex;
-  gap: 4px;
-  padding: 4px;
-  border-radius: var(--radius-full);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  backdrop-filter: blur(16px);
-}
-
-.nav-pill {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border-radius: var(--radius-full);
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  transition: color 0.2s var(--ease-out), background 0.2s var(--ease-out), transform 0.2s var(--ease-out);
-}
-
-.nav-pill:hover {
-  color: var(--text);
-  background: var(--border);
-}
-
-.nav-pill.active {
-  color: var(--text);
-  background: var(--surface-solid);
-  box-shadow: var(--shadow-sm);
-}
-
-.nav-pill.active svg {
-  color: var(--accent);
-}
-
-.mobile-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  backdrop-filter: blur(20px);
-}
-
-.mobile-nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.65rem;
-  font-weight: 600;
-  color: var(--text-faint);
-  padding: 8px 16px;
-  border-radius: var(--radius-md);
-  transition: color 0.2s;
-}
-
-.mobile-nav-item.active {
-  color: var(--accent);
-}
-
-.mobile-nav-add {
-  width: 52px;
-  height: 52px;
-  margin-top: -28px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  color: white !important;
-  box-shadow: 0 8px 28px var(--accent-glow);
-  justify-content: center;
-}
-
-.mobile-nav-add span {
-  display: none;
 }
 
 /* User switcher */
@@ -1852,15 +1669,6 @@ optgroup {
   margin-top: 4px;
 }
 
-.badge-active {
-  font-size: 0.6rem;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: var(--radius-full);
-  background: var(--success-soft);
-  color: var(--success);
-}
-
 .settings-grid {
   display: flex;
   flex-direction: column;
@@ -1874,8 +1682,8 @@ optgroup {
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
 }
 
 .payment-card {
@@ -1886,42 +1694,24 @@ optgroup {
   position: relative;
   overflow: hidden;
   transition: border-color 0.2s, transform 0.2s;
-  min-height: 140px;
   display: flex;
   flex-direction: column;
 }
 
-.payment-card-photo {
-  width: 100%;
-  height: 88px;
-  object-fit: cover;
-  display: block;
-}
-
-.payment-card-photo-placeholder {
-  width: 100%;
-  height: 88px;
-  background: linear-gradient(135deg, var(--border-strong), var(--border));
-}
-
-.payment-card.network-amex .payment-card-photo-placeholder {
-  background: linear-gradient(135deg, #006fcf, #004a8f);
-}
-
-.payment-card.network-mastercard .payment-card-photo-placeholder {
-  background: linear-gradient(135deg, #eb001b, #f79e1b);
-}
-
-.payment-card.network-visa .payment-card-photo-placeholder {
-  background: linear-gradient(135deg, #1a1f71, #2e4a9e);
+.payment-card-visual {
+  padding: 14px 14px 0;
+  display: flex;
+  justify-content: center;
 }
 
 .payment-card-body {
-  padding: 12px 14px 14px;
+  padding: 10px 14px 14px;
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  align-items: center;
+  text-align: center;
 }
 
 .payment-card-top {
@@ -1933,8 +1723,80 @@ optgroup {
   transform: translateY(-2px);
 }
 
-.payment-card-accent {
-  display: none;
+/* Card image — standard 200×126 credit-card frame */
+.card-media {
+  position: relative;
+  width: 100%;
+  max-width: var(--card-media-w, var(--card-img-w));
+  aspect-ratio: var(--card-img-ratio);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #0a0a0c;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    0 6px 16px rgba(0, 0, 0, 0.18);
+  flex-shrink: 0;
+}
+
+.card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  background: #0a0a0c;
+}
+
+.card-media-md {
+  --card-media-w: 200px;
+}
+
+.card-media-sm {
+  --card-media-w: 120px;
+}
+
+.card-media-xs {
+  --card-media-w: 96px;
+}
+
+.card-media-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--border-strong), var(--border));
+}
+
+.card-media-placeholder.network-amex {
+  background: linear-gradient(135deg, #006fcf, #004a8f);
+}
+
+.card-media-placeholder.network-mastercard {
+  background: linear-gradient(135deg, #eb001b, #f79e1b);
+}
+
+.card-media-placeholder.network-visa {
+  background: linear-gradient(135deg, #1a1f71, #2e4a9e);
+}
+
+.card-media-network-label {
+  font-size: 0.55rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.85);
+  text-align: center;
+  padding: 0 8px;
+}
+
+.card-picker-thumb-empty {
+  color: var(--text-faint);
+  background: var(--border) !important;
+  border-color: var(--border-strong);
+}
+
+.card-picker-thumb-empty svg {
+  opacity: 0.7;
 }
 
 /* Card networks */
@@ -2041,11 +1903,14 @@ optgroup {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 140px;
+  width: var(--card-img-w);
+  max-width: 100%;
+  aspect-ratio: var(--card-img-ratio);
   border: 2px dashed var(--border-strong);
-  border-radius: var(--radius-md);
+  border-radius: 10px;
   cursor: pointer;
   color: var(--text-muted);
+  background: var(--bg-elevated);
   transition: border-color 0.2s, background 0.2s;
 }
 
@@ -2058,15 +1923,14 @@ optgroup {
 .card-image-preview-wrap {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  align-items: flex-start;
+  gap: 12px;
 }
 
-.card-image-preview {
-  width: 100%;
-  max-height: 180px;
-  object-fit: cover;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border);
+.card-image-preview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .card-image-change-btn,
@@ -2077,7 +1941,6 @@ optgroup {
   font-weight: 600;
   cursor: pointer;
   padding: 0;
-  text-align: left;
 }
 
 .card-image-change-btn {
@@ -2105,16 +1968,16 @@ optgroup {
 
 .card-picker-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
+  gap: 12px;
 }
 
 .card-picker-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 10px 8px;
+  gap: 8px;
+  padding: 12px 8px;
   border-radius: var(--radius-md);
   border: 2px solid var(--border);
   background: var(--bg-elevated);
@@ -2128,35 +1991,10 @@ optgroup {
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
-.card-picker-thumb {
-  width: 100%;
-  height: 52px;
-  object-fit: cover;
-  border-radius: var(--radius-sm);
-}
-
-.card-picker-thumb-empty,
-.card-picker-thumb-placeholder {
-  width: 100%;
-  height: 52px;
-  border-radius: var(--radius-sm);
+.card-picker-visual {
   display: flex;
-  align-items: center;
   justify-content: center;
-  background: var(--border);
-  color: var(--text-faint);
-}
-
-.card-picker-thumb-placeholder.network-amex {
-  background: linear-gradient(135deg, #006fcf, #004a8f);
-}
-
-.card-picker-thumb-placeholder.network-mastercard {
-  background: linear-gradient(135deg, #eb001b, #f79e1b);
-}
-
-.card-picker-thumb-placeholder.network-visa {
-  background: linear-gradient(135deg, #1a1f71, #2e4a9e);
+  width: 100%;
 }
 
 .card-picker-label {
@@ -2164,6 +2002,7 @@ optgroup {
   font-weight: 600;
   line-height: 1.2;
   color: var(--text);
+  word-break: break-word;
 }
 
 .card-picker-network {
@@ -2601,15 +2440,6 @@ optgroup {
 }
 
 @media (max-width: 768px) {
-  .app-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .header-tools {
-    justify-content: space-between;
-  }
-
   .modal-content {
     max-height: 100dvh;
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;

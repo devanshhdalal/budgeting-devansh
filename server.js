@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
-import { PORT, dataDir, distDir, useGitHub } from './server/config.js';
+import { PORT, dataDir, distDir, useGitHub, GITHUB_OWNER, GITHUB_REPO, GITHUB_BRANCH } from './server/config.js';
 import { USERS } from './server/config/users.js';
 import { requireUser } from './server/middleware/auth.js';
 import { errorHandler } from './server/middleware/errorHandler.js';
@@ -25,15 +25,21 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api', requireUser);
 
 console.log(`Storage Mode: ${useGitHub ? 'GitHub' : 'Local Disk'}`);
+if (useGitHub) {
+  console.log(`GitHub sync: ${GITHUB_OWNER}/${GITHUB_REPO}@${GITHUB_BRANCH}`);
+}
 console.log(`Users: ${USERS.map((u) => u.name).join(', ')}`);
 
 for (const { id } of USERS) {
   app.use(`/images/${id}`, express.static(path.join(dataDir, 'users', id, 'images')));
 }
-app.use('/images', express.static(path.join(dataDir, 'images')));
 
 app.get('/health', (_req, res) => {
-  res.json({ ok: true });
+  res.json({
+    ok: true,
+    storage: useGitHub ? 'github' : 'local',
+    ...(useGitHub && { repo: `${GITHUB_OWNER}/${GITHUB_REPO}`, branch: GITHUB_BRANCH }),
+  });
 });
 
 app.use('/api/config', configRouter);

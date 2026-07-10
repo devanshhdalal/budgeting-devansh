@@ -1,12 +1,11 @@
 import { Router } from 'express';
-import fs from 'fs';
 import path from 'path';
 import multer from 'multer';
 import { GITHUB_OWNER, GITHUB_REPO, GITHUB_BRANCH, useGitHub } from '../config.js';
-import { putGitHubFile } from '../github.js';
 import { normalizeDate } from '../utils/date.js';
 import { validation, storageError } from '../errors.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
+import { writeBinaryFile } from '../storage/fileStore.js';
 import { userPaths } from '../storage/paths.js';
 
 const router = Router();
@@ -17,12 +16,6 @@ const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: MAX_FILE_SIZE },
 });
-
-const writeLocalImage = (paths, subfolder, filename, buffer) => {
-  const imgDir = path.join(paths.imagesDir, subfolder);
-  fs.mkdirSync(imgDir, { recursive: true });
-  fs.writeFileSync(path.join(imgDir, filename), buffer);
-};
 
 const extFromMime = (mime, originalName) => {
   if (mime === 'image/png') return '.png';
@@ -61,38 +54,29 @@ router.post(
     const ext = extFromMime(file.mimetype, file.originalname);
     const filename = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
     const relPath = `${paths.githubImagesPrefix}/${subfolder}/${filename}`;
+    const localPath = path.join(paths.imagesDir, subfolder, filename);
     const localUrl = `/images/${req.userId}/${subfolder}/${filename}`;
 
-    try {
-      writeLocalImage(paths, subfolder, filename, file.buffer);
-    } catch (e) {
-      throw storageError(`Failed to save ${isCard ? 'card image' : 'receipt'} locally`, { cause: e });
+    const writeResult = await writeBinaryFile(
+      localPath,
+      relPath,
+      file.buffer,
+      isCard ? `Upload card image ${filename}` : `Upload receipt ${filename}`
+    );
+
+    if (!writeResult.ok) {
+      throw storageError(writeResult.error || 'Failed to save image');
     }
 
-    if (useGitHub) {
-      const base64Img = file.buffer.toString('base64');
-      const putResult = await putGitHubFile(
-        relPath,
-        base64Img,
-        isCard ? `Upload card image ${filename}` : `Upload receipt ${filename}`
-      );
-      if (!putResult.ok) {
-        throw storageError(putResult.error || 'Failed to upload to GitHub');
-      }
-      const rawUrl = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${relPath}`;
-      return res.json({
-        success: true,
-        receiptUrl: isCard ? undefined : rawUrl,
-        imageUrl: isCard ? rawUrl : undefined,
-        url: rawUrl,
-      });
-    }
+    const url = useGitHub
+      ? `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/${relPath}`
+      : localUrl;
 
     res.json({
       success: true,
-      receiptUrl: isCard ? undefined : localUrl,
-      imageUrl: isCard ? localUrl : undefined,
-      url: localUrl,
+      receiptUrl: isCard ? undefined : url,
+      imageUrl: isCard ? url : undefined,
+      url,
     });
   })
 );
