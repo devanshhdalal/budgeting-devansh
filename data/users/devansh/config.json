@@ -226,13 +226,6 @@
       "renewalDate": "2026-08-10",
       "card": "Platinum Card",
       "notes": "Included with the Platinum Card"
-    },
-    {
-      "id": "sub-3f9b0eae-fb94-44c4-8f32-c6ee98ace378",
-      "name": "Tidal",
-      "amount": 6.31,
-      "renewalDate": "2026-06-14",
-      "card": "AMEX Cobalt"
     }
   ]
 }
