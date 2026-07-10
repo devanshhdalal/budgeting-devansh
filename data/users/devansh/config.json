@@ -19,7 +19,8 @@
         "Food": 1,
         "Base": 1
       },
-      "network": "visa"
+      "network": "visa",
+      "imageUrl": "https://raw.githubusercontent.com/devanshhdalal/budgeting-devansh/main/data/users/devansh/images/cards/1783718565069-519603354.png"
     },
     "Neo Mastercard": {
       "currency": "Cashback",
@@ -39,7 +40,8 @@
     }
   },
   "CARD_IDENTIFIERS": {
-    "1007": "AMEX Cobalt"
+    "1007": "AMEX Cobalt",
+    "5019": "Scene+ Visa"
   },
   "BILLING_CYCLES": {
     "AMEX Cobalt": {
