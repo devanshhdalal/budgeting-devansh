@@ -144,5 +144,12 @@
     "Subscriptions": 30,
     "Travel": 200
   },
-  "SUBSCRIPTIONS": []
+  "SUBSCRIPTIONS": [
+    {
+      "id": "sub-d689dff1-6cd3-4776-b6fe-938130c0f20e",
+      "name": "Sauce Plus",
+      "amount": 10,
+      "renewalDate": "2026-07-10"
+    }
+  ]
 }
