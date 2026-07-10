@@ -85,7 +85,12 @@
       }
     },
     "Neo": {
-      "type": "monthly"
+      "type": "statement",
+      "anchor": {
+        "statementStart": "",
+        "statementEnd": "",
+        "dueDate": ""
+      }
     },
     "Scene+": {
       "type": "monthly"
