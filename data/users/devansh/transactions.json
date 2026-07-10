@@ -88,12 +88,18 @@
   {
     "Date": "2026-06-08",
     "Month": null,
-    "Merchant": "Bounce - Bounce.com     San Francisco",
+    "Merchant": "Bounce Ba",
     "Amount": 4.75,
     "Category": "Other",
     "Card": "AMEX Cobalt",
-    "Notes": null,
-    "id": "963aba39-1f57-4241-81af-9d97bf0d99b5"
+    "Notes": "",
+    "id": "963aba39-1f57-4241-81af-9d97bf0d99b5",
+    "ReceiptUrl": "",
+    "IsRefund": false,
+    "Source": "manual",
+    "IsTest": false,
+    "Currency": "CAD",
+    "CreatedAt": "2026-07-10T23:03:27.761Z"
   },
   {
     "Date": "2026-06-08",
