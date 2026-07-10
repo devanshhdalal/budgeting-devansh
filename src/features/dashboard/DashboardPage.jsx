@@ -28,7 +28,7 @@ import { stagger, fadeUp } from '@/motion/presets';
 import LoadingScreen from '@/components/layout/LoadingScreen';
 import AnimatedNumber from '@/components/ui/AnimatedNumber';
 import PageError from '@/components/ui/PageError';
-import { resolveBillingRange, resolveBillingPeriod } from '@shared/billingCycle';
+import { resolveBillingRange, resolveBillingPeriod, resolvePreviousBillingPeriod } from '@shared/billingCycle';
 import { formatDisplayDate } from '@/utils/date';
 import { getPageErrorTitle, getPageErrorVariant } from '@/utils/apiErrors';
 import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
@@ -388,10 +388,20 @@ const Dashboard = () => {
       return null;
     }
     const cycle = appConfig.BILLING_CYCLES[filters.selectedCard];
-    const period = resolveBillingPeriod(filters.selectedCard, new Date(), appConfig.BILLING_CYCLES);
+    const today = new Date();
+    const todayIso = todayIsoDate();
+    const period = resolveBillingPeriod(filters.selectedCard, today, appConfig.BILLING_CYCLES);
+    const prevPeriod = resolvePreviousBillingPeriod(
+      filters.selectedCard,
+      today,
+      appConfig.BILLING_CYCLES
+    );
+    const paymentDueToday = cycle.type === 'statement' && prevPeriod?.due === todayIso;
     return {
       period,
       isStatement: cycle.type === 'statement',
+      paymentDueToday,
+      paymentDueStatementEnd: paymentDueToday ? prevPeriod.end : null,
     };
   }, [filters.selectedCard, appConfig]);
 
@@ -496,13 +506,21 @@ const Dashboard = () => {
       </motion.div>
 
       {billingContext && (
-        <motion.p className="billing-context-banner" variants={fadeUp}>
-          {billingContext.isStatement ? 'Statement' : 'Billing period'}:{' '}
-          {formatDisplayDate(billingContext.period.start)} – {formatDisplayDate(billingContext.period.end)}
-          {billingContext.period.due && (
-            <> · Due {formatDisplayDate(billingContext.period.due)}</>
+        <motion.div className="billing-context-banner" variants={fadeUp}>
+          <p className="billing-context-line">
+            {billingContext.isStatement ? 'Statement' : 'Billing period'}:{' '}
+            {formatDisplayDate(billingContext.period.start)} – {formatDisplayDate(billingContext.period.end)}
+            {billingContext.period.due && (
+              <> · Due {formatDisplayDate(billingContext.period.due)}</>
+            )}
+          </p>
+          {billingContext.paymentDueToday && (
+            <p className="billing-context-due-today">
+              Payment due today for statement ending{' '}
+              {formatDisplayDate(billingContext.paymentDueStatementEnd)}
+            </p>
           )}
-        </motion.p>
+        </motion.div>
       )}
 
       <div className="dashboard-grid">

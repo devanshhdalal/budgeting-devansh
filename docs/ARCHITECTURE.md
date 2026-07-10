@@ -773,6 +773,8 @@ Charts read colors via `useChartColors()` hook (computed from CSS vars).
 2. Step 3 (Billing cycle): calendar month or statement period with anchor dates
 3. `shared/billingCycle.js` projects future periods; partial anchors allowed while editing (validated when complete)
 
+**Anchor vs active period:** You enter one example statement (open, close, due). That anchor defines the repeating rule (close day-of-month and days from close to due). The **active** period is whichever statement contains today—often different from the example you typed. Budget tracking and the dashboard banner use the active period; the card editor preview shows both the example and active today.
+
 ### Add a spending category
 
 1. Settings → Categories → add label + icon (or edit `config.json`)

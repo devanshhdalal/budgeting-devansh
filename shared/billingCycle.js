@@ -175,6 +175,55 @@ export const projectBillingPeriods = (cardName, billingCycles, referenceDate = n
   return periods;
 };
 
+const ordinal = (n) => {
+  const v = n % 100;
+  if (v >= 11 && v <= 13) return `${n}th`;
+  const suffix = { 1: 'st', 2: 'nd', 3: 'rd' }[n % 10] || 'th';
+  return `${n}${suffix}`;
+};
+
+/**
+ * Human-readable rule derived from a one-time anchor statement.
+ * @returns {{ type: 'monthly'|'fixed', closeDay?: number, periodDays?: number, dueOffsetDays: number, label: string }|null}
+ */
+export const describeBillingRule = (anchor) => {
+  if (!anchor?.statementStart || !anchor?.statementEnd || !anchor?.dueDate) return null;
+
+  const periodDays = daysBetween(anchor.statementStart, anchor.statementEnd) + 1;
+  const dueOffsetDays = daysBetween(anchor.statementEnd, anchor.dueDate);
+  const dueLabel = `Due ${dueOffsetDays} day${dueOffsetDays === 1 ? '' : 's'} after close`;
+
+  if (isMonthlyCadence(periodDays)) {
+    const closeDay = parseIsoDate(anchor.statementEnd).getDate();
+    return {
+      type: 'monthly',
+      closeDay,
+      dueOffsetDays,
+      label: `Closes on the ${ordinal(closeDay)} · ${dueLabel}`,
+    };
+  }
+
+  return {
+    type: 'fixed',
+    periodDays,
+    dueOffsetDays,
+    label: `${periodDays}-day periods · ${dueLabel}`,
+  };
+};
+
+/** Billing period immediately before the one containing referenceDate. */
+export const resolvePreviousBillingPeriod = (
+  cardName,
+  referenceDate = new Date(),
+  billingCycles = {}
+) => {
+  const current = resolveBillingPeriod(cardName, referenceDate, billingCycles);
+  if (!current?.start) return null;
+  const prevRef = addDays(current.start, -1);
+  if (!prevRef) return null;
+  return resolveBillingPeriod(cardName, prevRef, billingCycles);
+};
+
 export const validateBillingCycle = (cycle) => {
   if (!cycle || typeof cycle !== 'object') return 'Billing cycle must be an object';
   if (!cycle.type) return null;

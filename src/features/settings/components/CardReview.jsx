@@ -1,7 +1,7 @@
 import CardImage from '@/components/ui/CardImage';
 import { NetworkBadge } from '@/features/settings/components/PaymentCardTile';
 import { getCardNetwork, getNetworkLabel } from '@/config/cardNetworks';
-import { resolveBillingPeriod } from '@shared/billingCycle';
+import { describeBillingRule, resolveBillingPeriod } from '@shared/billingCycle';
 import { formatDisplayDate } from '@/utils/date';
 
 const CardReview = ({ card }) => {
@@ -12,10 +12,11 @@ const CardReview = ({ card }) => {
   const isStatement = cycle.type === 'statement';
   const anchor = cycle.anchor || {};
   const hasFullAnchor = anchor.statementStart && anchor.statementEnd && anchor.dueDate;
-  const preview =
+  const activePreview =
     isStatement && hasFullAnchor
       ? resolveBillingPeriod(name, new Date(), { [name]: cycle })
       : null;
+  const rule = hasFullAnchor ? describeBillingRule(anchor) : null;
 
   const topMultipliers = Object.entries(card.multipliers || {})
     .filter(([, v]) => v !== 0 && v !== 1)
@@ -52,14 +53,23 @@ const CardReview = ({ card }) => {
         <span className="review-label">Currency</span>
         <span className="review-value">{card.currency || '—'}</span>
       </div>
-      <div className="review-row">
+      <div className="review-row review-row-stack">
         <span className="review-label">Billing</span>
         <span className="review-value">
-          {isStatement && hasFullAnchor && preview ? (
-            <>
-              Statement · {formatDisplayDate(preview.start)} – {formatDisplayDate(preview.end)}
-              {preview.due && <> · Due {formatDisplayDate(preview.due)}</>}
-            </>
+          {isStatement && hasFullAnchor && activePreview ? (
+            <span className="billing-review-stack">
+              <span>
+                Example: {formatDisplayDate(anchor.statementStart)} –{' '}
+                {formatDisplayDate(anchor.statementEnd)}
+                {anchor.dueDate && <> · Due {formatDisplayDate(anchor.dueDate)}</>}
+              </span>
+              <span>
+                Active today: {formatDisplayDate(activePreview.start)} –{' '}
+                {formatDisplayDate(activePreview.end)}
+                {activePreview.due && <> · Due {formatDisplayDate(activePreview.due)}</>}
+              </span>
+              {rule && <span className="billing-cycle-preview-rule">{rule.label}</span>}
+            </span>
           ) : (
             'Calendar month'
           )}

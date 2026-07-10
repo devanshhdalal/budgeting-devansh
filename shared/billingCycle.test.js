@@ -2,10 +2,12 @@ import { describe, expect, it } from 'vitest';
 import {
   addDays,
   daysBetween,
+  describeBillingRule,
   parseIsoDate,
   projectBillingPeriods,
   resolveBillingPeriod,
   resolveBillingRange,
+  resolvePreviousBillingPeriod,
   toIsoDate,
   validateBillingCycle,
 } from './billingCycle.js';
@@ -171,5 +173,83 @@ describe('projectBillingPeriods', () => {
     expect(periods[0]).toEqual({ start: '2025-01-01', end: '2025-01-31', due: null });
     expect(periods[1]).toEqual({ start: '2025-02-01', end: '2025-02-28', due: null });
     expect(periods[2]).toEqual({ start: '2025-03-01', end: '2025-03-31', due: null });
+  });
+});
+
+describe('user anchor scenario (May 20 – Jun 19, due Jul 10)', () => {
+  const userCycle = {
+    type: 'statement',
+    anchor: {
+      statementStart: '2026-05-20',
+      statementEnd: '2026-06-19',
+      dueDate: '2026-07-10',
+    },
+  };
+
+  const cycles = { Card: userCycle };
+
+  it('returns anchor period when reference is inside the example statement', () => {
+    const period = resolveBillingPeriod('Card', '2026-06-01', cycles);
+    expect(period).toEqual({
+      start: '2026-05-20',
+      end: '2026-06-19',
+      due: '2026-07-10',
+    });
+  });
+
+  it('returns next period on due day when new statement is already open', () => {
+    const period = resolveBillingPeriod('Card', '2026-07-10', cycles);
+    expect(period).toEqual({
+      start: '2026-06-20',
+      end: '2026-07-19',
+      due: '2026-08-09',
+    });
+  });
+});
+
+describe('describeBillingRule', () => {
+  it('describes monthly close day and due offset', () => {
+    const rule = describeBillingRule({
+      statementStart: '2026-05-20',
+      statementEnd: '2026-06-19',
+      dueDate: '2026-07-10',
+    });
+    expect(rule).toEqual({
+      type: 'monthly',
+      closeDay: 19,
+      dueOffsetDays: 21,
+      label: 'Closes on the 19th · Due 21 days after close',
+    });
+  });
+
+  it('describes fixed-length periods', () => {
+    const rule = describeBillingRule({
+      statementStart: '2025-01-01',
+      statementEnd: '2025-01-14',
+      dueDate: '2025-01-21',
+    });
+    expect(rule?.type).toBe('fixed');
+    expect(rule?.periodDays).toBe(14);
+    expect(rule?.dueOffsetDays).toBe(7);
+  });
+});
+
+describe('resolvePreviousBillingPeriod', () => {
+  const userCycle = {
+    type: 'statement',
+    anchor: {
+      statementStart: '2026-05-20',
+      statementEnd: '2026-06-19',
+      dueDate: '2026-07-10',
+    },
+  };
+
+  it('returns the prior statement when reference is in the next period', () => {
+    const prev = resolvePreviousBillingPeriod('Card', '2026-07-10', { Card: userCycle });
+    expect(prev).toEqual({
+      start: '2026-05-20',
+      end: '2026-06-19',
+      due: '2026-07-10',
+    });
   });
 });

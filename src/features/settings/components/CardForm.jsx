@@ -1,10 +1,48 @@
 import CardImageUpload from '@/features/settings/components/CardImageUpload';
 import { NetworkPicker } from '@/features/settings/components/PaymentCardTile';
 import DateField from '@/components/forms/DateField';
-import { resolveBillingPeriod } from '@shared/billingCycle';
+import { describeBillingRule, resolveBillingPeriod } from '@shared/billingCycle';
 import { formatDisplayDate } from '@/utils/date';
 
 const emptyAnchor = () => ({ statementStart: '', statementEnd: '', dueDate: '' });
+
+const formatPeriodLine = (start, end, due) => (
+  <>
+    {formatDisplayDate(start)} – {formatDisplayDate(end)}
+    {due && <> · Due {formatDisplayDate(due)}</>}
+  </>
+);
+
+const BillingCyclePreview = ({ anchor, cycle, cardKey }) => {
+  const hasFullAnchor = anchor.statementStart && anchor.statementEnd && anchor.dueDate;
+  if (!hasFullAnchor) return null;
+
+  const activePreview = resolveBillingPeriod(cardKey, new Date(), { [cardKey]: cycle });
+  const rule = describeBillingRule(anchor);
+
+  return (
+    <div className="billing-cycle-preview-grid">
+      <div className="billing-cycle-preview-row">
+        <span className="billing-cycle-preview-label">Your example</span>
+        <span className="billing-cycle-preview-value">
+          {formatPeriodLine(anchor.statementStart, anchor.statementEnd, anchor.dueDate)}
+        </span>
+      </div>
+      <div className="billing-cycle-preview-row">
+        <span className="billing-cycle-preview-label">Active today</span>
+        <span className="billing-cycle-preview-value">
+          {formatPeriodLine(activePreview.start, activePreview.end, activePreview.due)}
+        </span>
+      </div>
+      {rule && (
+        <div className="billing-cycle-preview-row">
+          <span className="billing-cycle-preview-label">Rule</span>
+          <span className="billing-cycle-preview-value billing-cycle-preview-rule">{rule.label}</span>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const CardForm = ({
   step,
@@ -36,10 +74,7 @@ const CardForm = ({
     onPatch({ billingCycle: { type: 'statement', anchor: nextAnchor } });
   };
 
-  const preview =
-    isStatement && anchor.statementStart && anchor.statementEnd && anchor.dueDate
-      ? resolveBillingPeriod(name || 'Card', new Date(), { [name || 'Card']: cycle })
-      : null;
+  const cardKey = name || 'Card';
 
   if (step === 1) {
     if (isCash) {
@@ -136,33 +171,32 @@ const CardForm = ({
 
         {isStatement ? (
           <>
+            <p className="billing-cycle-hint billing-cycle-anchor-hint">
+              Enter one recent statement exactly as it appears on your card. We&apos;ll repeat the
+              close day and payment grace period automatically.
+            </p>
             <DateField
-              label="Statement opens"
+              label="Example: statement opens"
               name="statementStart"
               value={anchor.statementStart || ''}
               onChange={(e) => updateAnchor('statementStart', e.target.value)}
               required={false}
             />
             <DateField
-              label="Statement closes"
+              label="Example: statement closes"
               name="statementEnd"
               value={anchor.statementEnd || ''}
               onChange={(e) => updateAnchor('statementEnd', e.target.value)}
               required={false}
             />
             <DateField
-              label="Payment due"
+              label="Example: payment due"
               name="dueDate"
               value={anchor.dueDate || ''}
               onChange={(e) => updateAnchor('dueDate', e.target.value)}
               required={false}
             />
-            {preview && (
-              <p className="billing-cycle-preview">
-                Current period: {formatDisplayDate(preview.start)} – {formatDisplayDate(preview.end)}
-                {preview.due && <> · Due {formatDisplayDate(preview.due)}</>}
-              </p>
-            )}
+            <BillingCyclePreview anchor={anchor} cycle={cycle} cardKey={cardKey} />
           </>
         ) : (
           <p className="billing-cycle-hint">
