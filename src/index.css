@@ -1,8 +1,10 @@
 /* Savvr - premium minimal design system */
+@import './styles/fonts.css';
 
 :root {
-  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
-  --font-display: 'Fraunces', Georgia, serif;
+  --font-family: 'SF Pro Display', sans-serif;
+  --font-sans: var(--font-family);
+  --font-display: var(--font-family);
 
   --bg: #f4f2ef;
   --bg-elevated: #ffffff;
@@ -85,10 +87,13 @@
 html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-family: var(--font-family);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
 }
 
 body {
-  font-family: var(--font-sans);
+  font-family: var(--font-family);
   background: var(--bg);
   color: var(--text);
   line-height: 1.55;
@@ -97,6 +102,13 @@ body {
 
 #root {
   min-height: 100dvh;
+  font-family: var(--font-family);
+}
+
+*,
+*::before,
+*::after {
+  font-family: inherit;
 }
 
 a {
@@ -107,8 +119,10 @@ a {
 button,
 input,
 select,
-textarea {
+textarea,
+optgroup {
   font: inherit;
+  font-family: var(--font-family);
   color: inherit;
 }
 

@@ -175,7 +175,7 @@ export const SpendingPieChart = ({ data, categories = [], onCategoryClick }) => 
   );
 };
 
-const AXIS_TICK = { fill: 'var(--text-faint)', fontSize: 11, fontFamily: 'var(--font-sans)' };
+const AXIS_TICK = { fill: 'var(--text-faint)', fontSize: 11, fontFamily: 'SF Pro Display' };
 
 export const SpendingBarChart = ({ data }) => {
   const colors = useChartColors();
