@@ -1292,16 +1292,6 @@
     "id": "fe01b21b-6725-446b-b4a4-3d25481517f9"
   },
   {
-    "Date": "2026-05-01",
-    "Month": null,
-    "Merchant": "SaucePlus",
-    "Amount": 9.89,
-    "Category": "Subscriptions",
-    "Card": "Scene+ Visa",
-    "Notes": null,
-    "id": "508c7aa4-0cb0-4053-afe0-ff536ee34676"
-  },
-  {
     "Date": "2026-04-30",
     "Month": null,
     "Merchant": "Costco Gas",
@@ -1720,16 +1710,6 @@
     "Card": "Scene+ Visa",
     "Notes": null,
     "id": "7a44bf21-e8e4-459f-9523-51daaaf5b219"
-  },
-  {
-    "Date": "2026-04-14",
-    "Month": null,
-    "Merchant": "Tidal",
-    "Amount": 6.31,
-    "Category": "Subscriptions",
-    "Card": "Scene+ Visa",
-    "Notes": null,
-    "id": "183dffa0-ab22-47f2-a980-96df951545f8"
   },
   {
     "Date": "2026-04-13",
