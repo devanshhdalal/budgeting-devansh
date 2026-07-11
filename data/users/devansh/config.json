@@ -233,6 +233,12 @@
       "amount": 6.31,
       "renewalDate": "2026-07-14",
       "card": "AMEX Cobalt"
+    },
+    {
+      "id": "sub-59eaed21-3dcc-4c02-953d-7182b0954aa9",
+      "name": "Membership Fee Installment",
+      "amount": 15.99,
+      "renewalDate": "2026-07-10"
     }
   ]
 }
