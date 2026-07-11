@@ -239,7 +239,6 @@
       "name": "Membership Fee Installment",
       "amount": 15.99,
       "renewalDate": "2026-08-10",
-      "card": "Cobalt",
       "notes": "monthly fee for cobalt"
     }
   ]
