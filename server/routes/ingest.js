@@ -8,6 +8,7 @@ import { parseAmex } from '../utils/parsers/amex.js';
 import { parseNeo } from '../utils/parsers/neo.js';
 import { parseScotiaEmail } from '../utils/parsers/scotiaEmail.js';
 import { normalizePayload } from './transactions.js';
+import { canonicalizeCardName } from '../../shared/cardNames.js';
 
 const router = Router();
 
@@ -27,10 +28,10 @@ const redactSensitive = (text) =>
 
 const resolveCard = (config, cardLast4, source) => {
   const map = config?.CARD_IDENTIFIERS || {};
-  if (cardLast4 && map[cardLast4]) return map[cardLast4];
+  if (cardLast4 && map[cardLast4]) return canonicalizeCardName(map[cardLast4]);
   if (source === 'amex') return 'AMEX (unknown)';
   if (source === 'neo') return 'Neo (unknown)';
-  if (source === 'scotia_email') return 'Scene+ Visa';
+  if (source === 'scotia_email') return 'Scene+';
   return '';
 };
 

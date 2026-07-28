@@ -9,6 +9,7 @@ import {
   getTransactions,
   upsertTransaction,
 } from '../storage/transactions.js';
+import { canonicalizeCardName } from '../../shared/cardNames.js';
 
 const router = Router();
 
@@ -56,6 +57,7 @@ export const normalizePayload = (body) => {
 
   const source = VALID_SOURCES.has(body.Source) ? body.Source : 'manual';
   const isTest = source === 'test' || Boolean(body.IsTest);
+  const card = body.Card ? canonicalizeCardName(body.Card) : body.Card;
 
   return {
     ...body,
@@ -63,6 +65,7 @@ export const normalizePayload = (body) => {
     Date: isoDate,
     Merchant: merchant,
     Category: category,
+    Card: card,
     IsRefund: isRefund,
     Source: source,
     IsTest: isTest,

@@ -64,14 +64,29 @@
     "7697": "Neo"
   },
   "BILLING_CYCLES": {
-    "AMEX Cobalt": {
-      "type": "monthly"
+    "Cobalt": {
+      "type": "statement",
+      "anchor": {
+        "statementStart": "2026-05-11",
+        "statementEnd": "2026-06-10",
+        "dueDate": "2026-07-01"
+      }
     },
-    "Scene+ Visa": {
-      "type": "monthly"
+    "Scene+": {
+      "type": "statement",
+      "anchor": {
+        "statementStart": "2026-05-20",
+        "statementEnd": "2026-06-19",
+        "dueDate": "2026-07-10"
+      }
     },
-    "Neo Mastercard": {
-      "type": "monthly"
+    "Neo": {
+      "type": "statement",
+      "anchor": {
+        "statementStart": "2026-06-04",
+        "statementEnd": "2026-07-03",
+        "dueDate": "2026-07-24"
+      }
     },
     "Cash": {
       "type": "monthly"
@@ -83,55 +98,31 @@
         "statementEnd": "2026-08-03",
         "dueDate": ""
       }
-    },
-    "Neo": {
-      "type": "statement",
-      "anchor": {
-        "statementStart": "2026-06-04",
-        "statementEnd": "2026-07-03",
-        "dueDate": "2026-07-24"
-      }
-    },
-    "Scene+": {
-      "type": "statement",
-      "anchor": {
-        "statementStart": "2026-05-20",
-        "statementEnd": "2026-06-19",
-        "dueDate": "2026-07-10"
-      }
-    },
-    "Cobalt": {
-      "type": "statement",
-      "anchor": {
-        "statementStart": "2026-05-11",
-        "statementEnd": "2026-06-10",
-        "dueDate": "2026-07-01"
-      }
     }
   },
   "MERCHANT_REWARDS_OVERRIDES": {
     "Rec Room": {
-      "AMEX Cobalt": {
+      "Cobalt": {
         "multiplier": 1,
         "note": "Entertainment override (not 5x)"
       },
-      "Scene+ Visa": {
+      "Scene+": {
         "multiplier": 2,
         "note": "2x Scene Points at Cineplex partners"
       }
     },
     "Cineplex Rec Room": {
-      "AMEX Cobalt": {
+      "Cobalt": {
         "multiplier": 1,
         "note": "Entertainment override (not 5x)"
       },
-      "Scene+ Visa": {
+      "Scene+": {
         "multiplier": 2,
         "note": "2x Scene Points at Cineplex partners"
       }
     },
     "Sobeys": {
-      "Scene+ Visa": {
+      "Scene+": {
         "multiplier": 2,
         "note": "2x Scene Points at Sobeys"
       }
@@ -233,7 +224,7 @@
       "name": "Tidal",
       "amount": 6.31,
       "renewalDate": "2026-07-14",
-      "card": "AMEX Cobalt"
+      "card": "Cobalt"
     },
     {
       "id": "sub-59eaed21-3dcc-4c02-953d-7182b0954aa9",

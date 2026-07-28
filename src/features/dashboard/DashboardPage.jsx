@@ -272,7 +272,7 @@ const BudgetTrackingCardBody = ({ budgets, categories, colors, onSelect }) => {
 
 const Dashboard = () => {
   const { transactions, setTransactions, config: appConfig, loading, syncError, syncStatus, refresh, user } = useData();
-  const filters = useTransactionFilters(transactions);
+  const filters = useTransactionFilters(transactions, appConfig);
   const chartColors = useChartColors();
   const toast = useToast();
   const { confirm, confirmDialog } = useConfirm();

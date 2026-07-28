@@ -1,8 +1,9 @@
 import { useMemo, useState, useCallback } from 'react';
 import { thisMonthRange } from '../utils/date';
 import { filterTransactions } from '../utils/filters';
+import { canonicalizeCardName } from '@shared/cardNames';
 
-export const useTransactionFilters = (transactions) => {
+export const useTransactionFilters = (transactions, config) => {
   const [selectedCard, setSelectedCard] = useState('All');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -44,10 +45,11 @@ export const useTransactionFilters = (transactions) => {
     [transactions, selectedCard, startDate, endDate, selectedCategory, searchQuery, needsReviewOnly]
   );
 
-  const uniqueCards = useMemo(
-    () => ['All', ...new Set(transactions.map((t) => t.Card).filter(Boolean))],
-    [transactions]
-  );
+  const uniqueCards = useMemo(() => {
+    const fromConfig = Object.keys(config?.CARDS ?? {});
+    const fromTx = transactions.map((t) => canonicalizeCardName(t.Card)).filter(Boolean);
+    return ['All', ...new Set([...fromConfig, ...fromTx])];
+  }, [transactions, config]);
 
   return {
     selectedCard,

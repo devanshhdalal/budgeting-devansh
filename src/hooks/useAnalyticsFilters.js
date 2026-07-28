@@ -1,11 +1,13 @@
 import { useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { resolveBillingRange } from '@shared/billingCycle';
+import { canonicalizeCardName } from '@shared/cardNames';
 import { thisMonthRange } from '@/utils/date';
 import { filterTransactions } from '@/utils/filters';
 
 const parseParams = (searchParams, config) => {
-  const card = searchParams.get('card') || 'All';
+  const rawCard = searchParams.get('card') || 'All';
+  const card = rawCard === 'All' ? 'All' : canonicalizeCardName(rawCard);
   const category = searchParams.get('category') || 'All';
   let start = searchParams.get('start') || '';
   let end = searchParams.get('end') || '';
@@ -95,10 +97,11 @@ export const useAnalyticsFilters = (transactions, config) => {
     [transactions, filters]
   );
 
-  const uniqueCards = useMemo(
-    () => ['All', ...new Set(transactions.map((t) => t.Card).filter(Boolean))],
-    [transactions]
-  );
+  const uniqueCards = useMemo(() => {
+    const fromConfig = Object.keys(config?.CARDS ?? {});
+    const fromTx = transactions.map((t) => canonicalizeCardName(t.Card)).filter(Boolean);
+    return ['All', ...new Set([...fromConfig, ...fromTx])];
+  }, [transactions, config]);
 
   const buildAnalyticsLink = useCallback(
     (overrides = {}) => {

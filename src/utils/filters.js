@@ -1,3 +1,5 @@
+import { cardsMatch } from '@shared/cardNames';
+
 export const matchesDateRange = (transactionDate, startDate, endDate) => {
   if (!transactionDate) return !startDate && !endDate;
   if (startDate && transactionDate < startDate) return false;
@@ -13,7 +15,7 @@ export const filterTransactions = (
   return transactions.filter((t) => {
     if (t.IsTest) return false;
     if (needsReviewOnly && t.Merchant !== 'Needs review') return false;
-    if (selectedCard !== 'All' && t.Card !== selectedCard) return false;
+    if (selectedCard !== 'All' && !cardsMatch(t.Card, selectedCard)) return false;
     if (!matchesDateRange(t.Date, startDate, endDate)) return false;
     if (selectedCategory !== 'All' && t.Category !== selectedCategory) return false;
     if (

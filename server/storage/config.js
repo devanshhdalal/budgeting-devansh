@@ -3,6 +3,7 @@ import { DEFAULT_USER_ID } from '../config/users.js';
 import { storageError } from '../errors.js';
 import { readJsonFile, writeJsonFile } from './fileStore.js';
 import { userPaths } from './paths.js';
+import { normalizeConfigCardNames } from '../../shared/cardNames.js';
 
 const caches = new Map();
 
@@ -26,6 +27,22 @@ export const getConfig = async (userId) => {
       );
       if (!result.ok) {
         throw storageError(result.error || 'Failed to seed Paula config');
+      }
+    }
+  }
+
+  if (config) {
+    const { config: normalized, changed } = normalizeConfigCardNames(config);
+    config = normalized;
+    if (changed) {
+      const result = await writeJsonFile(
+        paths.configFile,
+        paths.githubConfig,
+        config,
+        `Normalize card name aliases (${userId})`
+      );
+      if (!result.ok) {
+        throw storageError(result.error || 'Failed to normalize config card names');
       }
     }
   }

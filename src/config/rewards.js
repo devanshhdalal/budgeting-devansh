@@ -3,6 +3,8 @@
  * Looks at per-merchant overrides first, then the card's category multiplier,
  * then the card's "Base" multiplier, then 1.
  */
+import { canonicalizeCardName } from '@shared/cardNames';
+
 const resolveMultiplier = (cardConfig, category, merchant, overridesConfig) => {
   const override = overridesConfig?.[merchant]?.[cardConfig.name];
   if (override) {
@@ -14,9 +16,10 @@ const resolveMultiplier = (cardConfig, category, merchant, overridesConfig) => {
 };
 
 export const calculateRewards = (cardName, category, amount, merchant, cardsConfig, overridesConfig) => {
-  if (!cardName || !amount || !cardsConfig?.[cardName]) return null;
+  const key = canonicalizeCardName(cardName);
+  if (!key || !amount || !cardsConfig?.[key]) return null;
 
-  const cardConfig = { name: cardName, ...cardsConfig[cardName] };
+  const cardConfig = { name: key, ...cardsConfig[key] };
   const { multiplier, note } = resolveMultiplier(cardConfig, category, merchant, overridesConfig);
 
   const raw = amount * multiplier;

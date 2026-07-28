@@ -4,6 +4,7 @@ import { normalizeDate } from '../utils/date.js';
 import { notFound, storageError, validation } from '../errors.js';
 import { readJsonFile, writeJsonFile } from './fileStore.js';
 import { userPaths } from './paths.js';
+import { canonicalizeCardName } from '../../shared/cardNames.js';
 
 const caches = new Map();
 
@@ -21,6 +22,13 @@ const normalizeAll = (raw) => {
     if (iso && next.Date !== iso) {
       next.Date = iso;
       changed = true;
+    }
+    if (next.Card) {
+      const canon = canonicalizeCardName(next.Card);
+      if (canon !== next.Card) {
+        next.Card = canon;
+        changed = true;
+      }
     }
     return next;
   });

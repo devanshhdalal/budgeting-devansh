@@ -1,4 +1,5 @@
 import { addDays, daysBetween } from '@shared/billingCycle';
+import { canonicalizeCardName } from '@shared/cardNames';
 import { calculateRewards } from '@/config/rewards';
 import { formatPercent } from '@/utils/chartTheme';
 
@@ -82,7 +83,7 @@ export const buildMerchantRankings = (transactions, limit = 8) => {
 export const buildCardBreakdown = (transactions) => {
   const totals = groupBy(
     transactions.filter((t) => t.Card),
-    (t) => t.Card,
+    (t) => canonicalizeCardName(t.Card),
     (t) => t.Amount || 0
   );
 

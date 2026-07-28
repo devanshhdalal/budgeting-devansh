@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ParentSize } from '@visx/responsive';
 import PageHeader from '@/components/ui/PageHeader';
@@ -47,6 +47,12 @@ const KpiBlock = ({ label, value, hint, formatFn = (v) => String(v), sectionRef 
   );
 };
 
+const ResponsiveChart = ({ height, children }) => (
+  <ParentSize debounceTime={10}>
+    {({ width }) => (width > 0 ? children(width) : <div style={{ height, width: '100%' }} aria-hidden />)}
+  </ParentSize>
+);
+
 const formatRewardsSummary = (totals) => {
   const entries = Object.entries(totals || {});
   if (!entries.length) return '—';
@@ -63,12 +69,6 @@ const AnalyticsPage = () => {
   const toast = useToast();
   const kpiSectionRef = useRef(null);
   const filters = useAnalyticsFilters(transactions, config);
-
-  const [trendVisible, setTrendVisible] = useState(false);
-  const [categoryVisible, setCategoryVisible] = useState(false);
-  const [merchantsVisible, setMerchantsVisible] = useState(false);
-  const [rewardsVisible, setRewardsVisible] = useState(false);
-  const [budgetVisible, setBudgetVisible] = useState(false);
 
   const range = useMemo(
     () => ({ start: filters.startDate, end: filters.endDate }),
@@ -188,54 +188,54 @@ const AnalyticsPage = () => {
       <ScrollSection mount ref={kpiSectionRef} as="div" className="hero-stats analytics-kpis" deps={[summary.totalSpent]}>
         <KpiBlock
           sectionRef={kpiSectionRef}
-            label="Total spent"
-            value={summary.totalSpent}
-            formatFn={formatCurrency}
-            hint={changeLabel}
-          />
-          <KpiBlock
-            sectionRef={kpiSectionRef}
-            label="Avg / day"
-            value={summary.avgPerDay}
-            formatFn={formatCurrency}
-            hint={`${summary.transactionCount} txns`}
-          />
-          <KpiBlock
-            sectionRef={kpiSectionRef}
-            label="Rewards"
-            value={Object.values(summary.rewardTotals)[0] ?? 0}
-            hint={formatRewardsSummary(summary.rewardTotals)}
-            formatFn={(v) => (v ? String(Math.floor(v)) : '—')}
-          />
+          label="Total spent"
+          value={summary.totalSpent}
+          formatFn={formatCurrency}
+          hint={changeLabel}
+        />
+        <KpiBlock
+          sectionRef={kpiSectionRef}
+          label="Avg / day"
+          value={summary.avgPerDay}
+          formatFn={formatCurrency}
+          hint={`${summary.transactionCount} txns`}
+        />
+        <KpiBlock
+          sectionRef={kpiSectionRef}
+          label="Rewards"
+          value={Object.values(summary.rewardTotals)[0] ?? 0}
+          hint={formatRewardsSummary(summary.rewardTotals)}
+          formatFn={(v) => (v ? String(Math.floor(v)) : '—')}
+        />
       </ScrollSection>
 
-      <ScrollSection deps={[dailySeries.length, ...filterDeps]} onVisible={() => setTrendVisible(true)}>
+      <ScrollSection mount deps={[dailySeries.length, ...filterDeps]}>
         <div data-scroll-item>
           <ChartShell title="Spending over time">
-            <ParentSize debounceTime={10}>
-              {({ width }) => (
+            <ResponsiveChart height={280}>
+              {(width) => (
                 <AreaTrendChart
                   data={dailySeries}
-                  width={Math.max(width, 320)}
+                  width={width}
                   height={280}
                   accentColor="var(--accent)"
-                  animateIn={trendVisible}
+                  animateIn
                 />
               )}
-            </ParentSize>
+            </ResponsiveChart>
           </ChartShell>
         </div>
       </ScrollSection>
 
       <div className="analytics-grid">
-        <ScrollSection deps={[categoryData.length, ...filterDeps]} onVisible={() => setCategoryVisible(true)}>
+        <ScrollSection mount deps={[categoryData.length, ...filterDeps]}>
           <div data-scroll-item>
             <ChartShell title="By category">
               <CategoryDonut
                 data={categoryData}
                 categories={config.CATEGORIES}
                 selectedCategory={filters.selectedCategory}
-                animateIn={categoryVisible}
+                animateIn
                 onCategoryClick={(cat) =>
                   filters.setSelectedCategory(filters.selectedCategory === cat ? 'All' : cat)
                 }
@@ -244,10 +244,10 @@ const AnalyticsPage = () => {
           </div>
         </ScrollSection>
 
-        <ScrollSection deps={[merchants.length, ...filterDeps]} onVisible={() => setMerchantsVisible(true)}>
+        <ScrollSection mount deps={[merchants.length, ...filterDeps]}>
           <div data-scroll-item>
             <ChartShell title="Top merchants">
-              <MerchantBars data={merchants} animateIn={merchantsVisible} />
+              <MerchantBars data={merchants} animateIn />
             </ChartShell>
           </div>
         </ScrollSection>
@@ -271,32 +271,32 @@ const AnalyticsPage = () => {
       )}
 
       {rewards.currencies.length > 0 && (
-        <ScrollSection deps={[rewards.series.length, ...filterDeps]} onVisible={() => setRewardsVisible(true)}>
+        <ScrollSection deps={[rewards.series.length, ...filterDeps]}>
           <div data-scroll-item>
             <ChartShell title="Rewards over time">
-              <ParentSize debounceTime={10}>
-                {({ width }) => (
+              <ResponsiveChart height={220}>
+                {(width) => (
                   <AreaTrendChart
                     data={rewards.series.map((d) => ({
                       ...d,
                       amount: rewards.currencies.reduce((sum, c) => sum + (d[c] ?? 0), 0),
                     }))}
-                    width={Math.max(width, 320)}
+                    width={width}
                     height={220}
                     accentColor="var(--accent-2)"
-                    animateIn={rewardsVisible}
+                    animateIn
                   />
                 )}
-              </ParentSize>
+              </ResponsiveChart>
             </ChartShell>
           </div>
         </ScrollSection>
       )}
 
-      <ScrollSection deps={[budgetRows.length, ...filterDeps]} onVisible={() => setBudgetVisible(true)}>
+      <ScrollSection deps={[budgetRows.length, ...filterDeps]}>
         <div data-scroll-item>
           <ChartShell title="Budget vs actual">
-            <BudgetCompareChart data={budgetRows} animateIn={budgetVisible} />
+            <BudgetCompareChart data={budgetRows} animateIn />
           </ChartShell>
         </div>
       </ScrollSection>
