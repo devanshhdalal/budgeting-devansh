@@ -1,29 +1,36 @@
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { lazy, useEffect, useMemo, useRef, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sun, Moon, Keyboard } from 'lucide-react';
 import AmbientBackground from '@/components/layout/AmbientBackground';
-import LoadingScreen from '@/components/layout/LoadingScreen';
 import ErrorBoundary from '@/components/layout/ErrorBoundary';
 import PullToRefresh from '@/components/layout/PullToRefresh';
 import UserSwitcher from '@/components/layout/UserSwitcher';
 import StaggeredMenu from '@/components/layout/StaggeredMenu';
+import PageTransition from '@/components/layout/PageTransition';
 import { ShortcutsProvider } from '@/accessibility/ShortcutsProvider';
 import { useShortcuts } from '@/accessibility/shortcutsContext';
 import { UserProvider } from '@/context/UserProvider';
 import { DataProvider } from '@/context/DataProvider';
 import { ToastProvider } from '@/context/ToastProvider';
-import { pageEnter } from '@/motion/presets';
 
 const Dashboard = lazy(() => import('@/features/dashboard/DashboardPage'));
+const Analytics = lazy(() => import('@/features/analytics/AnalyticsPage'));
 const Subscriptions = lazy(() => import('@/features/subscriptions/SubscriptionsPage'));
 const AddTransaction = lazy(() => import('@/features/transactions/AddTransactionPage'));
 const SettingsPage = lazy(() => import('@/features/settings/SettingsPage'));
+
+void import('@/features/dashboard/DashboardPage');
+void import('@/features/analytics/AnalyticsPage');
+void import('@/features/subscriptions/SubscriptionsPage');
+void import('@/features/transactions/AddTransactionPage');
+void import('@/features/settings/SettingsPage');
 
 const THEME_KEY = 'app-theme';
 
 const MENU_ITEMS = [
   { label: 'Overview', ariaLabel: 'Go to overview', link: '/' },
+  { label: 'Analytics', ariaLabel: 'View spending analytics', link: '/analytics' },
   { label: 'Subscriptions', ariaLabel: 'Manage subscriptions', link: '/subscriptions' },
   { label: 'Add', ariaLabel: 'Add a transaction', link: '/add' },
   { label: 'Settings', ariaLabel: 'Open settings', link: '/settings' },
@@ -42,17 +49,6 @@ const ShortcutsHelpButton = () => {
     >
       <Keyboard size={18} />
     </button>
-  );
-};
-
-const PageTransition = ({ children }) => {
-  const location = useLocation();
-  return (
-    <AnimatePresence mode="wait">
-      <motion.div key={location.pathname} className="page-wrap" {...pageEnter}>
-        {children}
-      </motion.div>
-    </AnimatePresence>
   );
 };
 
@@ -124,16 +120,15 @@ const AppShellInner = () => {
         <div className="app-container">
           <main id="main-content" className="app-main" tabIndex={-1}>
             <ErrorBoundary>
-              <Suspense fallback={<LoadingScreen />}>
-                <PageTransition>
-                  <Routes>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/subscriptions" element={<Subscriptions />} />
-                    <Route path="/add" element={<AddTransaction />} />
-                    <Route path="/settings" element={<SettingsPage />} />
-                  </Routes>
-                </PageTransition>
-              </Suspense>
+              <Routes>
+                <Route element={<PageTransition />}>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/analytics" element={<Analytics />} />
+                  <Route path="/subscriptions" element={<Subscriptions />} />
+                  <Route path="/add" element={<AddTransaction />} />
+                  <Route path="/settings" element={<SettingsPage />} />
+                </Route>
+              </Routes>
             </ErrorBoundary>
           </main>
         </div>

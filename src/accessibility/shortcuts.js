@@ -15,9 +15,10 @@ export const SHORTCUT_GROUPS = [
     title: 'Navigation',
     items: [
       { id: 'overview', label: 'Go to Overview', keys: [modPlus('1')] },
-      { id: 'subscriptions', label: 'Go to Subscriptions', keys: [modPlus('2')] },
-      { id: 'add', label: 'Go to Add transaction', keys: [modPlus('3')] },
-      { id: 'settings', label: 'Go to Settings', keys: [modPlus('4')] },
+      { id: 'analytics', label: 'Go to Analytics', keys: [modPlus('2')] },
+      { id: 'subscriptions', label: 'Go to Subscriptions', keys: [modPlus('3')] },
+      { id: 'add', label: 'Go to Add transaction', keys: [modPlus('4')] },
+      { id: 'settings', label: 'Go to Settings', keys: [modPlus('5')] },
     ],
   },
   {

@@ -82,15 +82,20 @@ export const ShortcutsProvider = ({ children, menuRef }) => {
       }
       if (key === '2') {
         e.preventDefault();
-        navigate('/subscriptions');
+        navigate('/analytics');
         return;
       }
       if (key === '3') {
         e.preventDefault();
-        navigate('/add');
+        navigate('/subscriptions');
         return;
       }
       if (key === '4') {
+        e.preventDefault();
+        navigate('/add');
+        return;
+      }
+      if (key === '5') {
         e.preventDefault();
         navigate('/settings');
       }

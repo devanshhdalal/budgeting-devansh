@@ -22,18 +22,19 @@ import {
   formatRenewalLabel,
   getSubscriptions,
   newSubscriptionId,
+  nextRenewalFromStart,
   renewalUrgency,
+  resolveSubscriptionStartDate,
   sortByRenewal,
   subscriptionMonthlyTotal,
 } from '@/utils/subscriptions';
 import { getPageErrorTitle, getPageErrorVariant } from '@/utils/apiErrors';
-import { stagger, fadeUp } from '@/motion/presets';
 
 const emptyForm = () => ({
   id: '',
   name: '',
   amount: '',
-  renewalDate: todayIsoDate(),
+  startDate: todayIsoDate(),
   card: '',
   notes: '',
 });
@@ -41,13 +42,15 @@ const emptyForm = () => ({
 const buildSubscriptionEntry = (form, { isNew }) => {
   const name = form.name.trim();
   const amount = parseFloat(form.amount);
-  if (!name || !Number.isFinite(amount) || amount <= 0 || !form.renewalDate) return null;
+  if (!name || !Number.isFinite(amount) || amount <= 0 || !form.startDate) return null;
 
+  const startDate = form.startDate;
   return {
     id: form.id || (isNew ? newSubscriptionId() : ''),
     name,
     amount,
-    renewalDate: form.renewalDate,
+    startDate,
+    renewalDate: nextRenewalFromStart(startDate),
     ...(form.card && { card: form.card }),
     ...(form.notes?.trim() && { notes: form.notes.trim() }),
   };
@@ -58,7 +61,7 @@ const SubscriptionRow = ({ sub, categories, onEdit, onDelete }) => {
   const fromTransaction = sub.source === 'transaction';
 
   return (
-    <motion.div className="sub-row sub-row-managed" layout variants={fadeUp}>
+    <motion.div className="sub-row sub-row-managed" layout>
       <div className="sub-row-left">
         <div className="sub-icon">
           <CategoryIcon category="Subscriptions" categories={categories} />
@@ -67,7 +70,7 @@ const SubscriptionRow = ({ sub, categories, onEdit, onDelete }) => {
           <div className="sub-name">{sub.name}</div>
           <div className="sub-renewal-meta">
             <Calendar size={12} aria-hidden />
-            <span>{formatDisplayDate(sub.renewalDate)}</span>
+            <span>Next {formatDisplayDate(sub.renewalDate)}</span>
             <span className={`sub-renewal-badge sub-renewal-${urgency}`}>
               {formatRenewalLabel(sub.renewalDate)}
             </span>
@@ -120,6 +123,11 @@ const SubscriptionsPage = () => {
   const monthlyTotal = useMemo(() => subscriptionMonthlyTotal(subscriptions), [subscriptions]);
   const cardOptions = useMemo(() => Object.keys(config?.CARDS ?? {}), [config]);
 
+  const previewRenewal = useMemo(() => {
+    if (!form.startDate) return null;
+    return nextRenewalFromStart(form.startDate);
+  }, [form.startDate]);
+
   const markSaved = useCallback((ok) => {
     setSaveStatus(ok ? 'saved' : 'error');
     if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
@@ -159,11 +167,11 @@ const SubscriptionsPage = () => {
     const entry = buildSubscriptionEntry(formRef.current, { isNew: isAdding && !formRef.current.id });
     if (!entry) return;
 
-    const current = getSubscriptions(cfg);
-    const exists = current.some((s) => s.id === entry.id);
+    const manual = Array.isArray(cfg.SUBSCRIPTIONS) ? cfg.SUBSCRIPTIONS : [];
+    const exists = manual.some((s) => s.id === entry.id);
     const next = exists
-      ? current.map((s) => (s.id === entry.id ? entry : s))
-      : [...current, entry];
+      ? manual.map((s) => (s.id === entry.id ? entry : s))
+      : [...manual, entry];
 
     const ok = await persist(next);
     if (ok && isAdding) {
@@ -193,7 +201,7 @@ const SubscriptionsPage = () => {
       id: sub.source === 'transaction' ? '' : sub.id,
       name: sub.name,
       amount: String(sub.amount ?? ''),
-      renewalDate: sub.renewalDate || todayIsoDate(),
+      startDate: resolveSubscriptionStartDate(sub) || todayIsoDate(),
       card: sub.card || '',
       notes: sub.notes || '',
     });
@@ -221,7 +229,8 @@ const SubscriptionsPage = () => {
       danger: true,
     });
     if (!ok) return;
-    const next = getSubscriptions(config).filter((s) => s.id !== sub.id);
+    const manual = Array.isArray(config?.SUBSCRIPTIONS) ? config.SUBSCRIPTIONS : [];
+    const next = manual.filter((s) => s.id !== sub.id);
     const saved = await persist(next);
     if (saved) {
       toast.success('Subscription removed');
@@ -248,7 +257,7 @@ const SubscriptionsPage = () => {
   }
 
   return (
-    <motion.div className="subscriptions-page" variants={stagger} initial="hidden" animate="show">
+    <div className="subscriptions-page">
       <PageHeader
         eyebrow="Recurring"
         title="Subscriptions"
@@ -265,35 +274,33 @@ const SubscriptionsPage = () => {
         <SyncBanner message={`${syncError}. Showing cached settings.`} onRetry={handleRetry} retrying={loading} />
       )}
 
-      <motion.div variants={fadeUp}>
-        <SectionCard
-          title="Monthly total"
-          action={<span className="sub-amount sub-amount-lg">{formatCurrency(monthlyTotal)}/mo</span>}
-        >
-          {subscriptions.length === 0 ? (
-            <EmptyState title="No subscriptions yet">
-              <p className="empty-state-hint">
-                Add one manually, or categorize a transaction as Subscriptions.
-              </p>
-              <button type="button" className="btn btn-secondary" onClick={openAdd}>
-                Add your first subscription
-              </button>
-            </EmptyState>
-          ) : (
-            <div className="sub-list">
-              {subscriptions.map((sub) => (
-                <SubscriptionRow
-                  key={sub.id}
-                  sub={sub}
-                  categories={config.CATEGORIES}
-                  onEdit={openEdit}
-                  onDelete={handleDelete}
-                />
-              ))}
-            </div>
-          )}
-        </SectionCard>
-      </motion.div>
+      <SectionCard
+        title="Monthly total"
+        action={<span className="sub-amount sub-amount-lg">{formatCurrency(monthlyTotal)}/mo</span>}
+      >
+        {subscriptions.length === 0 ? (
+          <EmptyState title="No subscriptions yet">
+            <p className="empty-state-hint">
+              Add one manually, or categorize a transaction as Subscriptions.
+            </p>
+            <button type="button" className="btn btn-secondary" onClick={openAdd}>
+              Add your first subscription
+            </button>
+          </EmptyState>
+        ) : (
+          <div className="sub-list">
+            {subscriptions.map((sub) => (
+              <SubscriptionRow
+                key={sub.id}
+                sub={sub}
+                categories={config.CATEGORIES}
+                onEdit={openEdit}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
+        )}
+      </SectionCard>
 
       <Modal
         open={showModal}
@@ -301,73 +308,79 @@ const SubscriptionsPage = () => {
         title={isAdding ? 'Add subscription' : 'Edit subscription'}
         titleExtra={<SaveIndicator status={saveStatus} />}
       >
-              <div className="form-group">
-                <label className="form-label">Name</label>
-                <input
-                  className="form-input"
-                  name="name"
-                  value={form.name}
-                  onChange={handleChange}
-                  placeholder="Netflix, Spotify, iCloud..."
-                />
-              </div>
+        <div className="form-group">
+          <label className="form-label">Name</label>
+          <input
+            className="form-input"
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            placeholder="Netflix, Spotify, iCloud..."
+          />
+        </div>
 
-              <div className="form-grid-2">
-                <div className="form-group">
-                  <label className="form-label">Monthly amount (CAD)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="0.01"
-                    className="form-input"
-                    name="amount"
-                    value={form.amount}
-                    onChange={handleChange}
-                    placeholder="0.00"
-                  />
-                </div>
-                <DateField
-                  label="Next renewal"
-                  name="renewalDate"
-                  value={form.renewalDate}
-                  onChange={handleChange}
-                />
-              </div>
+        <div className="form-grid-2">
+          <div className="form-group">
+            <label className="form-label">Monthly amount (CAD)</label>
+            <input
+              type="number"
+              step="0.01"
+              min="0.01"
+              className="form-input"
+              name="amount"
+              value={form.amount}
+              onChange={handleChange}
+              placeholder="0.00"
+            />
+          </div>
+          <DateField
+            label="Starts"
+            name="startDate"
+            value={form.startDate}
+            onChange={handleChange}
+          />
+        </div>
 
-              <div className="form-group">
-                <label className="form-label">Payment card (optional)</label>
-                <select className="form-input" name="card" value={form.card} onChange={handleChange}>
-                  <option value="">None</option>
-                  {cardOptions.map((card) => (
-                    <option key={card} value={card}>{card}</option>
-                  ))}
-                </select>
-              </div>
+        {previewRenewal && (
+          <p className="form-hint sub-renewal-preview">
+            Next renewal · {formatDisplayDate(previewRenewal)} · {formatRenewalLabel(previewRenewal)}
+          </p>
+        )}
 
-              <div className="form-group">
-                <label className="form-label">Notes (optional)</label>
-                <input
-                  className="form-input"
-                  name="notes"
-                  value={form.notes}
-                  onChange={handleChange}
-                  placeholder="Family plan, annual billing, etc."
-                />
-              </div>
+        <div className="form-group">
+          <label className="form-label">Payment card (optional)</label>
+          <select className="form-input" name="card" value={form.card} onChange={handleChange}>
+            <option value="">None</option>
+            {cardOptions.map((card) => (
+              <option key={card} value={card}>{card}</option>
+            ))}
+          </select>
+        </div>
 
-              {!isAdding && editing && (
-                <button
-                  type="button"
-                  className="btn btn-ghost"
-                  style={{ width: '100%', marginTop: 8 }}
-                  onClick={() => handleDelete(editing)}
-                >
-                  <Trash2 size={18} /> Delete subscription
-                </button>
-              )}
+        <div className="form-group">
+          <label className="form-label">Notes (optional)</label>
+          <input
+            className="form-input"
+            name="notes"
+            value={form.notes}
+            onChange={handleChange}
+            placeholder="Family plan, annual billing, etc."
+          />
+        </div>
+
+        {!isAdding && editing && (
+          <button
+            type="button"
+            className="btn btn-ghost"
+            style={{ width: '100%', marginTop: 8 }}
+            onClick={() => handleDelete(editing)}
+          >
+            <Trash2 size={18} /> Delete subscription
+          </button>
+        )}
       </Modal>
       {confirmDialog}
-    </motion.div>
+    </div>
   );
 };
 

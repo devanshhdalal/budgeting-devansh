@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search } from 'lucide-react';
+import { Search, ArrowRight } from 'lucide-react';
+import { ParentSize } from '@visx/responsive';
 import { saveTransaction, deleteTransaction, uploadReceipt } from '@/services/storage';
-import { SpendingPieChart, SpendingBarChart } from '@/components/charts/Charts';
+import { AreaTrendChart } from '@/components/charts';
 import { useChartColors } from '@/hooks/useChartColors';
 import { getCategoryColor } from '@/utils/chartTheme';
 import TransactionItem from '@/features/transactions/components/TransactionItem';
@@ -19,12 +20,13 @@ import { BudgetSkeleton, ChartSkeleton, TransactionListSkeleton } from '@/featur
 import { todayIsoDate } from '@/utils/date';
 import { formatCurrency } from '@/utils/format';
 import { matchesDateRange } from '@/utils/filters';
-import { buildPieData, buildBarData, buildInsights } from '@/utils/chartData';
+import { buildInsights } from '@/utils/chartData';
+import { buildDailySeries, buildCategoryBreakdown } from '@/utils/analytics';
 import { useData } from '@/hooks/useData';
 import { useToast } from '@/hooks/useToast';
 import { useTransactionFilters } from '@/hooks/useTransactionFilters';
 import { MAX_VISIBLE_TRANSACTIONS } from '@/constants';
-import { stagger, fadeUp } from '@/motion/presets';
+import { fadeUp } from '@/motion/presets';
 import LoadingScreen from '@/components/layout/LoadingScreen';
 import AnimatedNumber from '@/components/ui/AnimatedNumber';
 import PageError from '@/components/ui/PageError';
@@ -427,8 +429,33 @@ const Dashboard = () => {
     [appConfig, transactions]
   );
 
-  const pieData = useMemo(() => buildPieData(filters.filteredTransactions), [filters.filteredTransactions]);
-  const barData = useMemo(() => buildBarData(filters.filteredTransactions), [filters.filteredTransactions]);
+  const sparklineData = useMemo(
+    () =>
+      buildDailySeries(filters.filteredTransactions, {
+        start: filters.startDate || budgetRange.start,
+        end: filters.endDate || budgetRange.end,
+      }),
+    [filters.filteredTransactions, filters.startDate, filters.endDate, budgetRange]
+  );
+
+  const analyticsLink = useMemo(() => {
+    const params = new URLSearchParams();
+    if (filters.selectedCard && filters.selectedCard !== 'All') {
+      params.set('card', filters.selectedCard);
+    }
+    if (filters.selectedCategory && filters.selectedCategory !== 'All') {
+      params.set('category', filters.selectedCategory);
+    }
+    if (filters.startDate) params.set('start', filters.startDate);
+    if (filters.endDate) params.set('end', filters.endDate);
+    const qs = params.toString();
+    return qs ? `/analytics?${qs}` : '/analytics';
+  }, [filters]);
+
+  const categoryBreakdown = useMemo(
+    () => buildCategoryBreakdown(filters.filteredTransactions),
+    [filters.filteredTransactions]
+  );
   const insights = useMemo(
     () => buildInsights(filters.filteredTransactions, appConfig),
     [filters.filteredTransactions, appConfig]
@@ -456,10 +483,10 @@ const Dashboard = () => {
 
   const { topMerchant, totalRewards, totalSpent } = insights;
   const rewardsLabel = formatRewards(totalRewards);
-  const topCategory = pieData[0]?.name || 'N/A';
+  const topCategory = categoryBreakdown[0]?.name || 'N/A';
 
   return (
-    <motion.div className="dashboard" variants={stagger} initial="hidden" animate="show">
+    <div className="dashboard">
       <PageHeader
         eyebrow={`${user.name}'s workspace`}
         title="Overview"
@@ -551,22 +578,30 @@ const Dashboard = () => {
           )}
         </SectionCard>
 
-        <SectionCard title="By category" className="col-span-4">
+        <SectionCard
+          title="Spending preview"
+          className="col-span-full"
+          action={
+            <Link to={analyticsLink} className="page-section-link analytics-preview-link">
+              View full analytics <ArrowRight size={14} aria-hidden />
+            </Link>
+          }
+        >
           {isInitialSync ? (
-            <ChartSkeleton variant="pie" />
+            <ChartSkeleton variant="bar" />
           ) : (
-            <SpendingPieChart
-              data={pieData}
-              categories={appConfig.CATEGORIES}
-              onCategoryClick={(cat) =>
-                filters.setSelectedCategory((prev) => (prev === cat ? 'All' : cat))
-              }
-            />
+            <ParentSize debounceTime={10}>
+              {({ width }) => (
+                <AreaTrendChart
+                  data={sparklineData}
+                  width={Math.max(width, 320)}
+                  height={160}
+                  compact
+                  animateIn
+                />
+              )}
+            </ParentSize>
           )}
-        </SectionCard>
-
-        <SectionCard title="Spending trend" className="col-span-8">
-          {isInitialSync ? <ChartSkeleton variant="bar" /> : <SpendingBarChart data={barData} />}
         </SectionCard>
 
         <SubscriptionsCard subscriptions={subscriptions} categories={appConfig.CATEGORIES} />
@@ -639,7 +674,7 @@ const Dashboard = () => {
       />
 
       {confirmDialog}
-    </motion.div>
+    </div>
   );
 };
 
