@@ -1,6 +1,6 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { animSet, animTo, createAnimTimeline } from '@/motion/anime/staggeredMenuMotion';
+import { gsap } from 'gsap';
 import './StaggeredMenu.css';
 
 const StaggeredMenu = forwardRef(({
@@ -60,22 +60,22 @@ const StaggeredMenu = forwardRef(({
     const all = [...layers, panel];
     closeTweenRef.current?.kill();
     const offscreen = position === 'left' ? -100 : 100;
-    closeTweenRef.current = animTo(all, {
+    closeTweenRef.current = gsap.to(all, {
       xPercent: offscreen,
       duration: 0.32,
       ease: 'power3.in',
       overwrite: 'auto',
       onComplete: () => {
         const itemEls = Array.from(panel.querySelectorAll('.sm-panel-itemLabel'));
-        if (itemEls.length) animSet(itemEls, { yPercent: 140, rotate: 10 });
+        if (itemEls.length) gsap.set(itemEls, { yPercent: 140, rotate: 10 });
         const numberEls = Array.from(
           panel.querySelectorAll('.sm-panel-list[data-numbering] .sm-panel-item')
         );
-        if (numberEls.length) animSet(numberEls, { '--sm-num-opacity': 0 });
+        if (numberEls.length) gsap.set(numberEls, { '--sm-num-opacity': 0 });
         const socialTitle = panel.querySelector('.sm-socials-title');
         const socialLinks = Array.from(panel.querySelectorAll('.sm-socials-link'));
-        if (socialTitle) animSet(socialTitle, { opacity: 0 });
-        if (socialLinks.length) animSet(socialLinks, { y: 25, opacity: 0 });
+        if (socialTitle) gsap.set(socialTitle, { opacity: 0 });
+        if (socialLinks.length) gsap.set(socialLinks, { y: 25, opacity: 0 });
         busyRef.current = false;
       },
     });
@@ -83,7 +83,7 @@ const StaggeredMenu = forwardRef(({
     const icon = iconRef.current;
     if (icon) {
       spinTweenRef.current?.kill();
-      spinTweenRef.current = animTo(icon, {
+      spinTweenRef.current = gsap.to(icon, {
         rotate: 0,
         duration: 0.35,
         ease: 'power3.inOut',
@@ -94,7 +94,7 @@ const StaggeredMenu = forwardRef(({
     const btn = toggleBtnRef.current;
     if (btn && changeMenuColorOnOpen) {
       colorTweenRef.current?.kill();
-      colorTweenRef.current = animTo(btn, {
+      colorTweenRef.current = gsap.to(btn, {
         color: menuButtonColor,
         duration: 0.3,
         ease: 'power2.out',
@@ -105,8 +105,8 @@ const StaggeredMenu = forwardRef(({
     if (inner) {
       textCycleAnimRef.current?.kill();
       setTextLines(['Menu', 'Close', 'Menu']);
-      animSet(inner, { yPercent: 0 });
-      textCycleAnimRef.current = animTo(inner, {
+      gsap.set(inner, { yPercent: 0 });
+      textCycleAnimRef.current = gsap.to(inner, {
         yPercent: -66.666,
         duration: 0.45,
         ease: 'power4.out',
@@ -119,28 +119,31 @@ const StaggeredMenu = forwardRef(({
   }, [location.pathname, closeMenu]);
 
   useLayoutEffect(() => {
-    const panel = panelRef.current;
-    const preContainer = preLayersRef.current;
-    const plusH = plusHRef.current;
-    const plusV = plusVRef.current;
-    const icon = iconRef.current;
-    const textInner = textInnerRef.current;
-    if (!panel || !plusH || !plusV || !icon || !textInner) return;
+    const ctx = gsap.context(() => {
+      const panel = panelRef.current;
+      const preContainer = preLayersRef.current;
+      const plusH = plusHRef.current;
+      const plusV = plusVRef.current;
+      const icon = iconRef.current;
+      const textInner = textInnerRef.current;
+      if (!panel || !plusH || !plusV || !icon || !textInner) return;
 
-    let preLayers = [];
-    if (preContainer) {
-      preLayers = Array.from(preContainer.querySelectorAll('.sm-prelayer'));
-    }
-    preLayerElsRef.current = preLayers;
+      let preLayers = [];
+      if (preContainer) {
+        preLayers = Array.from(preContainer.querySelectorAll('.sm-prelayer'));
+      }
+      preLayerElsRef.current = preLayers;
 
-    const offscreen = position === 'left' ? -100 : 100;
-    animSet([panel, ...preLayers], { xPercent: offscreen, opacity: 1 });
-    if (preContainer) animSet(preContainer, { xPercent: 0, opacity: 1 });
-    animSet(plusH, { transformOrigin: '50% 50%', rotate: 0 });
-    animSet(plusV, { transformOrigin: '50% 50%', rotate: 90 });
-    animSet(icon, { rotate: 0, transformOrigin: '50% 50%' });
-    animSet(textInner, { yPercent: 0 });
-    if (toggleBtnRef.current) animSet(toggleBtnRef.current, { color: menuButtonColor });
+      const offscreen = position === 'left' ? -100 : 100;
+      gsap.set([panel, ...preLayers], { xPercent: offscreen, opacity: 1 });
+      if (preContainer) gsap.set(preContainer, { xPercent: 0, opacity: 1 });
+      gsap.set(plusH, { transformOrigin: '50% 50%', rotate: 0 });
+      gsap.set(plusV, { transformOrigin: '50% 50%', rotate: 90 });
+      gsap.set(icon, { rotate: 0, transformOrigin: '50% 50%' });
+      gsap.set(textInner, { yPercent: 0 });
+      if (toggleBtnRef.current) gsap.set(toggleBtnRef.current, { color: menuButtonColor });
+    });
+    return () => ctx.revert();
   }, [menuButtonColor, position]);
 
   const buildOpenTimeline = useCallback(() => {
@@ -164,12 +167,12 @@ const StaggeredMenu = forwardRef(({
     const layerStates = layers.map((el) => ({ el, start: offscreen }));
     const panelStart = offscreen;
 
-    if (itemEls.length) animSet(itemEls, { yPercent: 140, rotate: 10 });
-    if (numberEls.length) animSet(numberEls, { '--sm-num-opacity': 0 });
-    if (socialTitle) animSet(socialTitle, { opacity: 0 });
-    if (socialLinks.length) animSet(socialLinks, { y: 25, opacity: 0 });
+    if (itemEls.length) gsap.set(itemEls, { yPercent: 140, rotate: 10 });
+    if (numberEls.length) gsap.set(numberEls, { '--sm-num-opacity': 0 });
+    if (socialTitle) gsap.set(socialTitle, { opacity: 0 });
+    if (socialLinks.length) gsap.set(socialLinks, { y: 25, opacity: 0 });
 
-    const tl = createAnimTimeline();
+    const tl = gsap.timeline({ paused: true });
 
     layerStates.forEach((ls, i) => {
       tl.fromTo(
@@ -232,7 +235,7 @@ const StaggeredMenu = forwardRef(({
             duration: 0.55,
             ease: 'power3.out',
             stagger: { each: 0.08, from: 'start' },
-            onComplete: () => animSet(socialLinks, { opacity: 1 }),
+            onComplete: () => gsap.set(socialLinks, { clearProps: 'opacity' }),
           },
           socialsStart + 0.04
         );
@@ -251,7 +254,7 @@ const StaggeredMenu = forwardRef(({
       tl.eventCallback('onComplete', () => {
         busyRef.current = false;
       });
-      tl.play();
+      tl.play(0);
     } else {
       busyRef.current = false;
     }
@@ -261,7 +264,7 @@ const StaggeredMenu = forwardRef(({
     const icon = iconRef.current;
     if (!icon) return;
     spinTweenRef.current?.kill();
-    spinTweenRef.current = animTo(icon, {
+    spinTweenRef.current = gsap.to(icon, {
       rotate: opening ? 225 : 0,
       duration: opening ? 0.8 : 0.35,
       ease: opening ? 'power4.out' : 'power3.inOut',
@@ -275,14 +278,14 @@ const StaggeredMenu = forwardRef(({
       if (!btn) return;
       colorTweenRef.current?.kill();
       if (changeMenuColorOnOpen) {
-        colorTweenRef.current = animTo(btn, {
+        colorTweenRef.current = gsap.to(btn, {
           color: opening ? openMenuButtonColor : menuButtonColor,
           delay: opening ? 0.18 : 0,
           duration: 0.3,
           ease: 'power2.out',
         });
       } else {
-        animSet(btn, { color: menuButtonColor });
+        gsap.set(btn, { color: menuButtonColor });
       }
     },
     [changeMenuColorOnOpen, menuButtonColor, openMenuButtonColor]
@@ -306,10 +309,10 @@ const StaggeredMenu = forwardRef(({
     seq.push(targetLabel);
     setTextLines(seq);
 
-    animSet(inner, { yPercent: 0 });
+    gsap.set(inner, { yPercent: 0 });
     const lineCount = seq.length;
     const finalShift = ((lineCount - 1) / lineCount) * 100;
-    textCycleAnimRef.current = animTo(inner, {
+    textCycleAnimRef.current = gsap.to(inner, {
       yPercent: -finalShift,
       duration: 0.5 + lineCount * 0.07,
       ease: 'power4.out',
@@ -360,7 +363,7 @@ const StaggeredMenu = forwardRef(({
 
   useEffect(() => {
     if (toggleBtnRef.current) {
-      animSet(toggleBtnRef.current, {
+      gsap.set(toggleBtnRef.current, {
         color: changeMenuColorOnOpen && openRef.current ? openMenuButtonColor : menuButtonColor,
       });
     }

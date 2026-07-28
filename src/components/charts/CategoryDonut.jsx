@@ -12,7 +12,7 @@ import { ChartEmpty } from './ChartShell';
 
 const DONUT = { width: 220, height: 220, margin: 12, inner: 58, outer: 88 };
 
-export const CategoryDonut = ({ data, categories = [], onCategoryClick, selectedCategory }) => {
+export const CategoryDonut = ({ data, categories = [], onCategoryClick, selectedCategory, animateIn = true }) => {
   const colors = useChartColors();
   const svgRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(null);
@@ -28,7 +28,7 @@ export const CategoryDonut = ({ data, categories = [], onCategoryClick, selected
   useAnimeScope(
     svgRef,
     () => {
-      if (!svgRef.current || !motionEnabled()) return;
+      if (!animateIn || !svgRef.current || !motionEnabled()) return;
       const arcs = svgRef.current.querySelectorAll('.donut-arc');
       animate(arcs, {
         opacity: [0, 1],
@@ -38,7 +38,7 @@ export const CategoryDonut = ({ data, categories = [], onCategoryClick, selected
         ease: easings.clayOut,
       });
     },
-    [data]
+    [data, animateIn]
   );
 
   if (!data.length) return <ChartEmpty message="No category spending in this view" />;
@@ -106,7 +106,7 @@ export const CategoryDonut = ({ data, categories = [], onCategoryClick, selected
           )}
         </div>
       </div>
-      <div className="chart-category-chips scroll-reveal-item" role="list">
+      <div className="chart-category-chips" role="list">
         {data.map((item, i) => (
           <button
             key={item.name}

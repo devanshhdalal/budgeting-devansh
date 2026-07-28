@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
 import { Plus, Pencil, Trash2, Calendar } from 'lucide-react';
 import { saveConfig } from '@/services/storage';
 import { useData } from '@/hooks/useData';
@@ -18,6 +17,7 @@ import { CategoryIcon } from '@/utils/categoryIcons';
 import { formatCurrency } from '@/utils/format';
 import { formatDisplayDate, todayIsoDate } from '@/utils/date';
 import EmptyState from '@/components/ui/EmptyState';
+import ScrollSection from '@/motion/anime/ScrollSection';
 import {
   formatRenewalLabel,
   getSubscriptions,
@@ -61,7 +61,7 @@ const SubscriptionRow = ({ sub, categories, onEdit, onDelete }) => {
   const fromTransaction = sub.source === 'transaction';
 
   return (
-    <motion.div className="sub-row sub-row-managed" layout>
+    <div className="sub-row sub-row-managed">
       <div className="sub-row-left">
         <div className="sub-icon">
           <CategoryIcon category="Subscriptions" categories={categories} />
@@ -92,7 +92,7 @@ const SubscriptionRow = ({ sub, categories, onEdit, onDelete }) => {
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -258,49 +258,57 @@ const SubscriptionsPage = () => {
 
   return (
     <div className="subscriptions-page">
-      <PageHeader
-        eyebrow="Recurring"
-        title="Subscriptions"
-        subtitle="Track renewals and monthly costs in one place."
-        action={
-          <button type="button" className="btn btn-primary" onClick={openAdd} disabled={saveStatus === 'saving'}>
-            <Plus size={18} />
-            <span className="hide-mobile">Add subscription</span>
-          </button>
-        }
-      />
+      <ScrollSection mount as="div" deps={[monthlyTotal]}>
+        <div data-scroll-item>
+          <PageHeader
+            eyebrow="Recurring"
+            title="Subscriptions"
+            subtitle="Track renewals and monthly costs in one place."
+            action={
+              <button type="button" className="btn btn-primary" onClick={openAdd} disabled={saveStatus === 'saving'}>
+                <Plus size={18} />
+                <span className="hide-mobile">Add subscription</span>
+              </button>
+            }
+          />
+        </div>
+      </ScrollSection>
 
       {syncError && (
         <SyncBanner message={`${syncError}. Showing cached settings.`} onRetry={handleRetry} retrying={loading} />
       )}
 
-      <SectionCard
-        title="Monthly total"
-        action={<span className="sub-amount sub-amount-lg">{formatCurrency(monthlyTotal)}/mo</span>}
-      >
-        {subscriptions.length === 0 ? (
-          <EmptyState title="No subscriptions yet">
-            <p className="empty-state-hint">
-              Add one manually, or categorize a transaction as Subscriptions.
-            </p>
-            <button type="button" className="btn btn-secondary" onClick={openAdd}>
-              Add your first subscription
-            </button>
-          </EmptyState>
-        ) : (
-          <div className="sub-list">
-            {subscriptions.map((sub) => (
-              <SubscriptionRow
-                key={sub.id}
-                sub={sub}
-                categories={config.CATEGORIES}
-                onEdit={openEdit}
-                onDelete={handleDelete}
-              />
-            ))}
-          </div>
-        )}
-      </SectionCard>
+      <ScrollSection as="div" deps={[subscriptions.length]}>
+        <div data-scroll-item>
+          <SectionCard
+            title="Monthly total"
+            action={<span className="sub-amount sub-amount-lg">{formatCurrency(monthlyTotal)}/mo</span>}
+          >
+            {subscriptions.length === 0 ? (
+              <EmptyState title="No subscriptions yet">
+                <p className="empty-state-hint">
+                  Add one manually, or categorize a transaction as Subscriptions.
+                </p>
+                <button type="button" className="btn btn-secondary" onClick={openAdd}>
+                  Add your first subscription
+                </button>
+              </EmptyState>
+            ) : (
+              <div className="sub-list">
+                {subscriptions.map((sub) => (
+                  <SubscriptionRow
+                    key={sub.id}
+                    sub={sub}
+                    categories={config.CATEGORIES}
+                    onEdit={openEdit}
+                    onDelete={handleDelete}
+                  />
+                ))}
+              </div>
+            )}
+          </SectionCard>
+        </div>
+      </ScrollSection>
 
       <Modal
         open={showModal}

@@ -10,7 +10,7 @@ import { ChartEmpty } from './ChartShell';
 const ROW_H = 36;
 const PAD = { top: 8, right: 16, bottom: 8, left: 120 };
 
-export const MerchantBars = ({ data, accentColor = 'var(--accent)' }) => {
+export const MerchantBars = ({ data, accentColor = 'var(--accent)', animateIn = true }) => {
   const wrapRef = useRef(null);
   const maxVal = useMemo(() => Math.max(...data.map((d) => d.value), 1), [data]);
   const width = 640;
@@ -35,10 +35,11 @@ export const MerchantBars = ({ data, accentColor = 'var(--accent)' }) => {
   useAnimeScope(
     wrapRef,
     () => {
+      if (!animateIn) return;
       const bars = wrapRef.current?.querySelectorAll('.merchant-bar-fill');
       if (bars?.length) animateBarStagger(bars);
     },
-    [data]
+    [data, animateIn]
   );
 
   if (!data.length) return <ChartEmpty message="No merchant data in this period" />;

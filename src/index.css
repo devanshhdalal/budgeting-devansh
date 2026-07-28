@@ -953,6 +953,32 @@ optgroup {
   margin-bottom: 24px;
 }
 
+.analytics-toolbar > [data-scroll-item] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-scroll-item] {
+    opacity: 0;
+    will-change: transform, opacity;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-scroll-item] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+.scroll-section {
+  display: block;
+}
+
 .analytics-kpis {
   margin-bottom: 28px;
 }
@@ -2690,14 +2716,6 @@ optgroup {
 }
 
 /* Charts */
-.recharts-wrapper {
-  font-family: var(--font-sans);
-}
-
-.recharts-cartesian-grid-horizontal line,
-.recharts-cartesian-grid-vertical line {
-  stroke: var(--border);
-}
 
 .chart-pie-stack {
   display: flex;
@@ -2711,11 +2729,6 @@ optgroup {
   width: 100%;
   max-width: 220px;
   margin: 0 auto;
-}
-
-.chart-pie-stage .recharts-tooltip-wrapper {
-  display: none !important;
-  pointer-events: none !important;
 }
 
 .chart-donut-center {

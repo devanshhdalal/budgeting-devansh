@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ParentSize } from '@visx/responsive';
 import PageHeader from '@/components/ui/PageHeader';
@@ -7,6 +7,8 @@ import PageError from '@/components/ui/PageError';
 import SyncBanner from '@/components/ui/SyncBanner';
 import LoadingScreen from '@/components/layout/LoadingScreen';
 import DateRangePicker from '@/features/dashboard/components/DateRangePicker';
+import ScrollSection from '@/motion/anime/ScrollSection';
+import { useInViewCountUp } from '@/motion/anime/scrollReveal';
 import { useData } from '@/hooks/useData';
 import { useToast } from '@/hooks/useToast';
 import { useAnalyticsFilters } from '@/hooks/useAnalyticsFilters';
@@ -29,15 +31,15 @@ import {
   MerchantBars,
   BudgetCompareChart,
 } from '@/components/charts';
-import { useScrollReveal } from '@/motion/anime/scrollReveal';
-import { useCountUp } from '@/motion/anime/countUp';
 
-const KpiBlock = ({ label, value, hint, formatFn = (v) => String(v) }) => {
-  const displayRef = useCountUp(typeof value === 'number' ? value : 0, { format: formatFn });
+const KpiBlock = ({ label, value, hint, formatFn = (v) => String(v), sectionRef }) => {
+  const valueRef = useRef(null);
+  useInViewCountUp(sectionRef, valueRef, typeof value === 'number' ? value : 0, formatFn, [value]);
+
   return (
-    <div className="stat-block scroll-reveal-item">
+    <div className="stat-block" data-scroll-item>
       <span className="stat-label">{label}</span>
-      <span className="stat-value" ref={displayRef}>
+      <span className="stat-value" ref={valueRef}>
         {formatFn(typeof value === 'number' ? value : 0)}
       </span>
       {hint && <span className="stat-hint">{hint}</span>}
@@ -59,14 +61,14 @@ const formatRewardsSummary = (totals) => {
 const AnalyticsPage = () => {
   const { config, transactions, loading, syncError, syncStatus, refresh } = useData();
   const toast = useToast();
-  const pageRef = useRef(null);
+  const kpiSectionRef = useRef(null);
   const filters = useAnalyticsFilters(transactions, config);
 
-  useScrollReveal(pageRef, '.scroll-reveal-item', [
-    filters.startDate,
-    filters.endDate,
-    filters.selectedCard,
-  ]);
+  const [trendVisible, setTrendVisible] = useState(false);
+  const [categoryVisible, setCategoryVisible] = useState(false);
+  const [merchantsVisible, setMerchantsVisible] = useState(false);
+  const [rewardsVisible, setRewardsVisible] = useState(false);
+  const [budgetVisible, setBudgetVisible] = useState(false);
 
   const range = useMemo(
     () => ({ start: filters.startDate, end: filters.endDate }),
@@ -121,6 +123,8 @@ const AnalyticsPage = () => {
     return `${sign}${summary.changePercent.toFixed(0)}% vs prior period`;
   }, [summary.changePercent]);
 
+  const filterDeps = [filters.startDate, filters.endDate, filters.selectedCard];
+
   const handleRetry = async () => {
     const result = await refresh();
     if (!result?.ok) toast.error('Sync failed', { description: syncError });
@@ -140,7 +144,7 @@ const AnalyticsPage = () => {
   }
 
   return (
-    <div ref={pageRef} className="analytics-page">
+    <div className="analytics-page">
       <PageHeader
         eyebrow="Spending"
         title="Analytics"
@@ -156,99 +160,146 @@ const AnalyticsPage = () => {
         <SyncBanner message={`${syncError}. Showing cached data.`} onRetry={handleRetry} retrying={loading} />
       )}
 
-      <div className="analytics-toolbar scroll-reveal-item">
-        <DateRangePicker
-          startDate={filters.startDate}
-          endDate={filters.endDate}
-          setStartDate={filters.setStartDate}
-          setEndDate={filters.setEndDate}
-        />
-        <div className="quick-actions">
-          <button type="button" className="chip" onClick={filters.setThisMonth}>
-            This month
-          </button>
+      <ScrollSection mount as="div" className="analytics-toolbar" deps={filterDeps}>
+        <div data-scroll-item>
+          <DateRangePicker
+            startDate={filters.startDate}
+            endDate={filters.endDate}
+            setStartDate={filters.setStartDate}
+            setEndDate={filters.setEndDate}
+          />
+          <div className="quick-actions">
+            <button type="button" className="chip" onClick={filters.setThisMonth}>
+              This month
+            </button>
+          </div>
+          <select
+            className="form-input category-select"
+            value={filters.selectedCard}
+            onChange={(e) => filters.setSelectedCard(e.target.value)}
+          >
+            {filters.uniqueCards.map((card) => (
+              <option key={card} value={card}>{card}</option>
+            ))}
+          </select>
         </div>
-        <select
-          className="form-input category-select"
-          value={filters.selectedCard}
-          onChange={(e) => filters.setSelectedCard(e.target.value)}
-        >
-          {filters.uniqueCards.map((card) => (
-            <option key={card} value={card}>{card}</option>
-          ))}
-        </select>
-      </div>
+      </ScrollSection>
 
-      <div className="hero-stats analytics-kpis">
-        <KpiBlock label="Total spent" value={summary.totalSpent} formatFn={formatCurrency} hint={changeLabel} />
-        <KpiBlock label="Avg / day" value={summary.avgPerDay} formatFn={formatCurrency} hint={`${summary.transactionCount} txns`} />
+      <ScrollSection mount ref={kpiSectionRef} as="div" className="hero-stats analytics-kpis" deps={[summary.totalSpent]}>
         <KpiBlock
-          label="Rewards"
-          value={Object.values(summary.rewardTotals)[0] ?? 0}
-          hint={formatRewardsSummary(summary.rewardTotals)}
-          formatFn={(v) => (v ? String(Math.floor(v)) : '—')}
-        />
-      </div>
+          sectionRef={kpiSectionRef}
+            label="Total spent"
+            value={summary.totalSpent}
+            formatFn={formatCurrency}
+            hint={changeLabel}
+          />
+          <KpiBlock
+            sectionRef={kpiSectionRef}
+            label="Avg / day"
+            value={summary.avgPerDay}
+            formatFn={formatCurrency}
+            hint={`${summary.transactionCount} txns`}
+          />
+          <KpiBlock
+            sectionRef={kpiSectionRef}
+            label="Rewards"
+            value={Object.values(summary.rewardTotals)[0] ?? 0}
+            hint={formatRewardsSummary(summary.rewardTotals)}
+            formatFn={(v) => (v ? String(Math.floor(v)) : '—')}
+          />
+      </ScrollSection>
 
-      <ChartShell title="Spending over time" className="scroll-reveal-item">
-        <ParentSize debounceTime={10}>
-          {({ width }) => (
-            <AreaTrendChart data={dailySeries} width={Math.max(width, 320)} height={280} accentColor="var(--accent)" />
-          )}
-        </ParentSize>
-      </ChartShell>
+      <ScrollSection deps={[dailySeries.length, ...filterDeps]} onVisible={() => setTrendVisible(true)}>
+        <div data-scroll-item>
+          <ChartShell title="Spending over time">
+            <ParentSize debounceTime={10}>
+              {({ width }) => (
+                <AreaTrendChart
+                  data={dailySeries}
+                  width={Math.max(width, 320)}
+                  height={280}
+                  accentColor="var(--accent)"
+                  animateIn={trendVisible}
+                />
+              )}
+            </ParentSize>
+          </ChartShell>
+        </div>
+      </ScrollSection>
 
       <div className="analytics-grid">
-        <ChartShell title="By category" className="scroll-reveal-item">
-          <CategoryDonut
-            data={categoryData}
-            categories={config.CATEGORIES}
-            selectedCategory={filters.selectedCategory}
-            onCategoryClick={(cat) =>
-              filters.setSelectedCategory(filters.selectedCategory === cat ? 'All' : cat)
-            }
-          />
-        </ChartShell>
+        <ScrollSection deps={[categoryData.length, ...filterDeps]} onVisible={() => setCategoryVisible(true)}>
+          <div data-scroll-item>
+            <ChartShell title="By category">
+              <CategoryDonut
+                data={categoryData}
+                categories={config.CATEGORIES}
+                selectedCategory={filters.selectedCategory}
+                animateIn={categoryVisible}
+                onCategoryClick={(cat) =>
+                  filters.setSelectedCategory(filters.selectedCategory === cat ? 'All' : cat)
+                }
+              />
+            </ChartShell>
+          </div>
+        </ScrollSection>
 
-        <ChartShell title="Top merchants" className="scroll-reveal-item">
-          <MerchantBars data={merchants} />
-        </ChartShell>
+        <ScrollSection deps={[merchants.length, ...filterDeps]} onVisible={() => setMerchantsVisible(true)}>
+          <div data-scroll-item>
+            <ChartShell title="Top merchants">
+              <MerchantBars data={merchants} animateIn={merchantsVisible} />
+            </ChartShell>
+          </div>
+        </ScrollSection>
       </div>
 
       {cardBreakdown.length > 1 && (
-        <SectionCard title="By card" className="scroll-reveal-item">
-          <div className="analytics-card-breakdown">
-            {cardBreakdown.map((row) => (
-              <div key={row.name} className="analytics-card-row">
-                <span>{row.name}</span>
-                <span className="sub-amount">{formatCurrency(row.value)}</span>
+        <ScrollSection deps={[cardBreakdown.length, ...filterDeps]}>
+          <div data-scroll-item>
+            <SectionCard title="By card">
+              <div className="analytics-card-breakdown">
+                {cardBreakdown.map((row) => (
+                  <div key={row.name} className="analytics-card-row">
+                    <span>{row.name}</span>
+                    <span className="sub-amount">{formatCurrency(row.value)}</span>
+                  </div>
+                ))}
               </div>
-            ))}
+            </SectionCard>
           </div>
-        </SectionCard>
+        </ScrollSection>
       )}
 
       {rewards.currencies.length > 0 && (
-        <ChartShell title="Rewards over time" className="scroll-reveal-item">
-          <ParentSize debounceTime={10}>
-            {({ width }) => (
-              <AreaTrendChart
-                data={rewards.series.map((d) => ({
-                  ...d,
-                  amount: rewards.currencies.reduce((sum, c) => sum + (d[c] ?? 0), 0),
-                }))}
-                width={Math.max(width, 320)}
-                height={220}
-                accentColor="var(--accent-2)"
-              />
-            )}
-          </ParentSize>
-        </ChartShell>
+        <ScrollSection deps={[rewards.series.length, ...filterDeps]} onVisible={() => setRewardsVisible(true)}>
+          <div data-scroll-item>
+            <ChartShell title="Rewards over time">
+              <ParentSize debounceTime={10}>
+                {({ width }) => (
+                  <AreaTrendChart
+                    data={rewards.series.map((d) => ({
+                      ...d,
+                      amount: rewards.currencies.reduce((sum, c) => sum + (d[c] ?? 0), 0),
+                    }))}
+                    width={Math.max(width, 320)}
+                    height={220}
+                    accentColor="var(--accent-2)"
+                    animateIn={rewardsVisible}
+                  />
+                )}
+              </ParentSize>
+            </ChartShell>
+          </div>
+        </ScrollSection>
       )}
 
-      <ChartShell title="Budget vs actual" className="scroll-reveal-item">
-        <BudgetCompareChart data={budgetRows} />
-      </ChartShell>
+      <ScrollSection deps={[budgetRows.length, ...filterDeps]} onVisible={() => setBudgetVisible(true)}>
+        <div data-scroll-item>
+          <ChartShell title="Budget vs actual">
+            <BudgetCompareChart data={budgetRows} animateIn={budgetVisible} />
+          </ChartShell>
+        </div>
+      </ScrollSection>
     </div>
   );
 };

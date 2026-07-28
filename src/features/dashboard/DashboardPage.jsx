@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { Search, ArrowRight } from 'lucide-react';
 import { ParentSize } from '@visx/responsive';
 import { saveTransaction, deleteTransaction, uploadReceipt } from '@/services/storage';
@@ -26,8 +25,8 @@ import { useData } from '@/hooks/useData';
 import { useToast } from '@/hooks/useToast';
 import { useTransactionFilters } from '@/hooks/useTransactionFilters';
 import { MAX_VISIBLE_TRANSACTIONS } from '@/constants';
-import { fadeUp } from '@/motion/presets';
 import LoadingScreen from '@/components/layout/LoadingScreen';
+import ScrollSection from '@/motion/anime/ScrollSection';
 import AnimatedNumber from '@/components/ui/AnimatedNumber';
 import PageError from '@/components/ui/PageError';
 import EmptyState from '@/components/ui/EmptyState';
@@ -150,7 +149,7 @@ const SubscriptionsCard = ({ subscriptions, categories }) => {
 };
 
 const Toolbar = ({ filters, categories }) => (
-  <motion.div className="toolbar" variants={fadeUp}>
+  <div className="toolbar" data-scroll-item>
     <div className="search-wrap">
       <Search size={18} />
       <input
@@ -202,7 +201,7 @@ const Toolbar = ({ filters, categories }) => (
         <option key={cat.value} value={cat.value}>{cat.label}</option>
       ))}
     </select>
-  </motion.div>
+  </div>
 );
 
 const BudgetTrackingCardBody = ({ budgets, categories, colors, onSelect }) => {
@@ -267,6 +266,7 @@ const Dashboard = () => {
   const [saveStatus, setSaveStatus] = useState('idle');
   const savedTimerRef = useRef(null);
   const [viewingReceipt, setViewingReceipt] = useState(null);
+  const [previewChartVisible, setPreviewChartVisible] = useState(false);
 
   useEffect(() => {
     editingRef.current = editing;
@@ -501,112 +501,138 @@ const Dashboard = () => {
         />
       )}
 
-      <div className="hero-stats">
+      <ScrollSection mount className="hero-stats" as="div" deps={[totalSpent]}>
         <StatCard
           featured
+          scrollItem
           label="Total spent"
           hint={`${filters.filteredTransactions.length} transactions in view`}
         >
           <AnimatedNumber value={totalSpent} format={formatCurrency} />
         </StatCard>
-        <StatCard label="Top category" value={topCategory} hint="Where most money went" />
-        <StatCard label="Rewards" value={rewardsLabel} hint="From your card multipliers" />
-      </div>
+        <StatCard scrollItem label="Top category" value={topCategory} hint="Where most money went" />
+        <StatCard scrollItem label="Rewards" value={rewardsLabel} hint="From your card multipliers" />
+      </ScrollSection>
 
-      <Toolbar filters={filters} categories={appConfig.CATEGORIES} />
+      <ScrollSection as="div" deps={[filters.selectedCategory]}>
+        <Toolbar filters={filters} categories={appConfig.CATEGORIES} />
+      </ScrollSection>
 
-      <div className="insight-grid">
-        <motion.div className="insight-block" variants={fadeUp}>
+      <ScrollSection as="div" className="insight-grid" deps={[topMerchant, topCategory]}>
+        <div className="insight-block" data-scroll-item>
           <span className="insight-title">Top merchant</span>
           <span className="insight-value">{topMerchant ? topMerchant[0] : 'None'}</span>
           <span className="insight-desc">{topMerchant ? `${formatCurrency(topMerchant[1])} spent` : 'No data'}</span>
-        </motion.div>
-        <motion.div className="insight-block" variants={fadeUp}>
+        </div>
+        <div className="insight-block" data-scroll-item>
           <span className="insight-title">Rewards earned</span>
           <span className="insight-value" style={{ fontSize: '1rem' }}>{rewardsLabel}</span>
           <span className="insight-desc">Active multipliers applied</span>
-        </motion.div>
-        <motion.div className="insight-block" variants={fadeUp}>
+        </div>
+        <div className="insight-block" data-scroll-item>
           <span className="insight-title">Monthly focus</span>
           <span className="insight-value">{topCategory}</span>
           <span className="insight-desc">Highest spend category</span>
-        </motion.div>
-      </div>
+        </div>
+      </ScrollSection>
 
-      <motion.div className="filter-pills" variants={fadeUp}>
-        {filters.uniqueCards.map((card) => (
-          <button
-            key={card}
-            type="button"
-            className={`pill ${filters.selectedCard === card ? 'active' : ''}`}
-            onClick={() => filters.setSelectedCard(card)}
-          >
-            {card}
-          </button>
-        ))}
-      </motion.div>
+      <ScrollSection as="div" deps={[filters.selectedCard]}>
+        <div className="filter-pills" data-scroll-item>
+          {filters.uniqueCards.map((card) => (
+            <button
+              key={card}
+              type="button"
+              className={`pill ${filters.selectedCard === card ? 'active' : ''}`}
+              onClick={() => filters.setSelectedCard(card)}
+            >
+              {card}
+            </button>
+          ))}
+        </div>
+      </ScrollSection>
 
       {billingContext && (
-        <motion.div className="billing-context-banner" variants={fadeUp}>
-          <p className="billing-context-line">
-            {billingContext.isStatement ? 'Statement' : 'Billing period'}:{' '}
-            {formatDisplayDate(billingContext.period.start)} – {formatDisplayDate(billingContext.period.end)}
-            {billingContext.period.due && (
-              <> · Due {formatDisplayDate(billingContext.period.due)}</>
-            )}
-          </p>
-          {billingContext.paymentDueToday && (
-            <p className="billing-context-due-today">
-              Payment due today for statement ending{' '}
-              {formatDisplayDate(billingContext.paymentDueStatementEnd)}
+        <ScrollSection as="div" deps={[billingContext.period.start]}>
+          <div className="billing-context-banner" data-scroll-item>
+            <p className="billing-context-line">
+              {billingContext.isStatement ? 'Statement' : 'Billing period'}:{' '}
+              {formatDisplayDate(billingContext.period.start)} – {formatDisplayDate(billingContext.period.end)}
+              {billingContext.period.due && (
+                <> · Due {formatDisplayDate(billingContext.period.due)}</>
+              )}
             </p>
-          )}
-        </motion.div>
+            {billingContext.paymentDueToday && (
+              <p className="billing-context-due-today">
+                Payment due today for statement ending{' '}
+                {formatDisplayDate(billingContext.paymentDueStatementEnd)}
+              </p>
+            )}
+          </div>
+        </ScrollSection>
       )}
 
       <div className="dashboard-grid">
-        <SectionCard title="Budget tracking" className="col-span-full">
-          {isInitialSync ? (
-            <BudgetSkeleton />
-          ) : (
-            <BudgetTrackingCardBody
-              budgets={categoryBudgets}
-              categories={appConfig.CATEGORIES}
-              colors={chartColors}
-              onSelect={filters.setSelectedCategory}
-            />
-          )}
-        </SectionCard>
-
-        <SectionCard
-          title="Spending preview"
-          className="col-span-full"
-          action={
-            <Link to={analyticsLink} className="page-section-link analytics-preview-link">
-              View full analytics <ArrowRight size={14} aria-hidden />
-            </Link>
-          }
-        >
-          {isInitialSync ? (
-            <ChartSkeleton variant="bar" />
-          ) : (
-            <ParentSize debounceTime={10}>
-              {({ width }) => (
-                <AreaTrendChart
-                  data={sparklineData}
-                  width={Math.max(width, 320)}
-                  height={160}
-                  compact
-                  animateIn
+        <ScrollSection as="div" className="col-span-full" deps={[categoryBudgets.length]}>
+          <div data-scroll-item>
+            <SectionCard title="Budget tracking" className="col-span-full">
+              {isInitialSync ? (
+                <BudgetSkeleton />
+              ) : (
+                <BudgetTrackingCardBody
+                  budgets={categoryBudgets}
+                  categories={appConfig.CATEGORIES}
+                  colors={chartColors}
+                  onSelect={filters.setSelectedCategory}
                 />
               )}
-            </ParentSize>
-          )}
-        </SectionCard>
+            </SectionCard>
+          </div>
+        </ScrollSection>
 
-        <SubscriptionsCard subscriptions={subscriptions} categories={appConfig.CATEGORIES} />
+        <ScrollSection
+          as="div"
+          className="col-span-full"
+          deps={[sparklineData.length]}
+          onVisible={() => setPreviewChartVisible(true)}
+        >
+          <div data-scroll-item>
+            <SectionCard
+              title="Spending preview"
+              className="col-span-full"
+              action={
+                <Link to={analyticsLink} className="page-section-link analytics-preview-link">
+                  View full analytics <ArrowRight size={14} aria-hidden />
+                </Link>
+              }
+            >
+              {isInitialSync ? (
+                <ChartSkeleton variant="bar" />
+              ) : (
+                <ParentSize debounceTime={10}>
+                  {({ width }) => (
+                    <AreaTrendChart
+                      data={sparklineData}
+                      width={Math.max(width, 320)}
+                      height={160}
+                      compact
+                      animateIn={previewChartVisible}
+                    />
+                  )}
+                </ParentSize>
+              )}
+            </SectionCard>
+          </div>
+        </ScrollSection>
 
-        <SectionCard title="Recent activity" className="col-span-full">
+        <ScrollSection as="div" deps={[subscriptions.length]}>
+          <div data-scroll-item>
+            <SubscriptionsCard subscriptions={subscriptions} categories={appConfig.CATEGORIES} />
+          </div>
+        </ScrollSection>
+
+        <ScrollSection as="div" className="col-span-full" deps={[filters.filteredTransactions.length]}>
+          <div data-scroll-item>
+            <SectionCard title="Recent activity" className="col-span-full">
           {isInitialSync ? (
             <TransactionListSkeleton />
           ) : filters.filteredTransactions.length === 0 ? (
@@ -654,7 +680,9 @@ const Dashboard = () => {
               ))}
             </div>
           )}
-        </SectionCard>
+            </SectionCard>
+          </div>
+        </ScrollSection>
       </div>
 
       <EditTransactionModal

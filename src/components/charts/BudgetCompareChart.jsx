@@ -13,7 +13,7 @@ import { ChartEmpty } from './ChartShell';
 const PAD = { top: 16, right: 16, bottom: 48, left: 16 };
 const KEYS = ['limit', 'actual'];
 
-export const BudgetCompareChart = ({ data }) => {
+export const BudgetCompareChart = ({ data, animateIn = true }) => {
   const wrapRef = useRef(null);
   const colors = useChartColors();
   const colorScale = scaleOrdinal({
@@ -64,7 +64,7 @@ export const BudgetCompareChart = ({ data }) => {
   useAnimeScope(
     wrapRef,
     () => {
-      if (!wrapRef.current || !motionEnabled()) return;
+      if (!wrapRef.current || !motionEnabled() || !animateIn) return;
       const limitBars = wrapRef.current.querySelectorAll('.budget-bar-limit');
       const actualBars = wrapRef.current.querySelectorAll('.budget-bar-actual');
       animate(limitBars, { scaleY: [0, 1], duration: 480, ease: easings.clayOut, transformOrigin: 'bottom' });
@@ -76,7 +76,7 @@ export const BudgetCompareChart = ({ data }) => {
         transformOrigin: 'bottom',
       });
     },
-    [data]
+    [data, animateIn]
   );
 
   if (!data.length) return <ChartEmpty message="No budget categories configured" />;
