@@ -1,19 +1,5 @@
 [
   {
-    "Amount": 20,
-    "Category": "Other",
-    "Date": "2026-07-09",
-    "Merchant": "Atlantic Cannabis",
-    "Card": "Cash",
-    "Notes": "",
-    "Source": "manual",
-    "IsRefund": false,
-    "Currency": "CAD",
-    "IsTest": false,
-    "CreatedAt": "2026-07-11T00:23:12.147Z",
-    "id": "1e87f872-bd8a-43d4-aef3-5f90d0c4ae77"
-  },
-  {
     "Date": "2026-06-10",
     "Month": null,
     "Merchant": "Membership Fee Installment",
