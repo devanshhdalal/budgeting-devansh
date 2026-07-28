@@ -107,10 +107,14 @@ const SubscriptionsCard = ({ subscriptions, categories }) => {
     >
       <div className="sub-list">
         {sorted.length === 0 && (
-          <p className="empty-state">
-            No subscriptions tracked.{' '}
-            <Link to="/subscriptions" className="inline-link">Add one</Link>
-          </p>
+          <EmptyState
+            className="empty-state-compact"
+            title="No subscriptions tracked"
+          >
+            <Link to="/subscriptions" className="inline-link">
+              Add one
+            </Link>
+          </EmptyState>
         )}
         {sorted.map((sub) => {
           const urgency = renewalUrgency(sub.renewalDate);
@@ -203,9 +207,14 @@ const BudgetTrackingCardBody = ({ budgets, categories, colors, onSelect }) => {
   const tracked = budgets.filter((c) => c.limit > 0);
   if (tracked.length === 0) {
     return (
-      <p className="empty-state">
-        No budget limits configured. Open Settings to set monthly limits per category.
-      </p>
+      <EmptyState
+        className="empty-state-compact"
+        title="No budget limits yet"
+      >
+        <Link to="/settings" className="inline-link">
+          Set monthly limits in Settings
+        </Link>
+      </EmptyState>
     );
   }
 
@@ -454,7 +463,7 @@ const Dashboard = () => {
       <PageHeader
         eyebrow={`${user.name}'s workspace`}
         title="Overview"
-        subtitle="Spending, budgets, and rewards in one calm view."
+        subtitle="Spending, budgets, and rewards at a glance."
       />
 
       {syncError && (

@@ -26,8 +26,8 @@ const AmbientBackground = ({ theme = 'dark' }) => {
   const particleColors = useMemo(
     () =>
       theme === 'dark'
-        ? ['#e8a090', '#a78bfa', '#f4f4f6']
-        : ['#c45c4a', '#8b6fd4', '#d4922a'],
+        ? ['#e09a86', '#7eaea8', '#dfc48a']
+        : ['#c4715a', '#5f8a8a', '#d1b070'],
     [theme]
   );
 

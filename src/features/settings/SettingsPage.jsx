@@ -289,7 +289,7 @@ const SettingsForm = ({ initialConfig, commitConfig, transactions, setTransactio
       <PageHeader
         eyebrow="Preferences"
         title="Settings"
-        subtitle="Changes save automatically as you edit."
+        subtitle="Budgets, categories, rewards, and payment methods."
         action={<SaveIndicator status={saveStatus} />}
       />
 

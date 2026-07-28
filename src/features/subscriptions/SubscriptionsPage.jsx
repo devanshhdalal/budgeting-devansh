@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Pencil, Trash2, Calendar, RefreshCw } from 'lucide-react';
+import { Plus, Pencil, Trash2, Calendar } from 'lucide-react';
 import { saveConfig } from '@/services/storage';
 import { useData } from '@/hooks/useData';
 import { useToast } from '@/hooks/useToast';
@@ -17,6 +17,7 @@ import LoadingScreen from '@/components/layout/LoadingScreen';
 import { CategoryIcon } from '@/utils/categoryIcons';
 import { formatCurrency } from '@/utils/format';
 import { formatDisplayDate, todayIsoDate } from '@/utils/date';
+import EmptyState from '@/components/ui/EmptyState';
 import {
   formatRenewalLabel,
   getSubscriptions,
@@ -251,7 +252,7 @@ const SubscriptionsPage = () => {
       <PageHeader
         eyebrow="Recurring"
         title="Subscriptions"
-        subtitle="Changes save automatically as you edit."
+        subtitle="Track renewals and monthly costs in one place."
         action={
           <button type="button" className="btn btn-primary" onClick={openAdd} disabled={saveStatus === 'saving'}>
             <Plus size={18} />
@@ -270,13 +271,14 @@ const SubscriptionsPage = () => {
           action={<span className="sub-amount sub-amount-lg">{formatCurrency(monthlyTotal)}/mo</span>}
         >
           {subscriptions.length === 0 ? (
-            <div className="subscriptions-empty">
-              <RefreshCw size={32} strokeWidth={1.5} />
-              <p>No subscriptions yet</p>
+            <EmptyState title="No subscriptions yet">
+              <p className="empty-state-hint">
+                Add one manually, or categorize a transaction as Subscriptions.
+              </p>
               <button type="button" className="btn btn-secondary" onClick={openAdd}>
                 Add your first subscription
               </button>
-            </div>
+            </EmptyState>
           ) : (
             <div className="sub-list">
               {subscriptions.map((sub) => (

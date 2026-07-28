@@ -9,12 +9,12 @@ export const CHART_COLOR_VARS = [
 ];
 
 export const FALLBACK_CHART_COLORS = [
-  '#c45c4a',
-  '#8b6fd4',
-  '#0d9b6e',
-  '#3b82f6',
-  '#d4922a',
-  '#64748b',
+  '#c4715a',
+  '#5f8a8a',
+  '#5a8f72',
+  '#d1b070',
+  '#8b6b5a',
+  '#7a8580',
 ];
 
 export const readChartColors = () => {

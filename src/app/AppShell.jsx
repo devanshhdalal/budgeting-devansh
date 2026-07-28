@@ -75,7 +75,7 @@ const ThemeToggle = ({ theme, onToggle }) => (
 
 const AppShellInner = () => {
   const menuRef = useRef(null);
-  const [theme, setTheme] = useState(() => localStorage.getItem(THEME_KEY) || 'dark');
+  const [theme, setTheme] = useState(() => localStorage.getItem(THEME_KEY) || 'light');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -85,12 +85,12 @@ const AppShellInner = () => {
   const toggleTheme = () => setTheme((t) => (t === 'light' ? 'dark' : 'light'));
 
   const menuColors = useMemo(
-    () => (theme === 'dark' ? ['#e8a090', '#a78bfa'] : ['#c45c4a', '#8b6fd4']),
+    () => (theme === 'dark' ? ['#e09a86', '#7eaea8'] : ['#c4715a', '#5f8a8a']),
     [theme]
   );
 
-  const accentColor = theme === 'dark' ? '#e8a090' : '#c45c4a';
-  const menuButtonColor = theme === 'dark' ? '#f4f4f6' : '#1a1a1f';
+  const accentColor = theme === 'dark' ? '#e09a86' : '#c4715a';
+  const menuButtonColor = theme === 'dark' ? '#f4f0eb' : '#2a2622';
 
   return (
     <ShortcutsProvider menuRef={menuRef}>

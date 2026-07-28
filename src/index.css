@@ -2,29 +2,30 @@
 @import './styles/fonts.css';
 
 :root {
+  /* Brand: terracotta (app icon / clay) + teal (logo mark) + warm cream */
   --font-family: 'SF Pro Display', sans-serif;
   --font-sans: var(--font-family);
   --font-display: var(--font-family);
 
-  --bg: #f4f2ef;
-  --bg-elevated: #ffffff;
-  --surface: rgba(255, 255, 255, 0.72);
-  --surface-solid: #ffffff;
-  --text: #1a1a1f;
-  --text-muted: #6b6b76;
-  --text-faint: #9a9aa6;
-  --border: rgba(26, 26, 31, 0.08);
-  --border-strong: rgba(26, 26, 31, 0.14);
+  --bg: #f3f0eb;
+  --bg-elevated: #faf8f5;
+  --surface: rgba(255, 252, 248, 0.78);
+  --surface-solid: #fffcf8;
+  --text: #2a2622;
+  --text-muted: #6f6860;
+  --text-faint: #9a9288;
+  --border: rgba(42, 38, 34, 0.08);
+  --border-strong: rgba(42, 38, 34, 0.14);
 
-  --accent: #c45c4a;
-  --accent-soft: rgba(196, 92, 74, 0.12);
-  --accent-glow: rgba(196, 92, 74, 0.35);
-  --accent-2: #8b6fd4;
-  --accent-2-soft: rgba(139, 111, 212, 0.12);
+  --accent: #c4715a;
+  --accent-soft: rgba(196, 113, 90, 0.14);
+  --accent-glow: rgba(196, 113, 90, 0.32);
+  --accent-2: #5f8a8a;
+  --accent-2-soft: rgba(95, 138, 138, 0.14);
 
-  --success: #0d9b6e;
-  --success-soft: rgba(13, 155, 110, 0.12);
-  --warn: #d4922a;
+  --success: #5a8f72;
+  --success-soft: rgba(90, 143, 114, 0.14);
+  --warn: #d1b070;
 
   --radius-xl: 28px;
   --radius-lg: 20px;
@@ -32,16 +33,16 @@
   --radius-sm: 10px;
   --radius-full: 999px;
 
-  --shadow-sm: 0 1px 2px rgba(26, 26, 31, 0.04), 0 4px 16px rgba(26, 26, 31, 0.04);
-  --shadow-md: 0 8px 32px rgba(26, 26, 31, 0.08);
-  --shadow-lg: 0 24px 64px rgba(26, 26, 31, 0.12);
+  --shadow-sm: 0 1px 2px rgba(42, 38, 34, 0.04), 0 4px 16px rgba(42, 38, 34, 0.04);
+  --shadow-md: 0 8px 32px rgba(42, 38, 34, 0.08);
+  --shadow-lg: 0 24px 64px rgba(42, 38, 34, 0.12);
 
-  --chart-1: #c45c4a;
-  --chart-2: #8b6fd4;
-  --chart-3: #0d9b6e;
-  --chart-4: #3b82f6;
-  --chart-5: #d4922a;
-  --chart-6: #64748b;
+  --chart-1: #c4715a;
+  --chart-2: #5f8a8a;
+  --chart-3: #5a8f72;
+  --chart-4: #d1b070;
+  --chart-5: #8b6b5a;
+  --chart-6: #7a8580;
 
   --menu-header-h: 80px;
   --card-img-w: 200px;
@@ -51,32 +52,36 @@
 }
 
 [data-theme='dark'] {
-  --bg: #0a0a0c;
-  --bg-elevated: #121218;
-  --surface: rgba(24, 24, 30, 0.65);
-  --surface-solid: #18181e;
-  --text: #f4f4f6;
-  --text-muted: #a1a1ad;
-  --text-faint: #6e6e7a;
-  --border: rgba(255, 255, 255, 0.07);
-  --border-strong: rgba(255, 255, 255, 0.12);
+  --bg: #141210;
+  --bg-elevated: #1c1916;
+  --surface: rgba(34, 30, 26, 0.72);
+  --surface-solid: #221e1a;
+  --text: #f4f0eb;
+  --text-muted: #b0a89e;
+  --text-faint: #7a7268;
+  --border: rgba(244, 240, 235, 0.08);
+  --border-strong: rgba(244, 240, 235, 0.14);
 
-  --accent: #e8a090;
-  --accent-soft: rgba(232, 160, 144, 0.14);
-  --accent-glow: rgba(232, 160, 144, 0.25);
-  --accent-2: #a78bfa;
-  --accent-2-soft: rgba(167, 139, 250, 0.14);
+  --accent: #e09a86;
+  --accent-soft: rgba(224, 154, 134, 0.16);
+  --accent-glow: rgba(224, 154, 134, 0.28);
+  --accent-2: #7eaea8;
+  --accent-2-soft: rgba(126, 174, 168, 0.16);
 
-  --chart-1: #e8a090;
-  --chart-2: #a78bfa;
-  --chart-3: #34d399;
-  --chart-4: #60a5fa;
-  --chart-5: #fbbf24;
-  --chart-6: #94a3b8;
+  --success: #7ab894;
+  --success-soft: rgba(122, 184, 148, 0.16);
+  --warn: #dfc48a;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2), 0 4px 20px rgba(0, 0, 0, 0.25);
-  --shadow-md: 0 12px 40px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 32px 80px rgba(0, 0, 0, 0.5);
+  --chart-1: #e09a86;
+  --chart-2: #7eaea8;
+  --chart-3: #7ab894;
+  --chart-4: #dfc48a;
+  --chart-5: #c4a08e;
+  --chart-6: #8a928c;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25), 0 4px 20px rgba(0, 0, 0, 0.28);
+  --shadow-md: 0 12px 40px rgba(0, 0, 0, 0.38);
+  --shadow-lg: 0 32px 80px rgba(0, 0, 0, 0.52);
 }
 
 *,
@@ -935,16 +940,6 @@ optgroup {
   margin: 0 auto;
 }
 
-.subscriptions-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  padding: 40px 24px;
-  color: var(--text-muted);
-  text-align: center;
-}
-
 .page-section-link {
   font-size: 0.8rem;
   font-weight: 600;
@@ -1002,6 +997,24 @@ optgroup {
   flex-direction: column;
   align-items: center;
   gap: 8px;
+}
+
+.empty-state-hint {
+  margin: 0;
+  max-width: 36ch;
+  color: var(--text-faint);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.empty-state-compact {
+  padding: 16px 8px 20px;
+  gap: 8px;
+}
+
+.empty-state-compact .empty-state-title {
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
 /* Banner */
@@ -1803,7 +1816,7 @@ optgroup {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent), #b85a48);
+  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 72%, var(--accent-2)));
   color: white;
   box-shadow: 0 8px 24px var(--accent-glow);
 }
@@ -1857,11 +1870,13 @@ optgroup {
   align-items: center;
   padding: 48px 24px;
   text-align: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
 }
 
 .success-icon {
   color: var(--success);
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 /* Settings */

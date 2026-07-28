@@ -310,7 +310,7 @@ const AddTransaction = () => {
       <PageHeader
         eyebrow="Manual entry"
         title="Add transaction"
-        subtitle="Changes save automatically as you fill in each field."
+        subtitle="Fill each step — changes save as you go."
         action={<SaveIndicator status={isSubmitting ? 'saving' : saveStatus} />}
       />
 
@@ -328,7 +328,7 @@ const AddTransaction = () => {
             <motion.div key="ok" className="success-panel" {...scaleIn}>
               <CheckCircle size={56} className="success-icon" strokeWidth={1.5} />
               <h2 className="page-title" style={{ fontSize: '1.5rem' }}>Saved</h2>
-              <p className="page-subtitle">Your transaction is in the ledger.</p>
+              <p className="page-subtitle">Added to your ledger.</p>
             </motion.div>
           ) : (
             <motion.div key="stepper" {...scaleIn}>
