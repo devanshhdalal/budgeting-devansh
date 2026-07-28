@@ -55,10 +55,10 @@ const EMPTY_EDIT_FORM = (tx) => ({
   ReceiptUrl: tx.ReceiptUrl || '',
 });
 
-const budgetColorOpacity = (percentage) => {
-  if (percentage > 90) return 1;
-  if (percentage > 70) return 0.88;
-  return 0.72;
+const budgetStatus = (percentage) => {
+  if (percentage >= 100) return 'over';
+  if (percentage >= 85) return 'near';
+  return 'under';
 };
 
 const formatRewards = (totals) => {
@@ -99,7 +99,6 @@ const SubscriptionsCard = ({ subscriptions, categories }) => {
   return (
     <SectionCard
       title="Subscriptions"
-      className="col-span-4"
       action={
         <Link to="/subscriptions" className="page-section-link">
           Manage · {formatCurrency(monthlyBurnRate)}/mo
@@ -125,7 +124,7 @@ const SubscriptionsCard = ({ subscriptions, categories }) => {
                 <div className="sub-icon">
                   <CategoryIcon category="Subscriptions" categories={categories} />
                 </div>
-                <div>
+                <div className="sub-row-text">
                   <div className="sub-name">{sub.name}</div>
                   <div className="sub-renewal-meta">
                     <span className={`sub-renewal-badge sub-renewal-${urgency}`}>
@@ -220,34 +219,53 @@ const BudgetTrackingCardBody = ({ budgets, categories, colors, onSelect }) => {
   }
 
   return (
-    <div className="summary-cards">
-      {tracked.map((cat) => (
-        <div
-          key={cat.value}
-          className="budget-row"
-          role="button"
-          tabIndex={0}
-          onClick={() => onSelect(cat.value)}
-          onKeyDown={(e) => e.key === 'Enter' && onSelect(cat.value)}
-        >
-          <div className="budget-row-head">
-            <span>{cat.label}</span>
-            <span>
-              {formatCurrency(cat.spent)} <span className="muted">/ {formatCurrency(cat.limit)}</span>
-            </span>
+    <div className="budget-list">
+      {tracked.map((cat) => {
+        const status = budgetStatus(cat.percentage);
+        const remaining = Math.max(0, cat.limit - cat.spent);
+        const barColor =
+          status === 'over'
+            ? 'var(--danger, #e85d5d)'
+            : status === 'near'
+              ? 'var(--warn)'
+              : getCategoryColor(cat.value, categories, colors);
+
+        return (
+          <div
+            key={cat.value}
+            className="budget-row"
+            data-status={status}
+            role="button"
+            tabIndex={0}
+            onClick={() => onSelect(cat.value)}
+            onKeyDown={(e) => e.key === 'Enter' && onSelect(cat.value)}
+          >
+            <div className="budget-row-head">
+              <span className="budget-row-label">{cat.label}</span>
+              <span className="budget-row-spent">{formatCurrency(cat.spent)}</span>
+            </div>
+            <div className="budget-row-meta">
+              <span>
+                of {formatCurrency(cat.limit)} · {Math.round(cat.percentage)}%
+              </span>
+              <span>
+                {status === 'over'
+                  ? `${formatCurrency(cat.spent - cat.limit)} over`
+                  : `${formatCurrency(remaining)} left`}
+              </span>
+            </div>
+            <div className="budget-bar-container">
+              <div
+                className="budget-bar-fill"
+                style={{
+                  width: `${Math.min(cat.percentage, 100)}%`,
+                  background: barColor,
+                }}
+              />
+            </div>
           </div>
-          <div className="budget-bar-container">
-            <div
-              className="budget-bar-fill"
-              style={{
-                width: `${cat.percentage}%`,
-                background: getCategoryColor(cat.value, categories, colors),
-                opacity: budgetColorOpacity(cat.percentage),
-              }}
-            />
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };
@@ -572,9 +590,9 @@ const Dashboard = () => {
       )}
 
       <div className="dashboard-grid">
-        <ScrollSection as="div" className="col-span-full" deps={[categoryBudgets.length]}>
+        <ScrollSection mount as="div" className="col-span-full" deps={[categoryBudgets.length]}>
           <div data-scroll-item>
-            <SectionCard title="Budget tracking" className="col-span-full">
+            <SectionCard title="Budget tracking">
               {isInitialSync ? (
                 <BudgetSkeleton />
               ) : (
@@ -590,6 +608,7 @@ const Dashboard = () => {
         </ScrollSection>
 
         <ScrollSection
+          mount
           as="div"
           className="col-span-full"
           deps={[sparklineData.length]}
@@ -598,7 +617,6 @@ const Dashboard = () => {
           <div data-scroll-item>
             <SectionCard
               title="Spending preview"
-              className="col-span-full"
               action={
                 <Link to={analyticsLink} className="page-section-link analytics-preview-link">
                   View full analytics <ArrowRight size={14} aria-hidden />
@@ -624,15 +642,15 @@ const Dashboard = () => {
           </div>
         </ScrollSection>
 
-        <ScrollSection as="div" deps={[subscriptions.length]}>
+        <ScrollSection as="div" className="col-span-5" deps={[subscriptions.length]}>
           <div data-scroll-item>
             <SubscriptionsCard subscriptions={subscriptions} categories={appConfig.CATEGORIES} />
           </div>
         </ScrollSection>
 
-        <ScrollSection as="div" className="col-span-full" deps={[filters.filteredTransactions.length]}>
+        <ScrollSection as="div" className="col-span-7" deps={[filters.filteredTransactions.length]}>
           <div data-scroll-item>
-            <SectionCard title="Recent activity" className="col-span-full">
+            <SectionCard title="Recent activity">
           {isInitialSync ? (
             <TransactionListSkeleton />
           ) : filters.filteredTransactions.length === 0 ? (

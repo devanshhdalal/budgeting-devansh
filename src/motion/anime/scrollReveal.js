@@ -97,13 +97,35 @@ export const useScrollSection = (
 
     if (mount) {
       const children = getTargets(el, childSelector);
+      onVisible?.();
       if (children.length) {
-        onVisible?.();
-        animRef.current = animateOnEnter(children, { staggerMs: 80, y: 20 });
+        // Ensure CSS-hidden items are painted before animating in
+        children.forEach((child) => {
+          child.style.opacity = '0';
+          child.style.transform = 'translateY(20px)';
+        });
+        // Double-rAF: wait for layout so ParentSize / charts measure correctly
+        let frame2 = 0;
+        const frame1 = requestAnimationFrame(() => {
+          frame2 = requestAnimationFrame(() => {
+            animRef.current = animateOnEnter(children, { staggerMs: 80, y: 20 });
+          });
+        });
+        return () => {
+          cancelAnimationFrame(frame1);
+          cancelAnimationFrame(frame2);
+          animRef.current?.revert?.();
+          animRef.current = null;
+          children.forEach((child) => {
+            child.style.opacity = '';
+            child.style.transform = '';
+          });
+        };
       }
-    } else {
-      animRef.current = attachScrollReveal(el, childSelector, onVisible);
+      return undefined;
     }
+
+    animRef.current = attachScrollReveal(el, childSelector, onVisible);
 
     return () => {
       animRef.current?.revert?.();

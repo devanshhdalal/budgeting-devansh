@@ -66,18 +66,18 @@ const SubscriptionRow = ({ sub, categories, onEdit, onDelete }) => {
         <div className="sub-icon">
           <CategoryIcon category="Subscriptions" categories={categories} />
         </div>
-        <div>
-          <div className="sub-name">{sub.name}</div>
-          <div className="sub-renewal-meta">
-            <Calendar size={12} aria-hidden />
-            <span>Next {formatDisplayDate(sub.renewalDate)}</span>
-            <span className={`sub-renewal-badge sub-renewal-${urgency}`}>
-              {formatRenewalLabel(sub.renewalDate)}
-            </span>
-            {fromTransaction && <span className="sub-source-badge">From transaction</span>}
-          </div>
-          {sub.card && <div className="sub-tag">{sub.card}</div>}
-        </div>
+                <div className="sub-row-text">
+                  <div className="sub-name">{sub.name}</div>
+                  <div className="sub-renewal-meta">
+                    <Calendar size={12} aria-hidden />
+                    <span>Next {formatDisplayDate(sub.renewalDate)}</span>
+                    <span className={`sub-renewal-badge sub-renewal-${urgency}`}>
+                      {formatRenewalLabel(sub.renewalDate)}
+                    </span>
+                    {fromTransaction && <span className="sub-source-badge">From transaction</span>}
+                  </div>
+                  {sub.card && <div className="sub-tag">{sub.card}</div>}
+                </div>
       </div>
       <div className="sub-row-right">
         <span className="sub-amount">{formatCurrency(sub.amount)}</span>

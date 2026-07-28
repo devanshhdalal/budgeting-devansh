@@ -37,14 +37,18 @@ export const ChartSkeleton = ({ variant = 'bar' }) => (
 );
 
 export const BudgetSkeleton = () => (
-  <div className="summary-cards">
+  <div className="budget-list">
     {Array.from({ length: 4 }).map((_, i) => (
       <div key={i} className="budget-row">
         <div className="budget-row-head">
           <Skeleton width={90} height={12} />
           <Skeleton width={70} height={12} />
         </div>
-        <Skeleton width="100%" height={6} radius={999} />
+        <div className="budget-row-meta">
+          <Skeleton width={100} height={10} />
+          <Skeleton width={60} height={10} />
+        </div>
+        <Skeleton width="100%" height={10} radius={999} />
       </div>
     ))}
   </div>

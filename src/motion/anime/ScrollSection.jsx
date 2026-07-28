@@ -35,7 +35,10 @@ const ScrollSection = forwardRef(({
   } });
 
   return (
-    <Tag ref={setRef} className={`scroll-section ${className}`.trim()}>
+    <Tag
+      ref={setRef}
+      className={`scroll-section ${mount ? 'scroll-section--mount' : 'scroll-section--scroll'} ${className}`.trim()}
+    >
       {children}
     </Tag>
   );
