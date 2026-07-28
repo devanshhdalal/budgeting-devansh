@@ -1,0 +1,85 @@
+{
+  "CARDS": {
+    "Cash": {
+      "currency": "Cash",
+      "multipliers": {
+        "Base": 0
+      }
+    },
+    "ION": {
+      "currency": "Avion Points",
+      "multipliers": {
+        "Base": 1
+      },
+      "network": "visa",
+      "imageUrl": null
+    }
+  },
+  "CARD_IDENTIFIERS": {
+    "1005": "ION"
+  },
+  "BILLING_CYCLES": {
+    "ION": {
+      "type": "monthly"
+    }
+  },
+  
+  "CATEGORIES": [
+    {
+      "value": "Food",
+      "label": "Food & Dining",
+      "icon": "Coffee"
+    },
+    {
+      "value": "Groceries",
+      "label": "Groceries",
+      "icon": "ShoppingCart"
+    },
+    {
+      "value": "Car",
+      "label": "Transportation & Car",
+      "icon": "Car"
+    },
+    {
+      "value": "Health",
+      "label": "Health & Wellness",
+      "icon": "HeartPulse"
+    },
+    {
+      "value": "Personal Items",
+      "label": "Personal Items",
+      "icon": "ShoppingBag"
+    },
+    {
+      "value": "Utilities",
+      "label": "Utilities & Bills",
+      "icon": "Home"
+    },
+    {
+      "value": "Subscriptions",
+      "label": "Subscriptions",
+      "icon": "Home"
+    },
+    {
+      "value": "Travel",
+      "label": "Travel",
+      "icon": "Plane"
+    },
+    {
+      "value": "Other",
+      "label": "Other",
+      "icon": "MoreHorizontal"
+    }
+  ],
+  "BUDGET_CONFIG": {
+    "Food": 150,
+    "Groceries": 400,
+    "Car": 150,
+    "Personal Items": 100,
+    "Health": 200,
+    "Utilities": 200,
+    "Subscriptions": 30,
+    "Travel": 200
+  },
+  "SUBSCRIPTIONS": []
+}
